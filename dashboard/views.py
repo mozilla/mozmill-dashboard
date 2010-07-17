@@ -9,8 +9,7 @@ from couchdb.http import ResourceNotFound
 #COUCHDB_SERVER = "http://127.0.0.1:5984"
 COUCHDB_SERVER = "http://brasstacks.mozilla.com/couchdb"
 
-SERVER = Server(getattr(settings,'COUCHDB_SERVER'))
-  
+SERVER = Server(COUCHDB_SERVER)
 
 def index(request):
     docs = SERVER['mozmill']
