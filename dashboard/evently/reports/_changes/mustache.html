@@ -1,0 +1,26 @@
+<table id="results">
+  <thead>
+    <tr>
+      <th>start time</th>
+      <th>os</th>
+      <th>product</th>
+      <th>version</th>
+      <th>buildid</th>
+      <th>testpath</th>
+      <th>total tests</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{#reports}}
+    <tr>
+      <td><a href="../reports/_show/report/{{_id}}">{{starttime}}</a></td>
+      <td></td>
+      <td>{{app.name}}</td>
+      <td>{{app.version}}</td>
+      <td>{{app.buildID}}</td>
+      <td>{{testPath}}</td>
+      <td></td>
+    <tr>
+  {{/reports}}
+  </tbody> 
+</table>

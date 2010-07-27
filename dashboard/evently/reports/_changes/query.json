@@ -1,0 +1,5 @@
+{
+  "view" : "reportByDate",
+  "descending" : "true",
+  "limit" : 50
+}
