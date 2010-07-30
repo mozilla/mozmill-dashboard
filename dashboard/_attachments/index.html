@@ -1,55 +1,29 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <style>
-      table#results {
-        border-spacing: 0;
-        padding : 0;
-      }
-      table#results td, table#results th {
-        margin: 0;
-        border: 1px solid #555;
-      }
-    </style>
-
     <title>MozMill Test-run Dashboard</title>
     <link rel="stylesheet" href="style/main.css" type="text/css">
 
-    <script src="../../../_utils/script/sha1.js"></script>
-    <script src="../../../_utils/script/json2.js"></script>
-    <script src="../../../_utils/script/jquery.js"></script>
-    <script src="../../../_utils/script/jquery.couch.js"></script>
-    <script src="vendor/couchapp/jquery.couch.app.js"></script>
-    <script src="vendor/couchapp/jquery.couch.app.util.js"></script>
-    <script src="vendor/couchapp/jquery.mustache.js"></script>
-    <script src="vendor/couchapp/jquery.evently.js"></script>
-
+    <script src="vendor/couchapp/loader.js"></script>
     <script type="text/javascript" charset="utf-8">
-      var URL_PREFIX = "/couchdb";
-      //var URL_PREFIX = "";
-
       $.couch.app(function(app) {
-        $.couch.urlPrefix = URL_PREFIX;
-
         $("#account").evently("account", app);
         $("#profile").evently("profile", app);
         $.evently.connect("#account","#profile", ["loggedIn","loggedOut"]);
   
         $("#reports").evently("reports", app);
         $.pathbinder.begin("/");
-      }, {
-        "urlPrefix": URL_PREFIX
       });
     </script>
-  </head>
 
+  </head>
   <body>
     <div id="account"></div>
 
     <h1>MozMill Test-run Dashboard</h1>
-    <p>Quick demonstration how to use CouchApp. The source can be found at:
+    <p>In development version of the upcoming Mozmill Dashboard. The source can be found at:
        <a href="http://github.com/whimboo/mozmill-dashboard/tree/couchapp">http://github.com/whimboo/mozmill-dashboard/tree/couchapp</a>
 
-    <div id="reports">Please wait while loading reports...</div>
+    <p>To see the test reports <a href="_list/reports/reportByDate?descending=true&limit=50">click here</a>.</p>
   </body>
 </html>

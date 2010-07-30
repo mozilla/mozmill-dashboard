@@ -1,5 +1,5 @@
 function(doc) {
-  if (doc.starttime) {
-    emit(doc.starttime, doc);
+  if (doc.time_start) {
+    emit(doc.time_start, doc);
   }
 }

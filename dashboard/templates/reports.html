@@ -1,0 +1,46 @@
+{{>header}}
+<table id="results" border="1">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Report</th>
+      <th>Product</th>
+      <th>Version</th>
+      <th>Build</th>
+      <th>Locale</th>
+      <th>OS</th>
+      <th>CPU</th>
+      <th>Results</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{#reports}}
+    <tr>
+      <td><a href="../../_show/report/{{id}}">{{time_start}}</a></td>
+      <td>{{type}}</td>
+      <td>{{product}}</td>
+      <td>{{version}}</td>
+      <td>{{build}}</td>
+      <td>{{locale}}</td>
+      <td>{{os}}</td>
+      <td>{{cpu}}</td>
+      <td class="results">Pass: <strong>{{passed}}</strong> / Fail: <strong>{{failed}}</strong> / Skip: <strong>{{skipped}}</strong></td>
+    </tr>
+  {{/reports}}
+  </tbody> 
+</table>
+</body>
+
+  <script src="../../script/myloader.js"></script>
+  <script src="/_utils/script/base64.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $.couch.app(function(app) {
+      //$(".date").prettyDate();
+      $("#account").evently("account", app);
+      var pr = app.ddoc.evently.profile.profileReady;
+      pr.mustache = pr.all; // mod the template for this page
+      $("#profile").evently("profile", app);
+      $.evently.connect("#account","#profile", ["loggedIn","loggedOut"]);
+    });
+  </script>
+</html>

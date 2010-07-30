@@ -1,7 +1,7 @@
 /* add styles here */
 
 body {
-  font:1em Helvetica, sans-serif;
+  font: .8em Helvetica, sans-serif;
   padding:4px;
 }
 
@@ -73,3 +73,58 @@ div.avatar img {
 #items ul {
   list-style: none;
 }
+
+
+table#results {
+  border-spacing: 0;
+}
+
+table#results td, table#results th {
+  margin: 0;
+  border: 1px solid #555;
+  padding: 2px 5px;
+}
+
+table#results {
+  border-spacing: 0;
+}
+
+table#result td, table#result th {
+  margin: 0;
+  border: 1px solid #555;
+  padding: 2px 5px;
+  min-width: 7em;
+}
+
+table#result tr.passed td {
+  background: #dfd;
+}
+
+table#result tr.failed td {
+  background: #fdd;
+}
+
+table#result tr.skipped td {
+  background: #ffd;
+}
+
+th.headerSortUp { 
+  background-image: url(../img/asc.gif) !important; 
+  background-color: #eee; 
+}
+
+th.headerSortDown { 
+  background-image: url(../img/desc.gif) !important;
+  background-color: #eee;
+}
+
+th.header {
+  background-image: url(../img/bg.gif);
+  cursor: pointer; 
+  font-weight: bold; 
+  background-repeat: no-repeat; 
+  background-position: center left; 
+  padding-left: 20px; 
+  border-right: 1px solid #dad9c7; 
+  margin-left: -1px; 
+} 

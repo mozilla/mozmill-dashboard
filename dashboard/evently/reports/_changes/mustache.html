@@ -1,26 +1,28 @@
 <table id="results">
   <thead>
     <tr>
-      <th>start time</th>
-      <th>os</th>
-      <th>product</th>
-      <th>version</th>
-      <th>buildid</th>
-      <th>testpath</th>
-      <th>total tests</th>
+      <th>Date</th>
+      <th>Product</th>
+      <th>Version</th>
+      <th>Build</th>
+      <th>Locale</th>
+      <th>OS</th>
+      <th>CPU</th>
+      <th>Results</th>
     </tr>
   </thead>
   <tbody>
   {{#reports}}
     <tr>
-      <td><a href="../reports/_show/report/{{_id}}">{{starttime}}</a></td>
-      <td></td>
-      <td>{{app.name}}</td>
-      <td>{{app.version}}</td>
-      <td>{{app.buildID}}</td>
-      <td>{{testPath}}</td>
-      <td></td>
-    <tr>
+      <td><a href="_show/report/{{id}}">{{time_start}}</a></td>
+      <td>{{product}}</td>
+      <td>{{version}}</td>
+      <td>{{build}}</td>
+      <td>{{locale}}</td>
+      <td>{{os}}</td>
+      <td>{{cpu}}</td>
+      <td class="results">Pass: <strong>{{passed}}</strong> / Fail: <strong>{{failed}}</strong> / Skip: <strong>{{skipped}}</strong></td>
+    </tr>
   {{/reports}}
   </tbody> 
 </table>
