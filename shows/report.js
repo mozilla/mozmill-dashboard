@@ -17,8 +17,9 @@ function(doc, req) {
     data.platform_version = doc.platform_version;
     data.app_locale = doc.application_locale;
     data.app_sourcestamp = doc.application_repository + "/rev/" + doc.application_changeset;
-    data.os = doc.system_info.system + doc.system_info.version;
-    data.service_pack = doc.system_info.service_pack;
+    data.system = doc.system_info.system,
+    data.system_version = doc.system_info.version,
+    data.service_pack = doc.system_info.service_pack,
     data.cpu = doc.system_info.processor,
     data.time_start = doc.time_start;
     data.time_end = doc.time_end;
@@ -28,7 +29,13 @@ function(doc, req) {
     data.results = [];
 
     for each (var result in doc.results) {
-      var types = {'bft' : 'firefox/', 'addons' : 'addons/'};
+      var types = {
+        'bft' : 'firefox/',
+        'mozmill-test' : 'firefox/',
+        'mozmill-restart-test' : 'firefox/',
+        'addons' : 'addons/'
+      };
+
       var type = types[doc.report_type];
       var filename = type + result.filename.split(type)[1]
       
