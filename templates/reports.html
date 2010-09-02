@@ -8,9 +8,12 @@
       <th>Version</th>
       <th>Build</th>
       <th>Locale</th>
-      <th>OS</th>
+      <th>Platform</th>
+      <th>Version</th>
       <th>CPU</th>
-      <th>Results</th>
+      <th># Pass</th>
+      <th># Skip</th>
+      <th># Fail</th>
     </tr>
   </thead>
   <tbody>
@@ -22,9 +25,12 @@
       <td>{{version}}</td>
       <td>{{build}}</td>
       <td>{{locale}}</td>
-      <td>{{system}} {{system_version}}</td>
+      <td>{{system}}</td>
+      <td>{{system_version}}</td>
       <td>{{cpu}}</td>
-      <td class="results">Pass: <strong>{{passed}}</strong> / Fail: <strong>{{failed}}</strong> / Skip: <strong>{{skipped}}</strong></td>
+      <td class="results">{{passed}}</td>
+      <td class="results">{{skipped}}</td>
+      <td class="results">{{failed}}</td>
     </tr>
   {{/reports}}
   </tbody> 
@@ -32,6 +38,7 @@
 </body>
 
   <script src="../../script/myloader.js"></script>
+  <script src="../../script/jquery.tablesorter.min.js"></script>
   <script src="/_utils/script/base64.js"></script>
   <script type="text/javascript" charset="utf-8">
     $.couch.app(function(app) {
@@ -42,5 +49,13 @@
       $("#profile").evently("profile", app);
       $.evently.connect("#account","#profile", ["loggedIn","loggedOut"]);
     });
+
+    $(document).ready(function() { 
+      $("#results").tablesorter({ 
+          // sort on the first column and third column, order asc 
+          sortList: [[0,1]] 
+      }); 
+    });
+
   </script>
 </html>
