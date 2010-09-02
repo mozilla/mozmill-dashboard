@@ -30,10 +30,10 @@ function(doc, req) {
 
     for each (var result in doc.results) {
       var types = {
-        'bft' : 'firefox/',
+        'firefox-general' : 'firefox/',
         'mozmill-test' : 'firefox/',
         'mozmill-restart-test' : 'firefox/',
-        'addons' : 'addons/'
+        'firefox-addons' : 'addons/'
       };
 
       var type = types[doc.report_type];
