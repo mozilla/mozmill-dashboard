@@ -33,6 +33,7 @@ function(doc, req) {
         'firefox-general' : 'firefox/',
         'mozmill-test' : 'firefox/',
         'mozmill-restart-test' : 'firefox/',
+        'firefox-update' : 'softwareUpdate',
         'firefox-addons' : 'addons/'
       };
 
