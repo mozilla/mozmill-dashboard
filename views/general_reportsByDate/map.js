@@ -1,8 +1,11 @@
 function(doc) {
-  if (doc.time_start) {
+  var report_types = ['firefox-general', 'mozmill', 'mozmill-restart'];
+  
+  if (doc.time_start &&
+      doc.report_type && report_types.indexOf(doc.report_type) != -1) {
+
     emit(doc.time_start, {
       id: doc._id,
-      report_type : doc.report_type,
       time_start : doc.time_start,
       time_end : doc.time_end,
       application_name : doc.application_name,

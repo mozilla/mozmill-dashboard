@@ -1,0 +1,66 @@
+[
+  {
+    "from" : "",
+    "to" : "_show/redirect"
+  },
+  {
+    "from" : "img/*",
+    "to" : "img/*"
+  },
+  {
+    "from" : "script/*",
+    "to" : "script/*"
+  },
+  {
+    "from" : "style/*",
+    "to" : "style/*"
+  },
+  {
+    "from" : "vendor/*",
+    "to" : "vendor/*"
+  },
+  {
+    "from" : "/general",
+    "to" : "_show/redirect"
+  },
+  {
+    "from" : "/general/reports",
+    "to" : "_list/general_reports/general_reportsByDate",
+    "query" : {
+      "descending" : true,
+      "limit" : 50
+    }
+  },
+  {
+    "from" : "/general/report",
+    "to" : "_show/report"
+  },
+  {
+    "from" : "/*/report/*",
+    "to" : "_show/report/*"
+  },
+  {
+    "from" : "/update",
+    "to" : "_show/redirect"
+  },
+  {
+    "from" : "/update/reports",
+    "to" : "_list/update_reports/update_reportsByDate",
+    "query" : {
+      "descending" : true,
+      "limit" : 50
+    }
+  },
+  {
+    "from" : "/addons",
+    "to" : "_show/redirect"
+  },
+  {
+    "from" : "/addons/reports",
+    "to" : "_list/addons_reports/addons_reportsByDate",
+    "query" : {
+      "descending" : true,
+      "limit" : 50
+    }
+  }
+]
