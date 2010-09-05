@@ -3,7 +3,7 @@ function(head, req) {
   var mustache = require("vendor/couchapp/lib/mustache");
 
   data = {
-    title : "All Firefox General Testrun Reports",
+    title : "Firefox General Testrun Reports",
     site_title : ddoc.couchapp.name,
     reports : []
   };

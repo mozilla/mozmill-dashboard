@@ -1,16 +1,50 @@
 /* add styles here */
 
 body {
+  margin: 0;
+  padding: 0 20px;
   font: .8em Helvetica, sans-serif;
-  padding:4px;
 }
 
-h1 {
-  margin-top:0;
+/* Header styling */
+#header {
+  position: relative;
+  margin: 0 -20px;
+  padding: 0;
+  background: url(/img/header_bg.png) repeat-x;
+  color: #fff;
+}
+
+#header h2 {
+  margin: 0;
+  padding: 5px 10px;
+}
+
+#testrun_selection {
+  margin-top: 20px;
+  padding: 5px 10px;
+  background: url(/img/testrun_bg.png) repeat-x;
+  font-size: 1.1em;
+}
+
+#testrun_selection ul {
+  display: inline;
+  padding: 0;
+  list-style: none;
+}
+
+#testrun_selection li {
+  display: inline;
+  margin-left: 10px;
+}
+
+#header a {
+  color: #ff9;
+  text-decoration: none;
 }
 
 #account {
-  float:right;
+  position: absolute;
 }
 
 #profile {
@@ -73,7 +107,6 @@ div.avatar img {
 #items ul {
   list-style: none;
 }
-
 
 table#results {
   border-spacing: 0;

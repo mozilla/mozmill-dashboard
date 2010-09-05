@@ -2,16 +2,20 @@
 <html>
   <head>
     <title>{{title}} - {{site_title}}</title>
-    <link rel="stylesheet" href="../../style/base-min.css" type="text/css">
-    <link rel="stylesheet" href="../../style/main.css" type="text/css">
+    <link rel="stylesheet" href="/style/main.css" type="text/css">
   </head>
   <body>
     <div id="header">
-      <div id="account"></div>
-      <div>
-        <a href="/general/reports">General</a> |
-        <a href="/update/reports">Updates</a> |
-        <a href="/addons/reports">Add-ons</a>
+      <h2><a href="{{path}}">{{site_title}}</a></h2>
+      <div id="testrun_selection">
+        Select testrun:
+        <ul>
+          <li><a href="/general/reports">General</a></li>
+          <li><a href="/update/reports">Updates</a></li>
+          <li><a href="/addons/reports">Add-ons</a></li>
+        </ul>
+        <div id="account"></div>
       </div>
-      <h1><strong>{{site_title}}:</strong> <a href="{{path}}">{{title}}</a></h1>
     </div>
+
+    <h2><a href="{{path}}">{{title}}</a></h2>
