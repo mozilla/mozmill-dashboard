@@ -38,7 +38,7 @@ function(doc, req) {
       };
 
       var type = types[doc.report_type];
-      var filename = type + result.filename.split(type)[1]
+      var filename = result.filename.split(type)[1]
       
       var status = "passed";
       if (result.skipped) {
