@@ -17,7 +17,7 @@ function(head, req) {
         time_start : value.time_start,
         time_end : value.time_end,
         version : value.application_version,
-        build : value.buildId,
+        buildid : value.buildId,
         locale : value.application_locale,
         system : value.system,
         system_version : value.system_version,

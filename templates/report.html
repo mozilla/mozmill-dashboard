@@ -1,23 +1,23 @@
 {{>header}}
     <h2>Information</h2>
-    <table>
+    <table id="information">
       <tr>
-       <td>Report Type:</td>
-       <td>{{report_type}}</td>
+       <th>Result ID:</th>
+       <td><a href="{{path}}">{{id}}</a></td>
       </tr><tr>
-       <td>Application:</td>
-       <td>{{app_name}} {{app_version}} ({{platform_version}}, {{app_locale}})</td>
+       <th>Application:</th>
+       <td>{{app_name}} {{app_version}} ({{platform_version}}, {{app_locale}}, {{platform_buildId}})</td>
       </tr><tr>
-        <td>Sourcestamp:</td>
+        <th>Sourcestamp:</th>
         <td><a href="{{app_sourcestamp}}">{{app_sourcestamp}}</a></td>
       </tr><tr>
-        <td>Platform:</td>
+        <th>Platform:</th>
         <td>{{system}} {{system_version}} {{service_pack}} ({{cpu}})</td>
       </tr><tr>
-        <td>Duration:</td>
+        <th>Duration:</th>
         <td>{{time_start}} - {{time_end}}</td>
       </tr><tr>
-        <td>Results:</td>
+        <th>Results:</th>
         <td>Pass: <strong>{{passed}}</strong> / Fail: <strong>{{failed}}</strong> / Skip: <strong>{{skipped}}</td>
       </tr>
     </table>
@@ -44,7 +44,10 @@
           <td>{{status}}</td>
           <td>{{filename}}</td>
           <td>{{test}}</td>
-          <td>{{{information}}}</td>
+          <td class="information">
+            {{{information}}}
+            <div class="tooltip">{{{stack}}}<div>
+          </td>
         </tr>
         {{/results}}
       </tbody>

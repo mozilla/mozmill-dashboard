@@ -5,16 +5,16 @@ function(doc, req) {
     data = {
       docid : JSON.stringify(req.id),
       id : req.id,
-      path : "/result/" + req.id,
-      site_title : this.couchapp.name
+      path : "/general/report/" + req.id,
+      site_title : this.couchapp.name,
+      title : "Test Report"
     };
 
   if (doc) {
-    data.title = doc._id;
-    data.report_type = doc.report_type
     data.app_name = doc.application_name;
     data.app_version = doc.application_version;
     data.platform_version = doc.platform_version;
+    data.platform_buildId = doc.platform_buildid;
     data.app_locale = doc.application_locale;
     data.app_sourcestamp = doc.application_repository + "/rev/" + doc.application_changeset;
     data.system = doc.system_info.system,
@@ -48,6 +48,7 @@ function(doc, req) {
       }
 
       var information = "";
+      var stack = "";
       try {
         if (result.skipped) {
           information = result.skipped_reason;
@@ -60,6 +61,7 @@ function(doc, req) {
           }
         } else {
           information = result.fails[0].exception.message;
+          stack = result.fails[0].exception.stack;
         }
       } catch (ex) { }
 
@@ -67,7 +69,8 @@ function(doc, req) {
         filename : filename,
         test : result.name,
         status : status,
-        information: information
+        information: information,
+        stack : stack
       });
     }
 

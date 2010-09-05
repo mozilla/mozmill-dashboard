@@ -1,14 +1,14 @@
 {{>header}}
-<table id="results" border="1">
+<table id="results">
   <thead>
     <tr>
       <th>Date</th>
       <th>Version</th>
       <th>Build</th>
-      <th>Locale</th>
       <th>Platform</th>
       <th>Version</th>
       <th>CPU</th>
+      <th>Locale</th>
       <th># Pass</th>
       <th># Skip</th>
       <th># Fail</th>
@@ -19,11 +19,11 @@
     <tr>
       <td><a href="report/{{id}}">{{time_start}}</a></td>
       <td>{{version}}</td>
-      <td>{{build}}</td>
-      <td>{{locale}}</td>
+      <td>{{buildid}}</td>
       <td>{{system}}</td>
       <td>{{system_version}}</td>
       <td>{{cpu}}</td>
+      <td>{{locale}}</td>
       <td class="results">{{passed}}</td>
       <td class="results">{{skipped}}</td>
       <td class="results">{{failed}}</td>
