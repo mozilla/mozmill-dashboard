@@ -3,7 +3,12 @@
 body {
   margin: 0;
   padding: 0 20px;
+  background: url(/img/page_bg.png) repeat;
   font: .8em Helvetica, sans-serif;
+}
+
+h2 {
+  margin-bottom: .5em;
 }
 
 /* Header styling */
@@ -21,7 +26,7 @@ body {
 }
 
 #testrun_selection {
-  margin-top: 20px;
+  margin: 20px 0;
   padding: 5px 10px;
   background: url(/img/testrun_bg.png) repeat-x;
   font-size: 1.1em;
@@ -108,49 +113,85 @@ div.avatar img {
   list-style: none;
 }
 
-table#results {
+table {
+  margin-bottom: 20px;
+  border: 1px solid #aaa;
+  -moz-border-radius: 10px;
   border-spacing: 0;
+  padding: 5px;
+  background-color: #fff;
+}
+
+table th {
+  padding: 5px 10px 5px 20px;
+  background-color: #eee;
+}
+
+table td {
+  border-bottom: 1px dotted #aaa;
+  border-right: 1px dotted #aaa;
+  padding: 5px 10px;
+  vertical-align: top;
 }
 
 table#results td, table#results th {
   margin: 0;
-  min-width: 6em;
-  border: 1px solid #555;
-  padding: 2px 5px;
-  text-align: center;
 }
 
-table#result {
-  border-spacing: 0;
+table#results td.results {
+  text-align: right;
+}
+
+table#information td {
+  border: none;
+}
+
+table#information th {
+  text-align: right;
 }
 
 table#result td, table#result th {
   margin: 0;
-  border: 1px solid #555;
-  padding: 2px 5px;
   min-width: 7em;
 }
 
 table#result tr.passed td {
-  background: #dfd;
+  color: #181;
 }
 
 table#result tr.failed td {
-  background: #fdd;
+  color: #811;
 }
 
 table#result tr.skipped td {
-  background: #ffd;
+  color: #f90;
+}
+
+.tooltip {
+  display: none;
+}
+
+table#result tr.failed td.information:hover .tooltip{
+  position: absolute;
+  display: block;
+  overflow: scroll;
+  width: 400px;
+  border: 1px solid #333;
+  -moz-border-radius: 10px;
+  padding: 5px 10px;
+  background-color: #fff;
 }
 
 th.headerSortUp { 
   background-image: url(../img/asc.gif) !important; 
-  background-color: #eee; 
+  background-color: #eee;
+  background-position: right center;
 }
 
 th.headerSortDown { 
   background-image: url(../img/desc.gif) !important;
   background-color: #eee;
+  background-position: right center;
 }
 
 th.header {
