@@ -28,7 +28,7 @@
     "to" : "_list/general_reports/general_reportsByDate",
     "query" : {
       "descending" : true,
-      "limit" : 50
+      "limit" : 51
     }
   },
   {

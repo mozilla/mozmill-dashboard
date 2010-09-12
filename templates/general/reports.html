@@ -1,7 +1,13 @@
 {{>header}}
+<p>
+  {{#key_prev}}<span><a href="{{path}}?endkey=[&quot;{{key_prev}}&quot;, {}]">Previous</a></span>&nbsp;{{/key_prev}}
+  {{#key_next}}<span><a href="{{path}}?startkey=[&quot;{{key_next}}&quot;, {}]">Next</a></span>{{/key_next}}
+</p>
+
 <table id="results">
   <thead>
     <tr>
+      <th>#</th>
       <th>Date</th>
       <th>Version</th>
       <th>Build</th>
@@ -17,16 +23,17 @@
   <tbody>
   {{#reports}}
     <tr>
+      <td>{{index}}</td>
       <td><a href="report/{{id}}">{{time_start}}</a></td>
-      <td>{{version}}</td>
-      <td>{{buildid}}</td>
+      <td>{{application_version}}</td>
+      <td>{{buildId}}</td>
       <td>{{system}}</td>
       <td>{{system_version}}</td>
-      <td>{{cpu}}</td>
+      <td>{{processor}}</td>
       <td>{{locale}}</td>
-      <td class="results">{{passed}}</td>
-      <td class="results">{{skipped}}</td>
-      <td class="results">{{failed}}</td>
+      <td class="results">{{tests_passed}}</td>
+      <td class="results">{{tests_skipped}}</td>
+      <td class="results">{{tests_failed}}</td>
     </tr>
   {{/reports}}
   </tbody> 
@@ -49,7 +56,7 @@
     $(document).ready(function() { 
       $("#results").tablesorter({ 
           // sort on the first column and third column, order asc 
-          sortList: [[0,1]] 
+          sortList: [[0,0]] 
       }); 
     });
 
