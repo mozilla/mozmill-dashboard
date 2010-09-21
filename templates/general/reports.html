@@ -1,43 +1,63 @@
 {{>header}}
-<p>
-  {{#key_prev}}<span><a href="{{path}}?endkey=[&quot;{{key_prev}}&quot;, {}]">Previous</a></span>&nbsp;{{/key_prev}}
-  {{#key_next}}<span><a href="{{path}}?startkey=[&quot;{{key_next}}&quot;, {}]">Next</a></span>{{/key_next}}
-</p>
+  <div id="content">
+    <fieldset id="filter">
+      <legend>Filter</legend>
+      <label for="branch_selection">Branch:</label>
+      <select id="branch_selection">
+        <option value="{}">All</option>
+        <option value="4.0">4.0</option>
+        <option value="3.6">3.6</option>
+        <option value="3.5">3.5</option>
+      </select>
+      <label for="platform_selection">Platform:</label>
+      <select id="platform_selection">
+        <option value="{}">All</option>
+        <option value="Linux">Linux</option>
+        <option value="Mac">Mac</option>
+        <option value="Windows NT">Windows NT</option>
+      </select>
+    </fieldset>
 
-<table id="results">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Date</th>
-      <th>Version</th>
-      <th>Build</th>
-      <th>Platform</th>
-      <th>Version</th>
-      <th>CPU</th>
-      <th>Locale</th>
-      <th># Pass</th>
-      <th># Skip</th>
-      <th># Fail</th>
-    </tr>
-  </thead>
-  <tbody>
-  {{#reports}}
-    <tr>
-      <td>{{index}}</td>
-      <td><a href="report/{{id}}">{{time_start}}</a></td>
-      <td>{{application_version}}</td>
-      <td>{{buildId}}</td>
-      <td>{{system}}</td>
-      <td>{{system_version}}</td>
-      <td>{{processor}}</td>
-      <td>{{locale}}</td>
-      <td class="results">{{tests_passed}}</td>
-      <td class="results">{{tests_skipped}}</td>
-      <td class="results">{{tests_failed}}</td>
-    </tr>
-  {{/reports}}
-  </tbody> 
-</table>
+    <div id="navigation">
+      {{#key_prev}}<span><a href="{{path}}?startkey=[&quot;{{key_prev}}&quot;]&docid={{docid_next}}">Previous</a></span>&nbsp;{{/key_prev}}
+      {{#key_next}}<span><a href="{{path}}?startkey=[&quot;{{key_next}}&quot;]&docid={{docid_next}}">Next</a></span>{{/key_next}}
+    </div>
+    
+    <table id="results">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th>Version</th>
+          <th>Build</th>
+          <th>Platform</th>
+          <th>Version</th>
+          <th>CPU</th>
+          <th>Locale</th>
+          <th># Pass</th>
+          <th># Skip</th>
+          <th># Fail</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{#reports}}
+        <tr>
+          <td>{{index}}</td>
+          <td><a href="report/{{id}}">{{time_start}}</a></td>
+          <td>{{application_version}}</td>
+          <td>{{buildId}}</td>
+          <td>{{system}}</td>
+          <td>{{system_version}}</td>
+          <td>{{processor}}</td>
+          <td>{{application_locale}}</td>
+          <td class="results">{{tests_passed}}</td>
+          <td class="results">{{tests_skipped}}</td>
+          <td class="results">{{tests_failed}}</td>
+        </tr>
+      {{/reports}}
+      </tbody> 
+    </table>
+  </div>
 </body>
 
   <script src="../../script/myloader.js"></script>

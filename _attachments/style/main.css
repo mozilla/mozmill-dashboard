@@ -27,25 +27,38 @@ h2 {
 
 #testrun_selection {
   margin: 20px 0;
-  padding: 5px 10px;
+  padding: 1px 10px;
   background: url(/img/testrun_bg.png) repeat-x;
-  font-size: 1.1em;
-}
-
-#testrun_selection ul {
-  display: inline;
-  padding: 0;
-  list-style: none;
-}
-
-#testrun_selection li {
-  display: inline;
-  margin-left: 10px;
+  font-size: 1em;
 }
 
 #header a {
   color: #ff9;
   text-decoration: none;
+}
+
+#testrun_selection form {
+  margin: 0;
+}
+
+#page_controls select, #filter select {
+  margin: 0 15px 0 5px;
+}
+
+#content {
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+#filter {
+  width: 300px;
+  text-align: left;
+}
+
+#content #navigation {
+  margin: 0 35px 10px;
+  text-align: right;
 }
 
 #account {
@@ -84,7 +97,6 @@ h2 {
 form {
   padding:4px;
   margin:6px;
-  background-color:#ddd;  
 }
 
 div.avatar {

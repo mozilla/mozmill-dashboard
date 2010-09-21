@@ -1,19 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{title}} - {{site_title}}</title>
+    <title>{{page_title}} - {{site_title}}</title>
     <link rel="stylesheet" href="/style/main.css" type="text/css">
   </head>
   <body>
     <div id="header">
       <h2><a href="{{path}}">{{site_title}}</a></h2>
       <div id="testrun_selection">
-        Select testrun:
-        <ul>
-          <li><a href="/general/reports">General</a></li>
-          <li><a href="/update/reports">Updates</a></li>
-          <li><a href="/addons/reports">Add-ons</a></li>
-        </ul>
+        <form id="page_controls">
+          <label for="type_selection">Report Type:</label>
+          <select id="type_selection">
+            <option value="/general">General Testrun</option>
+            <option value="/update">Update Testrun</option>
+            <option value="/addons">Add-ons Testrun</option>
+          </select>
+          <label for="view_selection">View:</label>
+          <select id="view_selection">
+            <option value="/general/topFail">Top Failures</option>
+            <option value="/general/newFail">New Failures</option>
+            <option value="/general/reports">Reports</option>
+          </select>
+        </form>
+
         <div id="account"></div>
       </div>
     </div>
