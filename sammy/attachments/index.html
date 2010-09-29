@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Reports</title>
+    <link rel="stylesheet" href="main.css" type="text/css">
+    <script language="javascript" type="text/javascript" src="jquery-1.4.2.min.js"></script>
+    <script language="javascript" type="text/javascript" src="sammy/sammy.js"></script>
+    <script language="javascript" type="text/javascript" src="sammy/plugins/sammy.mustache.js"></script>
+    <script language="javascript" type="text/javascript" src="dashboard.js"></script>
+  </head>
+  <body>
+    <div id="header">
+      <h2><a>Reports</a></h2>
+      <div id="testrun_selection">
+        <form id="page_controls">
+          <label for="type_selection">Report Type:</label>
+          <select id="type_selection">
+            <option value="/general">General Testrun</option>
+            <option value="/update">Update Testrun</option>
+            <option value="/addons">Add-ons Testrun</option>
+          </select>
+          <label for="view_selection">View:</label>
+          <select id="view_selection">
+            <option value="/general/topFail">Top Failures</option>
+            <option value="/general/newFail">New Failures</option>
+            <option value="/general/reports">Reports</option>
+          </select>
+        </form>
+
+        <div id="account"></div>
+      </div>
+    </div>
+
+    <h1>title</h1>
+    
+    <div id="content" ></div>
+
+</html>
