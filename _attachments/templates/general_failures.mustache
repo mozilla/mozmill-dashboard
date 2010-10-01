@@ -1,0 +1,34 @@
+    <fieldset id="filter">
+      <legend>Filter</legend>
+      <div id="branch-selection">
+        <span>Platform:</span>
+        <span class="branch-select">All</span>
+        <span class="branch-select">4.0</span>
+        <span class="branch-select">3.6</span>
+        <span class="branch-select">3.5</span>
+      </div>
+
+      <div id="os-selection">
+        <span>OS: </span>
+        <span class="branch-select">All</span>
+        <span class="branch-select">Linux</span>
+        <span class="branch-select">Mac</span>
+        <span class="branch-select">Windows NT</span>
+      </div>
+    </fieldset>
+
+    <table id="results">
+      <thead>
+        <tr>
+          <th>Test Module</th>
+          <th>Branch</th>
+          <th>Platform</th>
+          <th># Fail</th>
+          <th>Bugs</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody">
+      </tbody>
+    </table>
+
+    <div id="pagination"><input class="pagination" type="text" value="20"></input><span class="pagination"> more</span></div>  

@@ -17,7 +17,7 @@ var capitalize = function(s) {
 };
 
 var a = $.sammy(function () {
-  
+
   var general_reports = function() {
     var branch = this.params.branch ? this.params.branch : 'All';
     var os = this.params.os ? this.params.os : 'All';
@@ -38,8 +38,9 @@ var a = $.sammy(function () {
         if (elem.textContent === os) {
           $(elem).addClass("selected")
         }
+      }).click(function () {
+        window.location = '/#/general/'+branch+'/'+this.textContent
       })
-        .click(function () { window.location = '/#/general/'+branch+'/'+this.textContent })
 
       var addResults = function () {
         var query = {
@@ -57,7 +58,7 @@ var a = $.sammy(function () {
           resp.rows.forEach(function (row) {
             var v = row.value;
             entries += ( '<tr>' + 
-              '<td><a href="#/general/report/' + v.id + '">' + v.time_start + '</a></td>' +
+              '<td><a href="#/general/report/' + v.id + '">' + v.time + '</a></td>' +
               "<td>" + v.application_version + "</td>" + 
               "<td>" + v.buildId + "</td>" + 
               "<td>"+ v.system +"</td>" +
@@ -77,14 +78,101 @@ var a = $.sammy(function () {
       }
 
       addResults();
+      $("#results").tablesorter({ 
+        // sort on the first column and third column, order asc 
+        sortList: [[3,0]] 
+      });
+
+
       $("span.pagination").click(addResults);
       $("#subtitle").text("General Reports");
     });
   }
   
   
-  var topFailures = function () {
-    
+  var general_topFailures = function () {
+    var context = this;
+
+    var branch = this.params.branch ? this.params.branch : 'All';
+    var os = this.params.os ? this.params.os : 'All';
+
+    var template = '/templates/general_failures.mustache';
+
+    this.render(template).replace('#content').then(function () {
+      var limit = 0;
+      var skip = 0;
+
+      $('#branch-selection span').each(function (i, elem) {
+        if (elem.textContent === branch) {
+          $(elem).addClass("selected")
+        }
+      })
+        .click(function () { window.location = '/#/general/top/'+this.textContent+'/'+os })
+      
+      $('#os-selection span').each(function (i, elem) {
+        if (elem.textContent === os) {
+          $(elem).addClass("selected")
+        }
+      }).click(function () {
+        window.location = '/#/general/top/'+branch+'/'+this.textContent
+      })
+
+      var addResults = function () {
+        var query = {
+          startkey : JSON.stringify([branch, os, {}]),
+          endkey : JSON.stringify([branch, os]),
+          descending : true
+          //reduce : false
+        };
+
+        request({url:'/_view/general_failures?'+$.param(query)}, function (err, resp) {
+          if (err) console.log(err);
+
+          // Build up the failures array
+          var failures = [ ];
+          resp.rows.forEach(function (row) {
+            var v = row.value;
+            var k = row.key;
+
+            var index = k[3] + "|" + v.application_version + "|" + v.system;
+            if (index in failures) {
+              failures[index]++;
+            } else {
+              failures[index] = 1;
+            }
+          });
+ 
+          var output = "";
+          for (var key in failures) {
+            var entries = key.split("|");
+            var value = failures[key];
+
+            output += ( '<tr>' + 
+              '<td><a href="#/general/failure/' + entries[0] + '">' + entries[0] + '</a></td>' +
+              "<td>" + entries[1] + "</td>" + 
+              "<td>" + entries[2] + "</td>" + 
+              "<td>"+ value +"</td>" +
+              '<td class="bugs"></td>' +
+              "</tr>"
+            )
+          };
+          $("#resultsBody").append(output)
+  
+          limit += $("input.pagination").val();
+          skip += $("input.pagination").val();
+        });
+      }
+  
+      addResults();
+      $("span.pagination").click(addResults);
+      $("#subtitle").text("Top Failures");
+
+      $("#results").tablesorter({ 
+        // sort on the first column and third column, order asc 
+        sortList: [[3,0]] 
+      });
+
+    });
   }
 
   function general_report() {
@@ -119,16 +207,16 @@ var a = $.sammy(function () {
         var result = resp.results[i];
 
         var types = {
-          'firefox-general' : 'firefox/',
-          'mozmill-test' : 'firefox/',
-          'mozmill-restart-test' : 'firefox/',
+          'firefox-general' : 'firefox',
+          'mozmill-test' : 'firefox',
+          'mozmill-restart-test' : 'firefox',
           'firefox-update' : 'softwareUpdate',
-          'firefox-addons' : 'addons/'
+          'firefox-addons' : 'addons'
         };
-  
+
         var type = types[resp.report_type];
-        var filename = result.filename.split(type)[1]
-        
+        var filename = result.filename.split(type)[1].replace(/\\/, '/');
+
         var status = "passed";
         if (result.skipped) {
           status = "skipped";
@@ -205,7 +293,6 @@ var a = $.sammy(function () {
            event.preventDefault();
         });
       });
-
     });
 
     $("#subtitle").text("Report Details");
@@ -214,10 +301,13 @@ var a = $.sammy(function () {
   
   // Index of all databases
   // Database view
-  this.get('#/general', general_reports);
-  this.get('#/general/topfailures', topFailures);
+  this.get('#/general/reports', general_reports);
+  this.get('#/general/reports/:branch/:os', general_reports);
+  this.get('#/general/top', general_topFailures);
+  this.get('#/general/top/:branch/:os', general_topFailures);
   this.get('#/general/report/:id', general_report);
-  this.get('#/general/:branch/:os', general_reports);
+
+  
 })
 
 $(function() {
