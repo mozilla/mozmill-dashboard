@@ -15,36 +15,29 @@
         <span>Mac</span>
         <span>Windows NT</span>
       </div>
-
-      <div id="date">
-        <span>From: </span>
-        <input id="start-date" class="datepicker" type="text" value="" size="11" />
-        <span>To: </span>
-        <input id="end-date" class="datepicker" type="text" value="" size="11" />
-      </div>
     </fieldset>
 
-    <h2>Top Failures</h2>
+    <h2>Results for <em>{{test_module}} | {{test_function}}</em></h2>
 
     <table id="results">
       <thead>
         <tr>
-          <th>Module</th>
-          <th>Function</th>
-          <th>Branch</th>
+          <th>Date</th>
+          <th>Version</th>
           <th>Platform</th>
-          <th># Fail</th>
+          <th>Locale</th>
+          <th>Error Message</th>
           <!--<th>Bugs</th>-->
         </tr>
       </thead>
       <tbody>
       {{#reports}}
         <tr>
-          <td>{{test_module}}</td>
-          <td><a href="{{failure_link}}">{{test_function}}</a></td>
-          <td>{{application_branch}}</td>
-          <td>{{system_name}}</td>
-          <td>{{failure_count}}</td>
+          <td><a href="{{report_link}}">{{time}}</a></td>
+          <td>{{application_version}} ({{platform_buildId}})</td>
+          <td>{{system_name}} {{system_version}}</td>
+          <td>{{application_locale}}</td>
+          <td>{{message}}</td>
           <!--<td>{{bugs}}</td>-->
         </tr>
       {{/reports}}

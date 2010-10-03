@@ -56,13 +56,6 @@ var generalReportsMap = function(doc) {
 }
 
 var generalFailuresMap = function(doc) {
-  const APP_TO_PLATFORM_BRANCH = {
-    '4.0' : 'mozilla2.0',
-    '3.7' : 'mozilla1.9.3',
-    '3.6' : 'mozilla1.9.2',
-    '3.5' : 'mozilla1.9.1'
-  };
-
   const REPORT_TYPES = [
     'firefox-general',
     'mozmill',
@@ -77,7 +70,6 @@ var generalFailuresMap = function(doc) {
       REPORT_TYPES.indexOf(doc.report_type) != -1) {
 
     var application_branch = doc.application_version.match(/(\d\.\d)\.*/)[1];
-    var platform_branch = APP_TO_PLATFORM_BRANCH[application_branch];
 
     doc.results.forEach(function(result) {
       var path = result.filename.match('.*(firefox.*)')[1];
@@ -87,18 +79,28 @@ var generalFailuresMap = function(doc) {
         var r = {
           application_locale : doc.application_locale,
           application_version : doc.application_version,
-          platform_branch : platform_branch,
+          application_branch : application_branch,
           platform_buildId : doc.platform_buildid,
           platform_repository : doc.platform_repository,
           platform_changeset : doc.platform_changeset,
           system_name : doc.system_info.system,
-          system_version : doc.system_info.version
+          system_version : doc.system_info.version,
+          test_module : path,
+          test_function : result.name,
+          message : (result.fails.length > 0) ? result.fails[0].exception.message : ""
         };
 
-        emit([application_branch, doc.system_info.system, doc.time_start, path], r);
-        emit([application_branch, 'All', doc.time_start, path], r);
-        emit(['All', doc.system_info.system, doc.time_start, path], r);
-        emit(['All', 'All', doc.time_start, path], r);
+        emit([application_branch, doc.system_info.system, path, doc.time_start], r);
+        emit([application_branch, doc.system_info.system, 'All', doc.time_start], r);
+
+        emit([application_branch, 'All', path, doc.time_start], r);
+        emit([application_branch, 'All', 'All', doc.time_start], r);
+
+        emit(['All', doc.system_info.system, path, doc.time_start], r);
+        emit(['All', doc.system_info.system, 'All', doc.time_start], r);
+
+        emit(['All', 'All', path, doc.time_start], r);
+        emit(['All', 'All', 'All', doc.time_start], r);
       }
     });
   }

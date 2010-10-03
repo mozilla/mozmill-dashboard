@@ -144,6 +144,7 @@ table td {
   border-right: 1px dotted #aaa;
   padding: 5px 10px;
   vertical-align: top;
+  text-align: left;
 }
 
 table#results td, table#results th {

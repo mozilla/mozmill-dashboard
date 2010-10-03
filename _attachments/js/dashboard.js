@@ -70,17 +70,116 @@ var a = $.sammy(function () {
 
     });
   }
+
+  var general_failure = function() {
+    var context = this;
+
+    var branch = this.params.branch ? this.params.branch : 'All';
+    var platform = this.params.platform ? this.params.platform : 'All';
+    var test = this.params.test ? this.params.test : {};
+    var test_func = this.params.func ? this.params.func : {};
+
+    var fromDate;
+    if (this.params.from)
+      fromDate = new Date(this.params.from);
+    else {
+      fromDate = new Date();
+      fromDate.setDate(fromDate.getDate() - 7);
+    }
+
+    var toDate;
+    if (this.params.to)
+      toDate = new Date(this.params.to);
+    else {
+      toDate = new Date();
+    }
+
+    var query = {
+      startkey : JSON.stringify([branch, platform, test, toDate.format("yyyy-mm-dd") + "T23:59:59"]),
+      endkey : JSON.stringify([branch, platform, test, fromDate.format("yyyy-mm-dd") + "T00:00:00"]),
+      descending : true
+    };
+
+    request({url:'/_view/general_failures?'+$.param(query)}, function (err, resp) {
+      if (err) console.og(err);
+
+      context.reports = [ ];
+      context.test_module = test;
+      context.test_function = test_func;
+      resp.rows.forEach(function (row) {
+        var value = row.value;
+        
+        if (test_func == {} || value.test_function == test_func) {
+          value.time = new Date(row.key[3]).format("yyyy/mm/dd HH:MM:ss");
+          value.report_link = "#/general/report/" + row.id;
+
+          context.reports.push(value);
+        }
+      });
+
+      var template = '/templates/general_failure.mustache';
+      context.render(template).replace('#content').then(function () {
+        var limit = 0;
+        var skip = 0;
   
+        $('#branch-selection span').each(function (i, elem) {
+          if (elem.textContent == branch) {
+            $(elem).addClass("selected")
+          }
+        })
+        $('#branch-selection span').click(function () {
+          window.location = '/#/general/failure?branch=' + this.textContent +
+                            '&platform=' + platform + '&from=' + fromDate.format("yyyy-mm-dd") +
+                            '&to=' + toDate.format("yyyy-mm-dd") + "&test=" +
+                            encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
+        })
+        
+        $('#os-selection span').each(function (i, elem) {
+          if (elem.textContent == platform) {
+            $(elem).addClass("selected")
+          }
+        })
+        $('#os-selection span').click(function () {
+          window.location = '/#/general/failure?branch=' + branch +
+                            '&platform=' + this.textContent + '&from=' + fromDate.format("yyyy-mm-dd") +
+                            '&to=' + toDate.format("yyyy-mm-dd") + "&test=" +
+                            encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
+        })
   
+        $("#subtitle").text("Top Failures");
+        $("#results").tablesorter({ 
+          // sort on the first column and third column, order asc 
+          sortList: [[3,1]] 
+        });
+ 
+      });
+    });
+  }
+
   var general_topFailures = function () {
     var context = this;
 
     var branch = this.params.branch ? this.params.branch : 'All';
-    var os = this.params.os ? this.params.os : 'All';
+    var platform = this.params.platform ? this.params.platform : 'All';
+
+    var fromDate;
+    if (this.params.from)
+      fromDate = new Date(this.params.from);
+    else {
+      fromDate = new Date();
+      fromDate.setDate(fromDate.getDate() - 7);
+    }
+
+    var toDate;
+    if (this.params.to)
+      toDate = new Date(this.params.to);
+    else {
+      toDate = new Date();
+    }
 
     var query = {
-      startkey : JSON.stringify([branch, os, {}]),
-      endkey : JSON.stringify([branch, os]),
+      startkey : JSON.stringify([branch, platform, 'All', toDate.format("yyyy-mm-dd") + "T23:59:59"]),
+      endkey : JSON.stringify([branch, platform, 'All', fromDate.format("yyyy-mm-dd") + "T00:00:00"]),
       descending : true
     };
 
@@ -93,7 +192,7 @@ var a = $.sammy(function () {
         var v = row.value;
         var k = row.key;
 
-        var index = k[3] + "|" + v.application_version + "|" + v.system_name;
+        var index = v.test_module + "|" + v.test_function + "|" + v.application_branch + "|" + v.system_name;
         if (index in failures) {
           failures[index]++;
         } else {
@@ -106,9 +205,14 @@ var a = $.sammy(function () {
         var entries = key.split("|");
         context.reports.push({
           test_module : entries[0],
-          application_version : entries[1],
-          system_name : entries[2],
-          failure_link : '/#/general/failure/' + branch + "/" + os + "/" + entries[0],
+          test_function : entries[1],
+          application_branch : entries[2],
+          system_name : entries[3],
+          failure_link : '/#/general/failure?branch=' + entries[2] + "&platform=" +
+                         entries[3] + '&from=' + fromDate.format("yyyy-mm-dd") +
+                        '&to=' + toDate.format("yyyy-mm-dd") + "&test=" +
+                        encodeURIComponent(entries[0]) + "&func=" +
+                        encodeURIComponent(entries[1]),
           failure_count : failures[key]
         });
       };
@@ -124,23 +228,39 @@ var a = $.sammy(function () {
           }
         })
         $('#branch-selection span').click(function () {
-          window.location = '/#/general/top/' + this.textContent + '/' + os;
+          window.location = '/#/general/top?branch=' + this.textContent + "&platform=" + platform +
+                            '&from=' + $("#start-date").val() +
+                            '&to=' + $("#end-date").val();
         })
         
         $('#os-selection span').each(function (i, elem) {
-          if (elem.textContent == os) {
+          if (elem.textContent == platform) {
             $(elem).addClass("selected")
           }
         })
         $('#os-selection span').click(function () {
-          window.location = '/#/general/top/' + branch + '/' + this.textContent;
+          window.location = '/#/general/top?branch=' + branch + "&platform=" + this.textContent +
+                            '&from=' + $("#start-date").val() +
+                            '&to=' + $("#end-date").val();
         })
   
+        $(".datepicker").datepicker();
+        $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+
+        $('#start-date').datepicker().val(fromDate.format("yyyy-mm-dd")).trigger('change');
+        $('#end-date').datepicker().val(toDate.format("yyyy-mm-dd")).trigger('change');
+
+        $(".datepicker").change(function() {
+          window.location = '/#/general/top?branch=' + branch + "&platform=" + platform +
+                            '&from=' + $("#start-date").val() +
+                            '&to=' + $("#end-date").val();
+        })
+        
         $("#subtitle").text("Top Failures");
-  
+
         $("#results").tablesorter({ 
           // sort on the first column and third column, order asc 
-          sortList: [[3,1]] 
+          sortList: [[4,1], [0,1], [1,1]]
         });
  
       });
@@ -149,7 +269,7 @@ var a = $.sammy(function () {
 
   function general_report() {
     var context = this;
-    
+
     var id = this.params.id ? this.params.id : 'null';
     var template = '/templates/report.mustache';
 
@@ -187,7 +307,7 @@ var a = $.sammy(function () {
         };
 
         var type = types[resp.report_type];
-        var filename = result.filename.split(type)[1].replace(/\\/, '/');
+        var filename = result.filename.split(type)[1].replace(/\\/g, '/');
 
         var status = "passed";
         if (result.skipped) {
@@ -279,7 +399,7 @@ var a = $.sammy(function () {
   this.get('#/general/reports', general_reports);
   this.get('#/general/reports/:branch/:os', general_reports);
   this.get('#/general/top', general_topFailures);
-  this.get('#/general/top/:branch/:os', general_topFailures);
+  this.get('#/general/failure', general_failure);
   this.get('#/general/report/:id', general_report);
   this.get(/\.*/, fallback);
   
