@@ -2,18 +2,18 @@
       <legend>Filter</legend>
       <div id="branch-selection">
         <span>Platform:</span>
-        <span class="branch-select">All</span>
-        <span class="branch-select">4.0</span>
-        <span class="branch-select">3.6</span>
-        <span class="branch-select">3.5</span>
+        <span>All</span>
+        <span>4.0</span>
+        <span>3.6</span>
+        <span>3.5</span>
       </div>
 
       <div id="os-selection">
         <span>OS: </span>
-        <span class="branch-select">All</span>
-        <span class="branch-select">Linux</span>
-        <span class="branch-select">Mac</span>
-        <span class="branch-select">Windows NT</span>
+        <span>All</span>
+        <span>Linux</span>
+        <span>Mac</span>
+        <span>Windows NT</span>
       </div>
     </fieldset>
 
@@ -23,17 +23,31 @@
           <th>Date</th>
           <th>Version</th>
           <th>Build</th>
+          <th>Locale</th>
           <th>Platform</th>
           <th>Version</th>
           <th>CPU</th>
-          <th>Locale</th>
           <th># Pass</th>
           <th># Skip</th>
           <th># Fail</th>
         </tr>
       </thead>
-      <tbody id="resultsBody">
+      <tbody>
+      {{#reports}}
+        <tr>
+          <td><a href="{{report_link}}">{{time}}</a></td>
+          <td>{{application_version}}</td>
+          <td>{{build_id}}</td>
+          <td>{{locale}}</td>
+          <td>{{system_name}}</td>
+          <td>{{system_version}}</td>
+          <td>{{processor}}</td>
+          <td class="results">{{tests_passed}}</td>
+          <td class="results">{{tests_skipped}}</td>
+          <td class="results">{{tests_failed}}</td>
+        </tr>
+      {{/reports}}
       </tbody>
-      
     </table>
+
     <div id="pagination"><input class="pagination" type="text" value="20"></input><span class="pagination"> more</span></div>  

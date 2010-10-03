@@ -35,23 +35,21 @@ var generalReportsMap = function(doc) {
     var platform_branch = APP_TO_PLATFORM_BRANCH[application_branch];
 
     var r = {
-      id: doc._id,
       time : doc.time_start,
-      application_name : doc.application_name,
       application_version : doc.application_version,
-      application_locale : doc.application_locale,
+      build_id : doc.platform_buildid,
       platform_branch : platform_branch,
-      buildId : doc.platform_buildid,
-      system : doc.system_info.system,
+      system_name : doc.system_info.system,
       system_version : doc.system_info.version,
       processor : doc.system_info.processor,
+      locale : doc.application_locale,
       tests_passed : doc.tests_passed,
       tests_failed : doc.tests_failed,
       tests_skipped : doc.tests_skipped
-    }
+    };
 
-    emit([application_branch, r.system, doc.time_start], r);
-    emit(['All', r.system, doc.time_start], r);
+    emit([application_branch, r.system_name, doc.time_start], r);
+    emit(['All', r.system_name, doc.time_start], r);
     emit([application_branch, 'All', doc.time_start], r);
     emit(['All', 'All', doc.time_start], r);
   }
@@ -93,7 +91,8 @@ var generalFailuresMap = function(doc) {
           platform_buildId : doc.platform_buildid,
           platform_repository : doc.platform_repository,
           platform_changeset : doc.platform_changeset,
-          system : doc.system_info.system + " " + doc.system_info.version
+          system_name : doc.system_info.system,
+          system_version : doc.system_info.version
         };
 
         emit([application_branch, doc.system_info.system, doc.time_start, path], r);

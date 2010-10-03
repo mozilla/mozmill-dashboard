@@ -217,15 +217,22 @@ th.header {
   margin-left: -1px; 
 } 
 
-span.branch-select {
-  cursor: pointer;
-  padding-left: 20px;
+#branch-selection, #os-selection {
+  padding: 5px 10px;
 }
+
+#branch-selection span, #os-selection span {
+  padding: 2px 5px;
+  cursor: pointer;
+}
+
+span.selected {
+  background-color: #555;
+  color: #ffe;
+}
+
 span.pagination {
   cursor: pointer;
   padding-left: 20px;
 }
 
-span.selected {
-  background-color: #555;
-}

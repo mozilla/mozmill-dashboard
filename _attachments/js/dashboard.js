@@ -12,80 +12,62 @@ var request = function (options, callback) {
   $.ajax(options)
 }
 
-var capitalize = function(s) {
-  return s.replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } );
-};
-
 var a = $.sammy(function () {
 
   var general_reports = function() {
     var branch = this.params.branch ? this.params.branch : 'All';
     var os = this.params.os ? this.params.os : 'All';
-    var template = '/templates/general_reports.mustache';
 
-    this.render(template).replace('#content').then(function () {
-      var limit = 0;
-      var skip = 0;
+    var query = {
+      startkey: JSON.stringify([branch, os, {}]),
+      endkey: JSON.stringify([branch, os]),
+      descending: "true",
+      limit: 25
+    };
 
-      $('#branch-selection span').each(function (i, elem) {
-        if (elem.textContent === branch) {
-          $(elem).addClass("selected")
-        }
+    var context = this;
+    request({url: '/_view/general_reports?' + $.param(query)}, function (err, resp) {
+      if (err) console.log(err);
+
+      context.reports = [ ];
+      resp.rows.forEach(function (report) {
+        var value = report.value;
+        value.report_link = "#/general/report/" + report.id;
+
+        context.reports.push(value);
       })
-        .click(function () { window.location = '/#/general/'+this.textContent+'/'+os })
-      
-      $('#os-selection span').each(function (i, elem) {
-        if (elem.textContent === os) {
-          $(elem).addClass("selected")
-        }
-      }).click(function () {
-        window.location = '/#/general/'+branch+'/'+this.textContent
-      })
 
-      var addResults = function () {
-        var query = {
-          startkey: JSON.stringify([branch, os, {}])
-          , endkey: JSON.stringify([branch, os])
-          , descending: "true"
-          , limit: 25 //String(limit) + $("input.pagination").val()
-          // , skip: String(skip)
-        }
+      var template = '/templates/general_reports.mustache';
+      context.render(template).replace('#content').then(function () {
+  
+        $('#branch-selection span').each(function (i, elem) {
+          if (elem.textContent == branch) {
+            $(elem).addClass("selected")
+          }
+        })
+
+        $('#branch-selection span').click(function () {
+          window.location = '/#/general/reports/' + this.textContent + '/' + os;
+        })
         
-        request({url:'/_view/general_reports?'+$.param(query)}, function (err, resp) {
-          var entries = '';
-          if (err) console.log(err);
+        $('#os-selection span').each(function (i, elem) {
+          if (elem.textContent == os) {
+            $(elem).addClass("selected")
+          }
+        })
 
-          resp.rows.forEach(function (row) {
-            var v = row.value;
-            entries += ( '<tr>' + 
-              '<td><a href="#/general/report/' + v.id + '">' + v.time + '</a></td>' +
-              "<td>" + v.application_version + "</td>" + 
-              "<td>" + v.buildId + "</td>" + 
-              "<td>"+ v.system +"</td>" +
-              "<td>" + v.system_version + "</td>" +
-              "<td>" + v.processor + "</td>" +
-              "<td>" + v.application_locale + "</td>" +
-              "<td>" + v.tests_passed + "</td>" +
-              "<td>" + v.tests_skipped + "</td>" +
-              "<td>" + v.tests_failed + "</td>" +
-              "</tr>"
-            )
-          })
-          $("#resultsBody").append(entries)
-          limit += $("input.pagination").val();
-          skip += $("input.pagination").val();
+        $('#os-selection span').click(function () {
+          window.location = '/#/general/reports/' + branch + '/' + this.textContent
+        })
+  
+        $("#results").tablesorter({ 
+          // sort on the first column and third column, order asc 
+          sortList: [[3,0]] 
         });
-      }
-
-      addResults();
-      $("#results").tablesorter({ 
-        // sort on the first column and third column, order asc 
-        sortList: [[3,0]] 
+  
+        $("#subtitle").text("General Reports");
       });
 
-
-      $("span.pagination").click(addResults);
-      $("#subtitle").text("General Reports");
     });
   }
   
@@ -96,82 +78,72 @@ var a = $.sammy(function () {
     var branch = this.params.branch ? this.params.branch : 'All';
     var os = this.params.os ? this.params.os : 'All';
 
-    var template = '/templates/general_failures.mustache';
+    var query = {
+      startkey : JSON.stringify([branch, os, {}]),
+      endkey : JSON.stringify([branch, os]),
+      descending : true
+    };
 
-    this.render(template).replace('#content').then(function () {
-      var limit = 0;
-      var skip = 0;
+    request({url:'/_view/general_failures?'+$.param(query)}, function (err, resp) {
+      if (err) console.log(err);
 
-      $('#branch-selection span').each(function (i, elem) {
-        if (elem.textContent === branch) {
-          $(elem).addClass("selected")
+      // Build up the failures array
+      var failures = [ ];
+      resp.rows.forEach(function (row) {
+        var v = row.value;
+        var k = row.key;
+
+        var index = k[3] + "|" + v.application_version + "|" + v.system_name;
+        if (index in failures) {
+          failures[index]++;
+        } else {
+          failures[index] = 1;
         }
-      })
-        .click(function () { window.location = '/#/general/top/'+this.textContent+'/'+os })
-      
-      $('#os-selection span').each(function (i, elem) {
-        if (elem.textContent === os) {
-          $(elem).addClass("selected")
-        }
-      }).click(function () {
-        window.location = '/#/general/top/'+branch+'/'+this.textContent
-      })
-
-      var addResults = function () {
-        var query = {
-          startkey : JSON.stringify([branch, os, {}]),
-          endkey : JSON.stringify([branch, os]),
-          descending : true
-          //reduce : false
-        };
-
-        request({url:'/_view/general_failures?'+$.param(query)}, function (err, resp) {
-          if (err) console.log(err);
-
-          // Build up the failures array
-          var failures = [ ];
-          resp.rows.forEach(function (row) {
-            var v = row.value;
-            var k = row.key;
-
-            var index = k[3] + "|" + v.application_version + "|" + v.system;
-            if (index in failures) {
-              failures[index]++;
-            } else {
-              failures[index] = 1;
-            }
-          });
- 
-          var output = "";
-          for (var key in failures) {
-            var entries = key.split("|");
-            var value = failures[key];
-
-            output += ( '<tr>' + 
-              '<td><a href="#/general/failure/' + entries[0] + '">' + entries[0] + '</a></td>' +
-              "<td>" + entries[1] + "</td>" + 
-              "<td>" + entries[2] + "</td>" + 
-              "<td>"+ value +"</td>" +
-              '<td class="bugs"></td>' +
-              "</tr>"
-            )
-          };
-          $("#resultsBody").append(output)
-  
-          limit += $("input.pagination").val();
-          skip += $("input.pagination").val();
-        });
-      }
-  
-      addResults();
-      $("span.pagination").click(addResults);
-      $("#subtitle").text("Top Failures");
-
-      $("#results").tablesorter({ 
-        // sort on the first column and third column, order asc 
-        sortList: [[3,0]] 
       });
 
+      context.reports = [ ];
+      for (var key in failures) {
+        var entries = key.split("|");
+        context.reports.push({
+          test_module : entries[0],
+          application_version : entries[1],
+          system_name : entries[2],
+          failure_link : '/#/general/failure/' + branch + "/" + os + "/" + entries[0],
+          failure_count : failures[key]
+        });
+      };
+
+      var template = '/templates/general_failures.mustache';
+      context.render(template).replace('#content').then(function () {
+        var limit = 0;
+        var skip = 0;
+  
+        $('#branch-selection span').each(function (i, elem) {
+          if (elem.textContent == branch) {
+            $(elem).addClass("selected")
+          }
+        })
+        $('#branch-selection span').click(function () {
+          window.location = '/#/general/top/' + this.textContent + '/' + os;
+        })
+        
+        $('#os-selection span').each(function (i, elem) {
+          if (elem.textContent == os) {
+            $(elem).addClass("selected")
+          }
+        })
+        $('#os-selection span').click(function () {
+          window.location = '/#/general/top/' + branch + '/' + this.textContent;
+        })
+  
+        $("#subtitle").text("Top Failures");
+  
+        $("#results").tablesorter({ 
+          // sort on the first column and third column, order asc 
+          sortList: [[3,1]] 
+        });
+ 
+      });
     });
   }
 
@@ -296,9 +268,12 @@ var a = $.sammy(function () {
     });
 
     $("#subtitle").text("Report Details");
-
   }
-  
+
+  var fallback = function() {
+    $("#content").text("Not Found");
+  }
+
   // Index of all databases
   // Database view
   this.get('#/general/reports', general_reports);
@@ -306,7 +281,7 @@ var a = $.sammy(function () {
   this.get('#/general/top', general_topFailures);
   this.get('#/general/top/:branch/:os', general_topFailures);
   this.get('#/general/report/:id', general_report);
-
+  this.get(/\.*/, fallback);
   
 })
 

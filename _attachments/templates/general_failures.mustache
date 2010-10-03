@@ -2,18 +2,18 @@
       <legend>Filter</legend>
       <div id="branch-selection">
         <span>Platform:</span>
-        <span class="branch-select">All</span>
-        <span class="branch-select">4.0</span>
-        <span class="branch-select">3.6</span>
-        <span class="branch-select">3.5</span>
+        <span>All</span>
+        <span>4.0</span>
+        <span>3.6</span>
+        <span>3.5</span>
       </div>
 
       <div id="os-selection">
         <span>OS: </span>
-        <span class="branch-select">All</span>
-        <span class="branch-select">Linux</span>
-        <span class="branch-select">Mac</span>
-        <span class="branch-select">Windows NT</span>
+        <span>All</span>
+        <span>Linux</span>
+        <span>Mac</span>
+        <span>Windows NT</span>
       </div>
     </fieldset>
 
@@ -21,13 +21,22 @@
       <thead>
         <tr>
           <th>Test Module</th>
-          <th>Branch</th>
+          <th>Version</th>
           <th>Platform</th>
           <th># Fail</th>
-          <th>Bugs</th>
+          <!--<th>Bugs</th>-->
         </tr>
       </thead>
-      <tbody id="resultsBody">
+      <tbody>
+      {{#reports}}
+        <tr>
+          <td>{{test_module}}</td>
+          <td>{{application_version}}</td>
+          <td>{{system_name}}</td>
+          <td><a href="{{failure_link}}">{{failure_count}}</a></td>
+          <!--<td>{{bugs}}</td>-->
+        </tr>
+      {{/reports}}
       </tbody>
     </table>
 
