@@ -16,11 +16,11 @@ var a = $.sammy(function () {
 
   var general_reports = function() {
     var branch = this.params.branch ? this.params.branch : 'All';
-    var os = this.params.os ? this.params.os : 'All';
+    var platform = this.params.platform ? this.params.platform : 'All';
 
     var query = {
-      startkey: JSON.stringify([branch, os, {}]),
-      endkey: JSON.stringify([branch, os]),
+      startkey: JSON.stringify([branch, platform, {}]),
+      endkey: JSON.stringify([branch, platform]),
       descending: "true",
       limit: 25
     };
@@ -47,17 +47,17 @@ var a = $.sammy(function () {
         })
 
         $('#branch-selection span').click(function () {
-          window.location = '/#/general/reports/' + this.textContent + '/' + os;
+          window.location = '/#/general/reports?branch=' + this.textContent + '&platform=' + platform;
         })
         
         $('#os-selection span').each(function (i, elem) {
-          if (elem.textContent == os) {
+          if (elem.textContent == platform) {
             $(elem).addClass("selected")
           }
         })
 
         $('#os-selection span').click(function () {
-          window.location = '/#/general/reports/' + branch + '/' + this.textContent
+          window.location = '/#/general/reports?branch=' + branch + '&platform=' + this.textContent
         })
   
         $("#results").tablesorter({ 
@@ -67,7 +67,10 @@ var a = $.sammy(function () {
   
         $("#subtitle").text("General Reports");
       });
+    });
 
+    $(".selection").change(function() {
+      window.location = this.value;
     });
   }
 
@@ -147,12 +150,16 @@ var a = $.sammy(function () {
         })
   
         $("#subtitle").text("Top Failures");
+
         $("#results").tablesorter({ 
           // sort on the first column and third column, order asc 
           sortList: [[3,1]] 
         });
- 
       });
+    });
+
+    $(".selection").change(function() {
+      window.location = this.value;
     });
   }
 
@@ -262,8 +269,12 @@ var a = $.sammy(function () {
           // sort on the first column and third column, order asc 
           sortList: [[4,1], [0,1], [1,1]]
         });
- 
+
       });
+    });
+
+    $(".selection").change(function() {
+      window.location = this.value;
     });
   }
 
@@ -375,7 +386,7 @@ var a = $.sammy(function () {
           $("tr.skipped").fadeOut("slow");
            event.preventDefault();
         });
-    
+
         $("#skipped").click(function (event) {
           $("#filter a").fadeIn();
           $("#skipped").fadeOut();
@@ -384,10 +395,16 @@ var a = $.sammy(function () {
           $("tr.skipped").fadeIn("slow");
            event.preventDefault();
         });
+
+        $("#subtitle").text("Report Details");
+
+        $(".selection").change(function() {
+          window.location = this.value;
+        });
+
       });
     });
 
-    $("#subtitle").text("Report Details");
   }
 
   var fallback = function() {
@@ -396,10 +413,10 @@ var a = $.sammy(function () {
 
   // Index of all databases
   // Database view
-  this.get('#/general/reports', general_reports);
-  this.get('#/general/reports/:branch/:os', general_reports);
+  this.get('#/general', general_topFailures);
   this.get('#/general/top', general_topFailures);
   this.get('#/general/failure', general_failure);
+  this.get('#/general/reports', general_reports);
   this.get('#/general/report/:id', general_report);
   this.get(/\.*/, fallback);
   
