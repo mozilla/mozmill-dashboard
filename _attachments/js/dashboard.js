@@ -22,7 +22,7 @@ var a = $.sammy(function () {
       startkey: JSON.stringify([branch, platform, {}]),
       endkey: JSON.stringify([branch, platform]),
       descending: "true",
-      limit: 25
+      limit: 100
     };
 
     var context = this;
@@ -33,7 +33,7 @@ var a = $.sammy(function () {
       resp.rows.forEach(function (report) {
         var value = report.value;
         value.report_link = "#/general/report/" + report.id;
-
+        value.time = new Date(value.time).format("yyyy/mm/dd HH:MM:ss");
         context.reports.push(value);
       })
 
@@ -62,7 +62,7 @@ var a = $.sammy(function () {
   
         $("#results").tablesorter({ 
           // sort on the first column and third column, order asc 
-          sortList: [[3,0]] 
+          sortList: [[0,1]] 
         });
   
         $("#subtitle").text("General Reports");
