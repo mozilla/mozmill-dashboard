@@ -407,8 +407,69 @@ var a = $.sammy(function () {
 
   }
 
+  var update_reports = function() {
+    var branch = this.params.branch ? this.params.branch : 'All';
+    var platform = this.params.platform ? this.params.platform : 'All';
+
+    var query = {
+      startkey: JSON.stringify([branch, platform, {}]),
+      endkey: JSON.stringify([branch, platform]),
+      descending: "true",
+      limit: 100
+    };
+
+    var context = this;
+    request({url: '/_view/update_reports?' + $.param(query)}, function (err, resp) {
+      if (err) console.log(err);
+
+      context.reports = [ ];
+      resp.rows.forEach(function (report) {
+        var value = report.value;
+        value.report_link = "#/update/report/" + report.id;
+        value.time = new Date(value.time).format("yyyy/mm/dd HH:MM:ss");
+        context.reports.push(value);
+      })
+
+      var template = '/templates/general_reports.mustache';
+      context.render(template).replace('#content').then(function () {
+  
+        $('#branch-selection span').each(function (i, elem) {
+          if (elem.textContent == branch) {
+            $(elem).addClass("selected")
+          }
+        })
+
+        $('#branch-selection span').click(function () {
+          window.location = '/#/update/reports?branch=' + this.textContent + '&platform=' + platform;
+        })
+        
+        $('#os-selection span').each(function (i, elem) {
+          if (elem.textContent == platform) {
+            $(elem).addClass("selected")
+          }
+        })
+
+        $('#os-selection span').click(function () {
+          window.location = '/#/update/reports?branch=' + branch + '&platform=' + this.textContent
+        })
+  
+        $("#results").tablesorter({ 
+          // sort on the first column and third column, order asc 
+          sortList: [[0,1]] 
+        });
+  
+        $("#subtitle").text("Update Reports");
+      });
+    });
+
+    $(".selection").change(function() {
+      window.location = this.value;
+    });
+  }
+
+
   var fallback = function() {
-    $("#content").text("Not Found");
+    window.location = "/#/general";
   }
 
   // Index of all databases
@@ -418,6 +479,9 @@ var a = $.sammy(function () {
   this.get('#/general/failure', general_failure);
   this.get('#/general/reports', general_reports);
   this.get('#/general/report/:id', general_report);
+  this.get('#/update', update_reports);
+  this.get('#/update/reports', update_reports);
+  this.get('#/update/report/:id', general_report);
   this.get(/\.*/, fallback);
   
 })
