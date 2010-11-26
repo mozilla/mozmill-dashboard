@@ -170,23 +170,25 @@ var a = $.sammy(function () {
     var platform = this.params.platform ? this.params.platform : 'All';
 
     var fromDate;
-    if (this.params.from)
+    if (this.params.from) {
       fromDate = new Date(this.params.from);
+    }
     else {
       fromDate = new Date();
       fromDate.setDate(fromDate.getDate() - 7);
     }
 
     var toDate;
-    if (this.params.to)
+    if (this.params.to) {
       toDate = new Date(this.params.to);
+    }
     else {
       toDate = new Date();
     }
 
     var query = {
-      startkey : JSON.stringify([branch, platform, 'All', toDate.format("yyyy-mm-dd") + "T23:59:59"]),
-      endkey : JSON.stringify([branch, platform, 'All', fromDate.format("yyyy-mm-dd") + "T00:00:00"]),
+      startkey : JSON.stringify([branch, platform, 'All', toDate.format("yyyy-mm-dd", true) + "T23:59:59"]),
+      endkey : JSON.stringify([branch, platform, 'All', fromDate.format("yyyy-mm-dd", true) + "T00:00:00"]),
       descending : true
     };
 
@@ -216,8 +218,8 @@ var a = $.sammy(function () {
           application_branch : entries[2],
           system_name : entries[3],
           failure_link : '/#/general/failure?branch=' + entries[2] + "&platform=" +
-                         entries[3] + '&from=' + fromDate.format("yyyy-mm-dd") +
-                        '&to=' + toDate.format("yyyy-mm-dd") + "&test=" +
+                         entries[3] + '&from=' + fromDate.format("yyyy-mm-dd", true) +
+                        '&to=' + toDate.format("yyyy-mm-dd", true) + "&test=" +
                         encodeURIComponent(entries[0]) + "&func=" +
                         encodeURIComponent(entries[1]),
           failure_count : failures[key]
@@ -254,8 +256,8 @@ var a = $.sammy(function () {
         $(".datepicker").datepicker();
         $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
 
-        $('#start-date').datepicker().val(fromDate.format("yyyy-mm-dd")).trigger('change');
-        $('#end-date').datepicker().val(toDate.format("yyyy-mm-dd")).trigger('change');
+        $('#start-date').datepicker().val(fromDate.format("yyyy-mm-dd", true)).trigger('change');
+        $('#end-date').datepicker().val(toDate.format("yyyy-mm-dd", true)).trigger('change');
 
         $(".datepicker").change(function() {
           window.location = '/#/general/top?branch=' + branch + "&platform=" + platform +
@@ -426,7 +428,7 @@ var a = $.sammy(function () {
       resp.rows.forEach(function (report) {
         var value = report.value;
         value.report_link = "#/update/report/" + report.id;
-        value.time = new Date(value.time).format("yyyy/mm/dd HH:MM:ss");
+        value.time = new Date(value.time).format("yyyy/mm/dd HH:MM:ss", true);
         context.reports.push(value);
       })
 
