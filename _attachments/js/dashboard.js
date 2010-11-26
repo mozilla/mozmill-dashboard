@@ -22,7 +22,7 @@ var a = $.sammy(function () {
       startkey: JSON.stringify([branch, platform, {}]),
       endkey: JSON.stringify([branch, platform]),
       descending: "true",
-      limit: 100
+      limit: 300
     };
 
     var context = this;
