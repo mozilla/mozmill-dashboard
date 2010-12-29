@@ -1,0 +1,124 @@
+    <h2>Information</h2>
+    <table id="information" class="clean">
+      <tr>
+        <th>Build:</th>
+        <td>
+         {{post_app_name}} {{post_app_version}} ({{post_platform_version}}, {{post_app_locale}}, <a href="{{post_app_sourcestamp}}">{{post_platform_buildId}}</a>)
+        </td>
+      </tr><tr>
+        <th>Platform:</th>
+        <td>{{system}} {{system_version}} {{service_pack}} ({{cpu}})</td>
+      </tr><tr>
+        <th>Duration:</th>
+        <td>{{time_start}} - {{time_end}}</td>
+      </tr><tr>
+       <th>Report:</th>
+       <td><a href="/db/{{id}}">{{id}}</a></td>
+      </tr><tr>
+        <th>Results:</th>
+        <td>Pass: <strong>{{passed}}</strong> / Fail: <strong>{{failed}}</strong> / Skip: <strong>{{skipped}}</td>
+      </tr>
+    </table>
+
+    <h2>Updates</h2>
+    {{#updates}}
+    <table class="clean">
+      <tbody>
+        <tr>
+          <th>Status:</th>
+          <td>
+            {{#success}}
+              PASS
+            {{/success}}
+            {{^success}}
+              FAIL
+            {{/success}}
+          </td>
+        </tr><tr>
+          {{#build_pre}}
+          <th>Build (pre):</th>
+          <td>{{user_agent}} ({{locale}}, <a href="{{sourcestamp}}">{{buildid}}</a>)</td>
+          {{/build_pre}}
+        </tr><tr>
+          {{#build_post}}
+          <th>Build (post):</th>
+          <td>{{user_agent}} ({{locale}}, <a href="{{sourcestamp}}">{{buildid}}</a>)</td>
+          {{/build_post}}
+        </tr><tr>
+          {{#patch}}
+          <th>Channel:</td>
+          <td>{{channel}}</td>
+          {{/patch}}
+        </tr><tr>
+          <th>Type:</td>
+          <td>
+          {{#patch}}
+            {{type}},
+            {{#is_complete}}
+              complete,
+            {{/is_complete}}
+            {{^is_complete}}
+              partial,
+            {{/is_complete}}
+          {{/patch}}
+            {{#fallback}}
+              fallback
+            {{/fallback}}
+            {{^fallback}}
+              direct
+            {{/fallback}}
+          </td>
+        </tr><tr>
+          {{#patch}}
+          <th>Download:</td>
+          <td><a href="{{url}}">{{url}}</a> ({{size}} Byte, {{download_duration}} ms)</td>
+          {{/patch}}
+        </tr><tr>
+          {{#build_post}}
+          <th>Disabled Add-ons:</td>
+          <td>{{disabled_addons}}</td>
+          {{/build_post}}
+        </tr>
+      </tbody>
+    </table>
+    {{/updates}}
+    {{^updates}}
+    <table class="clean">
+      <tr>
+        <td>No update results available</td>
+      </tr>
+    </table>
+    {{/updates}}
+
+    <h2>Results</h2>
+    <p id="filter">
+      Filter:
+      <a href="#" id="all">All</a>
+      <a href="#" id="passed">Passed</a>
+      <a href="#" id="failed">Failed</a>
+      <a href="#" id="skipped">Skipped</a>
+    </p>
+
+    <table id="result">
+      <thead>
+        <th>Status</th>
+        <th>Filename</th>
+        <th>Test</th>
+        <th>Information</th>
+      </thead>
+      <tbody>
+        {{#results}}
+        <tr class="{{status}}">
+          <td>{{status}}</td>
+          <td>{{filename}}</td>
+          <td>{{test}}</td>
+          <td class="information">
+            {{{information}}}
+            <div class="tooltip">{{{stack}}}<div>
+          </td>
+        </tr>
+        {{/results}}
+      </tbody>
+    </table>
+  </body>
+

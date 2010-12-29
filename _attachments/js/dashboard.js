@@ -27,7 +27,7 @@ var a = $.sammy(function () {
 
     var context = this;
     request({url: '/_view/general_reports?' + $.param(query)}, function (err, resp) {
-      if (err) console.log(err);
+      if (err) window.alert(err);
 
       context.reports = [ ];
       resp.rows.forEach(function (report) {
@@ -193,7 +193,7 @@ var a = $.sammy(function () {
     };
 
     request({url:'/_view/general_failures?'+$.param(query)}, function (err, resp) {
-      if (err) console.log(err);
+      if (err) window.alert(err);
 
       // Build up the failures array
       var failures = [ ];
@@ -284,10 +284,10 @@ var a = $.sammy(function () {
     var context = this;
 
     var id = this.params.id ? this.params.id : 'null';
-    var template = '/templates/report.mustache';
+    var template = '/templates/general_report.mustache';
 
     request({url: '/db/' + id}, function (err, resp) {
-      if (err) console.log(err);
+      if (err) window.alert(err);
 
       context.id = resp._id;
       context.app_name = resp.application_name;
@@ -422,7 +422,7 @@ var a = $.sammy(function () {
 
     var context = this;
     request({url: '/_view/update_reports?' + $.param(query)}, function (err, resp) {
-      if (err) console.log(err);
+      if (err) window.alert(err);
 
       context.reports = [ ];
       resp.rows.forEach(function (report) {
@@ -469,6 +469,139 @@ var a = $.sammy(function () {
     });
   }
 
+  function update_report() {
+    var context = this;
+
+    var id = this.params.id ? this.params.id : 'null';
+    var template = '/templates/update_report.mustache';
+
+    request({url: '/db/' + id}, function (err, resp) {
+      if (err) window.alert(err);
+
+      context.id = resp._id;
+      context.system = resp.system_info.system,
+      context.system_version = resp.system_info.version,
+      context.service_pack = resp.system_info.service_pack,
+      context.cpu = resp.system_info.processor,
+      context.time_start = new Date(resp.time_start).format("yyyy/mm/dd HH:MM:ss", true);
+      context.time_end = new Date(resp.time_end).format("yyyy/mm/dd HH:MM:ss", true);
+      context.passed = resp.tests_passed;
+      context.failed = resp.tests_failed;
+      context.skipped = resp.tests_skipped;
+
+      // In the case that no update data is available default to the known values
+      context.post_app_name = resp.application_name;
+      context.post_app_version = resp.application_version;
+      context.post_platform_version = resp.platform_version;
+      context.post_platform_buildId = resp.platform_buildid;
+      context.post_app_locale = resp.application_locale;
+      context.post_app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
+
+
+      context.updates = resp.updates;
+      context.results = [];
+  
+      for (var i = 0; i < resp.results.length; i++) {
+        var result = resp.results[i];
+
+        var types = {
+          'firefox-general' : 'firefox',
+          'mozmill-test' : 'firefox',
+          'mozmill-restart-test' : 'firefox',
+          'firefox-update' : 'softwareUpdate',
+          'firefox-addons' : 'addons'
+        };
+
+        var type = types[resp.report_type];
+        var filename = result.filename.split(type)[1].replace(/\\/g, '/');
+
+        var status = "passed";
+        if (result.skipped) {
+          status = "skipped";
+        } else if (result.failed) {
+          status = "failed";
+        }
+  
+        var information = "";
+        var stack = "";
+        try {
+          if (result.skipped) {
+            information = result.skipped_reason;
+  
+            var re = /Bug ([\d]+)/g.exec(information);
+            if (re) {
+              var tmpl = '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=%s">Bug %s</a>';
+              var link = tmpl.replace(/\%s/g, re[1]);
+              information = information.replace(re[0], link);
+            }
+          } else {
+            information = result.fails[0].exception.message;
+            stack = result.fails[0].exception.stack;
+          }
+        } catch (ex) { }
+  
+        context.results.push({
+          filename : filename,
+          test : result.name,
+          status : status,
+          information: information,
+          stack : stack
+        });
+      }
+
+      context.render(template).replace('#content').then(function () {
+        $("#result").tablesorter({ 
+          // sort on the first column and third column, order asc 
+          sortList: [[0,0],[1,0]] 
+        });
+        $("#all").fadeOut();
+        $("#all").click(function (event) {
+          $("#filter a").fadeIn();
+          $("#all").fadeOut();
+          $("tr.passed").fadeIn("slow");
+          $("tr.failed").fadeIn("slow");
+          $("tr.skipped").fadeIn("slow");
+           event.preventDefault();
+        });
+    
+        $("#passed").click(function (event) {
+          $("#filter a").fadeIn();
+          $("#passed").fadeOut();
+          $("tr.passed").fadeIn("slow");
+          $("tr.failed").fadeOut("slow");
+          $("tr.skipped").fadeOut("slow");
+           event.preventDefault();
+        });
+    
+        $("#failed").click(function (event) {
+          $("#filter a").fadeIn();
+          $("#failed").fadeOut();
+          $("tr.passed").fadeOut("slow");
+          $("tr.failed").fadeIn("slow");
+          $("tr.skipped").fadeOut("slow");
+           event.preventDefault();
+        });
+
+        $("#skipped").click(function (event) {
+          $("#filter a").fadeIn();
+          $("#skipped").fadeOut();
+          $("tr.passed").fadeOut("slow");
+          $("tr.failed").fadeOut("slow");
+          $("tr.skipped").fadeIn("slow");
+           event.preventDefault();
+        });
+
+        $("#subtitle").text("Report Details");
+
+        $(".selection").change(function() {
+          window.location = this.value;
+        });
+
+      });
+    });
+
+  }
+
 
   var fallback = function() {
     window.location = "/#/general";
@@ -483,7 +616,7 @@ var a = $.sammy(function () {
   this.get('#/general/report/:id', general_report);
   this.get('#/update', update_reports);
   this.get('#/update/reports', update_reports);
-  this.get('#/update/report/:id', general_report);
+  this.get('#/update/report/:id', update_report);
   this.get(/\.*/, fallback);
   
 })

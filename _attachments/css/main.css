@@ -46,9 +46,8 @@ h2 {
 }
 
 #content {
-  width: 80%;
+  width: 90%;
   margin: 0 auto;
-  text-align: center;
 }
 
 #filter {
@@ -155,11 +154,11 @@ table#results td.results {
   text-align: right;
 }
 
-table#information td {
+table.clean td {
   border: none;
 }
 
-table#information th {
+table.clean th {
   text-align: right;
 }
 
