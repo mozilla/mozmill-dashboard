@@ -12,29 +12,50 @@
     <script language="javascript" type="text/javascript" src="js/sammy/sammy.js"></script>
     <script language="javascript" type="text/javascript" src="js/sammy/plugins/sammy.mustache.js"></script>
     <script language="javascript" type="text/javascript" src="js/dashboard.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function (){
+        $("ul.topnav li a").hover(function () {
+          //Following events are applied to the subnav itself (moving subnav up and down)
+          $(this).parent().find("ul.subnav").slideDown('fast').show();
+          $(this).parent().hover(function () {
+          }, function (){
+            //When the mouse hovers out of the subnav, move it back up
+            $(this).parent().find("ul.subnav").slideUp('slow');
+          });
+
+        // Following events are applied to the trigger (Hover events for the trigger)
+        }).hover(function () {
+          $(this).addClass("subhover");
+        }, function () {
+          //On Hover Out
+          $(this).removeClass("subhover");
+        });
+      });
+      </script>
   </head>
 
   <body>
     <div id="header">
       <h2 id="title">Mozmill Results Dashboard</h2>
-      <div id="testrun_selection">
-        <form id="page_controls">
-          <label for="type_selection">Report Type:</label>
-          <select id="type_selection" class="selection">
-            <option value="/#/general">General Testrun</option>
-            <option value="/#/update">Update Testrun</option>
-            <!--<option value="/addons">Add-ons Testrun</option>-->
-          </select>
-          <label for="view_selection">View:</label>
-          <select id="view_selection" class="selection">
-            <option value="/#/general/top">Top Failures</option>
-            <!--<option value="/#/general/new">New Failures</option>-->
-            <option value="/#/general/reports">Reports</option>
-          </select>
-        </form>
 
-        <div id="account"></div>
-      </div>
+      <ul class="topnav">
+        <li><a href="#">Home</a></li>
+        <li>
+          <a href="#/general">General Testrun</a>
+          <ul class="subnav">
+            <li><a href="#/general/reports">Reports</a></li>
+            <li><a href="#/general/top">Top Failures</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#/update">Update Testrun</a>
+          <ul class="subnav">
+            <li><a href="#/update/reports">Reports</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <div id="account"></div>
     </div>
 
     <div id="content"></div>

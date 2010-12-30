@@ -25,20 +25,73 @@ h2 {
   padding: 5px 10px;
 }
 
-#testrun_selection {
-  margin: 20px 0;
-  padding: 1px 10px;
-  background: url(/img/testrun_bg.png) repeat-x;
-  font-size: 1em;
-}
-
 #header a {
   color: #ff9;
   text-decoration: none;
 }
 
-#testrun_selection form {
+ul.topnav {
+  list-style: none;
+  float: left;
+  width: 100%;
   margin: 0;
+  padding: 0;
+  background: url(/img/testrun_bg.png) repeat-x;
+  font-size: 1em;
+}
+
+ul.topnav li {
+  float: left;
+  margin: 0;
+  padding: 0 5px;
+  position: relative;
+}
+
+ul.topnav li a {
+  padding: 10px 5px;
+  color: #fff !important;
+  display: block;
+  text-decoration: none;
+  float: left;
+}
+
+ul.topnav li a:hover {
+  background: url(topnav_hover.gif) no-repeat center top;
+  color: #ff9 !important;
+}
+
+ul.topnav li ul.subnav {
+  list-style: none;
+  position: absolute;
+  left: 0;
+  top: 31px;
+  background: url(/img/testrun_bg.png) repeat-x;
+  margin: 0;
+  padding: 0;
+  display: none;
+  float: left;
+  width: 170px;
+  -moz-border-radius-bottomleft: 5px;
+  -moz-border-radius-bottomright: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px;
+}
+
+ul.topnav li ul.subnav li{
+  margin: 0; padding: 0;
+  clear: both;
+  width: 170px;
+}
+
+html ul.topnav li ul.subnav li a {
+  float: left;
+  width: 145px;
+  background: #222 url(/img/testrun_bg.png) repeat 10px center;
+  padding-left: 20px;
+}
+
+html ul.topnav li ul.subnav li a:hover {
+  background: #222 url(/img/testrun_bg.png) repeat 10px center;
 }
 
 #page_controls select, #filter select {
@@ -48,6 +101,8 @@ h2 {
 #content {
   width: 90%;
   margin: 0 auto;
+  padding-top: 10px;
+  clear: both;
 }
 
 #filter {
@@ -194,13 +249,13 @@ table#result tr.failed td.information:hover .tooltip{
   background-color: #fff;
 }
 
-th.headerSortUp { 
-  background-image: url(../img/asc.gif) !important; 
+th.headerSortUp {
+  background-image: url(../img/asc.gif) !important;
   background-color: #eee;
   background-position: right center;
 }
 
-th.headerSortDown { 
+th.headerSortDown {
   background-image: url(../img/desc.gif) !important;
   background-color: #eee;
   background-position: right center;
@@ -208,14 +263,14 @@ th.headerSortDown {
 
 th.header {
   background-image: url(../img/bg.gif);
-  cursor: pointer; 
-  font-weight: bold; 
-  background-repeat: no-repeat; 
-  background-position: center left; 
-  padding-left: 20px; 
-  border-right: 1px solid #dad9c7; 
-  margin-left: -1px; 
-} 
+  cursor: pointer;
+  font-weight: bold;
+  background-repeat: no-repeat;
+  background-position: center left;
+  padding-left: 20px;
+  border-right: 1px solid #dad9c7;
+  margin-left: -1px;
+}
 
 #branch-selection, #os-selection {
   padding: 5px 10px;
@@ -235,4 +290,3 @@ span.pagination {
   cursor: pointer;
   padding-left: 20px;
 }
-
