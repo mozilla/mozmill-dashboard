@@ -1,0 +1,53 @@
+    <fieldset id="filter">
+      <legend>Filter</legend>
+
+      <div id="branch-selection">
+        <span>Branch:</span>
+        <span>All</span>
+        <span>4.0</span>
+        <span>3.6</span>
+        <span>3.5</span>
+      </div>
+
+      <div id="channel-selection">
+        <span>Channel: </span>
+        <span>All</span>
+        <span>release</span>
+        <span>release-test</span>
+        <span>beta</span>
+        <span>beta-test</span>
+        <span>nightly</span>
+      </div>
+
+      <div id="date">
+        <span>From: </span>
+        <input id="start-date" class="datepicker" type="text" value="" size="11" />
+        <span>To: </span>
+        <input id="end-date" class="datepicker" type="text" value="" size="11" />
+      </div>
+    </fieldset>
+
+    <h2>Updates Overview</h2>
+
+    <table id="results">
+      <thead>
+        <tr>
+          <th>Target Build</th>
+          <th>Source Build</th>
+          <th>Channel</th>
+          <th># Testruns</th>
+          <th># Failed</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{#updates}}
+        <tr>
+          <td><a href="{{detail_url}}">{{post_build}}</a></td>
+          <td>{{pre_build}}</a></td>
+          <td>{{channel}}</td>
+          <td>{{testrun_count}}</td>
+          <td>{{failure_count}}</td>
+        </tr>
+      {{/updates}}
+      </tbody>
+    </table>

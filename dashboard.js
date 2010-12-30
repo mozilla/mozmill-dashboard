@@ -7,7 +7,7 @@ ddoc = {
     { from: "/",      to: 'index.html'},
     { from: "/db/*",  to: '../../*'},
     { from: "/*",     to: '*'}
-  ] 
+  ]
 };
 
 
@@ -148,14 +148,73 @@ var updateReportsMap = function(doc) {
   }
 }
 
+var updateDefaultMap = function(doc) {
+  const REPORT_TYPES = [
+    'firefox-update'
+  ];
+
+  if (doc.time_start &&
+      doc.application_version &&
+      doc.system_info.system &&
+      doc.updates &&
+      doc.report_type &&
+      REPORT_TYPES.indexOf(doc.report_type) != -1) {
+
+    var application_branch = doc.application_version.match(/(\d\.\d)\.*/)[1];
+
+    var r = {
+      application_locale : doc.application_locale,
+      application_branch : application_branch,
+      system_name : doc.system_info.system,
+      system_version : doc.system_info.version,
+      tests_passed : doc.tests_passed,
+      tests_failed : doc.tests_failed
+    };
+
+    // Additional information from update results
+    var updateCount = doc.updates.length;
+    if (updateCount > 0) {
+      r.pre_build = doc.updates[0].build_pre.version;
+      r.post_build = doc.updates[updateCount - 1].build_post.version;
+      r.channel = doc.updates[0].patch.channel;
+    }
+    else {
+      r.pre_build = "n/a";
+      r.post_build = doc.application_version;
+      r.channel = "n/a";
+    }
+
+    emit([application_branch, r.channel, r.pre_build, r.post_build, doc.time_start], r);
+
+    emit([application_branch, r.channel, r.pre_build, 'All', doc.time_start], r);
+
+    emit([application_branch, r.channel, 'All', r.post_build, doc.time_start], r);
+    emit([application_branch, r.channel, 'All', 'All', doc.time_start], r);
+
+    emit([application_branch, 'All', r.pre_build, r.post_build, doc.time_start], r);
+    emit([application_branch, 'All', r.pre_build, 'All', doc.time_start], r);
+    emit([application_branch, 'All', 'All', r.post_build, doc.time_start], r);
+    emit([application_branch, 'All', 'All', 'All', doc.time_start], r);
+
+    emit(['All', r.channel, r.pre_build, r.post_build, doc.time_start], r);
+    emit(['All', r.channel, r.pre_build, 'All', doc.time_start], r);
+    emit(['All', r.channel, 'All', r.post_build, doc.time_start], r);
+    emit(['All', r.channel, 'All', 'All', doc.time_start], r);
+    emit(['All', 'All', r.pre_build, r.post_build, doc.time_start], r);
+    emit(['All', 'All', r.pre_build, 'All', doc.time_start], r);
+    emit(['All', 'All', 'All', r.post_build, doc.time_start], r);
+    emit(['All', 'All', 'All', 'All', doc.time_start], r);
+  }
+}
+
 
 ddoc.views = {
   general_reports : { map: generalReportsMap },
   general_failures : { map: generalFailuresMap },
-  update_reports : { map: updateReportsMap }
+  update_reports : { map: updateReportsMap },
+  update_default : { map: updateDefaultMap }
 }
 
 couchapp.loadAttachments(ddoc, path.join(__dirname, '_attachments'))
 
 exports.app = ddoc
-

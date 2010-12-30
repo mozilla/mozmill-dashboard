@@ -106,8 +106,17 @@ html ul.topnav li ul.subnav li a:hover {
 }
 
 #filter {
-  width: 300px;
+  width: 500px;
   text-align: left;
+}
+
+#filter div {
+  padding: 5px 10px;
+}
+
+#filter div span {
+  padding: 2px 5px;
+  cursor: pointer;
 }
 
 #content #navigation {
@@ -270,15 +279,6 @@ th.header {
   padding-left: 20px;
   border-right: 1px solid #dad9c7;
   margin-left: -1px;
-}
-
-#branch-selection, #os-selection {
-  padding: 5px 10px;
-}
-
-#branch-selection span, #os-selection span {
-  padding: 2px 5px;
-  cursor: pointer;
 }
 
 span.selected {

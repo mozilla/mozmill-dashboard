@@ -412,6 +412,126 @@
 
     }
 
+    var update_overview = function () {
+      var context = this;
+
+      var branch = this.params.branch || 'All';
+      var channel = this.params.channel || 'All';
+
+      var fromDate;
+      if (this.params.from) {
+        fromDate = new Date(this.params.from);
+      }
+      else {
+        fromDate = new Date();
+        fromDate.setDate(fromDate.getDate() - 7);
+      }
+
+      var toDate;
+      if (this.params.to) {
+        toDate = new Date(this.params.to);
+      }
+      else {
+        toDate = new Date();
+      }
+
+      var query = {
+        startkey : JSON.stringify([branch, channel, 'All', 'All', toDate.format("yyyy-mm-dd", true) + "T23:59:59"]),
+        endkey : JSON.stringify([branch, channel, 'All', 'All', fromDate.format("yyyy-mm-dd", true) + "T00:00:00"]),
+        descending : true
+      };
+
+      request({url:'/_view/update_default?'+$.param(query)}, function (err, resp) {
+        if (err) window.alert(err);
+
+        // Build up the updates array
+        var updates = [ ];
+        resp.rows.forEach(function (row) {
+          var v = row.value;
+          var k = row.key;
+
+          var index = v.post_build + "|" + v.pre_build + "|" + v.channel;
+          var failed = (v.tests_failed > 0 || v.tests_passed == 0) ? 1 : 0;
+          if (index in updates) {
+            updates[index].testruns += 1;
+            updates[index].failures += failed;
+          }
+          else {
+            updates[index] = {
+              testruns : 1,
+              failures : failed
+            };
+          }
+        });
+
+        context.updates = [ ];
+        for (var key in updates) {
+          var entries = key.split("|");
+          context.updates.push({
+            post_build : entries[0],
+            pre_build : entries[1],
+            channel: entries[2],
+            testrun_count : updates[key].testruns,
+            failure_count : updates[key].failures,
+            detail_url : '/#/update/detail?branch=' + entries[2] + "&channel=" +
+                         entries[3] + '&from=' + fromDate.format("yyyy-mm-dd", true) +
+                         '&to=' + toDate.format("yyyy-mm-dd", true) + "&target=" +
+                         encodeURIComponent(entries[0])
+          });
+        };
+
+        var template = '/templates/update_default.mustache';
+        context.render(template).replace('#content').then(function () {
+          var limit = 0;
+          var skip = 0;
+
+          $('#branch-selection span').each(function (i, elem) {
+            if (elem.textContent == branch) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#branch-selection span').click(function () {
+            window.location = '/#/update/overview?branch=' + this.textContent + "&channel=" + channel +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $('#channel-selection span').each(function (i, elem) {
+            if (elem.textContent == channel) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#channel-selection span').click(function () {
+            window.location = '/#/update/overview?branch=' + branch + "&channel=" + this.textContent +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $(".datepicker").datepicker();
+          $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+
+          $('#start-date').datepicker().val(fromDate.format("yyyy-mm-dd", true)).trigger('change');
+          $('#end-date').datepicker().val(toDate.format("yyyy-mm-dd", true)).trigger('change');
+
+          $(".datepicker").change(function() {
+            window.location = '/#/update/overview?branch=' + branch + "&channel=" + channel +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $("#results").tablesorter({
+            // sort on the first column and third column, order asc
+            sortList: [[4,1]]
+          });
+
+        });
+      });
+
+      $(".selection").change(function() {
+        window.location = this.value;
+      });
+    }
+
     var update_reports = function() {
       var branch = this.params.branch ? this.params.branch : 'All';
       var platform = this.params.platform ? this.params.platform : 'All';
@@ -611,6 +731,7 @@
     this.get('#/general/reports', general_reports);
     this.get('#/general/report/:id', general_report);
     this.get('#/update', update_reports);
+    this.get('#/update/overview', update_overview);
     this.get('#/update/reports', update_reports);
     this.get('#/update/report/:id', update_report);
   });
