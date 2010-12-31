@@ -290,3 +290,15 @@ span.pagination {
   cursor: pointer;
   padding-left: 20px;
 }
+
+.passed {
+  color: #181;
+}
+
+.failed {
+  color: #811;
+}
+
+.skipped {
+  color: #f90;
+}

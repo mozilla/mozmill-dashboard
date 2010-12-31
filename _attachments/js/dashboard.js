@@ -473,14 +473,14 @@
             channel: entries[2],
             testrun_count : updates[key].testruns,
             failure_count : updates[key].failures,
-            detail_url : '/#/update/detail?branch=' + entries[2] + "&channel=" +
-                         entries[3] + '&from=' + fromDate.format("yyyy-mm-dd", true) +
+            detail_url : '/#/update/detail?branch=' + branch + "&channel=" +
+                         entries[2] + '&from=' + fromDate.format("yyyy-mm-dd", true) +
                          '&to=' + toDate.format("yyyy-mm-dd", true) + "&target=" +
                          encodeURIComponent(entries[0])
           });
         };
 
-        var template = '/templates/update_default.mustache';
+        var template = '/templates/update_overview.mustache';
         context.render(template).replace('#content').then(function () {
           var limit = 0;
           var skip = 0;
@@ -522,6 +522,137 @@
           $("#results").tablesorter({
             // sort on the first column and third column, order asc
             sortList: [[4,1]]
+          });
+
+        });
+      });
+
+      $(".selection").change(function() {
+        window.location = this.value;
+      });
+    }
+
+    var update_detail = function () {
+      var context = this;
+
+      var branch = this.params.branch || 'All';
+      var channel = this.params.channel || 'All';
+      var target = this.params.target || 'n/a';
+
+      var fromDate;
+      if (this.params.from) {
+        fromDate = new Date(this.params.from);
+      }
+      else {
+        fromDate = new Date();
+        fromDate.setDate(fromDate.getDate() - 7);
+      }
+
+      var toDate;
+      if (this.params.to) {
+        toDate = new Date(this.params.to);
+      }
+      else {
+        toDate = new Date();
+      }
+
+      var query = {
+        startkey : JSON.stringify([branch, channel, 'All', target, toDate.format("yyyy-mm-dd", true) + "T23:59:59"]),
+        endkey : JSON.stringify([branch, channel, 'All', target, fromDate.format("yyyy-mm-dd", true) + "T00:00:00"]),
+        descending : true,
+        include_docs: true
+      };
+
+      request({url:'/_view/update_default?'+$.param(query)}, function (err, resp) {
+        if (err) window.alert(err);
+
+        var platforms = [ ];
+        var versions = [ ];
+
+        resp.rows.forEach(function (row) {
+          var v = row.value;
+          var k = row.key;
+
+          // List of tested platforms for table header
+          var platform = v.system_name + " " + v.system_version;
+          if (platforms.indexOf(platform) == -1)
+            platforms.push(platform);
+
+          // List of tested versions
+          if (versions.indexOf(v.pre_build) == -1) {
+            versions.push(v.pre_build);
+          }
+        });
+
+        // Sort platforms alphabetically
+        platforms = platforms.sort();
+
+        // Prepare map for matrix
+        var data = new Array(versions.length);
+        for (var i = 0; i < versions.length; i++) {
+          data[i] = { "version" : versions[i] };
+          data[i]["platform"] = new Array(platforms.length);
+          for (var j = 0; j < platforms.length; j++) {
+            data[i]["platform"][j] = { "platform" : platforms[j] };
+            data[i]["platform"][j]["builds"] = [ ];
+          }
+        }
+
+        // Populate matrix with builds
+        resp.rows.forEach(function (row) {
+          var v = row.value;
+          var k = row.key;
+          var doc = row.doc;
+
+          var platform = v.system_name + " " + v.system_version;
+
+          var index_platform = platforms.indexOf(platform);
+          var index_version = versions.indexOf(v.pre_build);
+
+          var builds = data[index_version]["platform"][index_platform]["builds"];
+          builds.push({
+            "locale" : v.application_locale,
+            "updates" : doc.updates,
+            "report_link" : "#/update/report/" + row.id
+          });
+        });
+
+        context.channel = channel;
+        context.post_build = target;
+        context.platforms = platforms;
+        context.data = data;
+
+        var template = '/templates/update_detail.mustache';
+        context.render(template).replace('#content').then(function () {
+          var limit = 0;
+          var skip = 0;
+
+          $('#channel-selection span').each(function (i, elem) {
+            if (elem.textContent == channel) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#channel-selection span').click(function () {
+            window.location = '/#/update/detail?branch=' + branch + "&channel=" + this.textContent +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val() + "&target=" + target;
+          })
+
+          $(".datepicker").datepicker();
+          $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+
+          $('#start-date').datepicker().val(fromDate.format("yyyy-mm-dd", true)).trigger('change');
+          $('#end-date').datepicker().val(toDate.format("yyyy-mm-dd", true)).trigger('change');
+
+          $(".datepicker").change(function() {
+            window.location = '/#/update/detail?branch=' + branch + "&channel=" + channel +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val() + "&target=" + target;
+          })
+
+          $("#results").tablesorter({
+            // sort on the first column and third column, order asc
+            sortList: [[0,1]]
           });
 
         });
@@ -732,6 +863,7 @@
     this.get('#/general/report/:id', general_report);
     this.get('#/update', update_reports);
     this.get('#/update/overview', update_overview);
+    this.get('#/update/detail', update_detail);
     this.get('#/update/reports', update_reports);
     this.get('#/update/report/:id', update_report);
   });
