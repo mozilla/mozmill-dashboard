@@ -360,10 +360,6 @@
         }
 
         context.render(template).replace('#content').then(function () {
-          $("#result").tablesorter({
-            // sort on the first column and third column, order asc
-            sortList: [[0,0],[1,0]]
-          });
           $("#all").fadeOut();
           $("#all").click(function (event) {
             $("#filter a").fadeIn();
@@ -804,10 +800,6 @@
         }
 
         context.render(template).replace('#content').then(function () {
-          $("#result").tablesorter({
-            // sort on the first column and third column, order asc
-            sortList: [[0,0],[1,0]]
-          });
           $("#all").fadeOut();
           $("#all").click(function (event) {
             $("#filter a").fadeIn();
