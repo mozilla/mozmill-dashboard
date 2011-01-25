@@ -299,10 +299,10 @@
         context.platform_buildId = resp.platform_buildid;
         context.app_locale = resp.application_locale;
         context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
-        context.system = resp.system_info.system,
-        context.system_version = resp.system_info.version,
-        context.service_pack = resp.system_info.service_pack,
-        context.cpu = resp.system_info.processor,
+        context.system = resp.system_info.system;
+        context.system_version = resp.system_info.version;
+        context.service_pack = resp.system_info.service_pack;
+        context.cpu = resp.system_info.processor;
         context.time_start = resp.time_start;
         context.time_end = resp.time_end;
         context.passed = resp.tests_passed;
@@ -729,10 +729,10 @@
         if (err) window.alert(err);
 
         context.id = resp._id;
-        context.system = resp.system_info.system,
-        context.system_version = resp.system_info.version,
-        context.service_pack = resp.system_info.service_pack,
-        context.cpu = resp.system_info.processor,
+        context.system = resp.system_info.system;
+        context.system_version = resp.system_info.version;
+        context.service_pack = resp.system_info.service_pack;
+        context.cpu = resp.system_info.processor;
         context.time_start = new Date(resp.time_start).format("yyyy/mm/dd HH:MM:ss", true);
         context.time_end = new Date(resp.time_end).format("yyyy/mm/dd HH:MM:ss", true);
         context.passed = resp.tests_passed;
@@ -846,6 +846,185 @@
       });
     }
 
+    var l10n_reports = function () {
+      var branch = this.params.branch ? this.params.branch : 'All';
+      var platform = this.params.platform ? this.params.platform : 'All';
+
+      var query = {
+        startkey: JSON.stringify([branch, platform, {}]),
+        endkey: JSON.stringify([branch, platform]),
+        descending: "true",
+        limit: 300
+      };
+
+      var context = this;
+      request({url: '/_view/l10n_reports?' + $.param(query)}, function (err, resp) {
+        if (err) window.alert(err);
+
+        context.reports = [ ];
+        resp.rows.forEach(function (report) {
+          var value = report.value;
+          value.report_link = "#/l10n/report/" + report.id;
+          value.time = new Date(value.time).format("yyyy/mm/dd HH:MM:ss");
+          context.reports.push(value);
+        })
+
+        var template = '/templates/l10n_reports.mustache';
+        context.render(template).replace('#content').then(function () {
+
+          $('#branch-selection span').each(function (i, elem) {
+            if (elem.textContent == branch) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#branch-selection span').click(function () {
+            window.location = '/#/l10n/reports?branch=' + this.textContent + '&platform=' + platform;
+          })
+
+          $('#os-selection span').each(function (i, elem) {
+            if (elem.textContent == platform) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#os-selection span').click(function () {
+            window.location = '/#/l10n/reports?branch=' + branch + '&platform=' + this.textContent
+          })
+
+          $("#results").tablesorter({
+            // sort on the first column and third column, order asc
+            sortList: [[0,1]]
+          });
+
+          $("#subtitle").text("General Reports");
+        });
+      });
+
+      $(".selection").change(function() {
+        window.location = this.value;
+      });
+    }
+
+    function l10n_report() {
+      var context = this;
+
+      var id = this.params.id ? this.params.id : 'null';
+      var template = '/templates/l10n_report.mustache';
+
+      request({url: '/db/' + id}, function (err, resp) {
+        if (err) window.alert(err);
+
+        context.id = resp._id;
+        context.app_name = resp.application_name;
+        context.app_version = resp.application_version;
+        context.platform_version = resp.platform_version;
+        context.platform_buildId = resp.platform_buildid;
+        context.app_locale = resp.application_locale;
+        context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
+        context.system = resp.system_info.system;
+        context.system_version = resp.system_info.version;
+        context.service_pack = resp.system_info.service_pack;
+        context.cpu = resp.system_info.processor;
+        context.time_start = resp.time_start;
+        context.time_end = resp.time_end;
+        context.passed = resp.tests_passed;
+        context.failed = resp.tests_failed;
+        context.skipped = resp.tests_skipped;
+
+        context.results = [];
+
+        for (var i = 0; i < resp.results.length; i++) {
+          var result = resp.results[i];
+
+          var types = {
+            'firefox-l10n' : 'l10n'
+          };
+
+          var type = types[resp.report_type];
+          var filename = result.filename.split(type)[1].replace(/\\/g, '/');
+
+          var status = "passed";
+          if (result.skipped) {
+            status = "skipped";
+          } else if (result.failed) {
+            status = "failed";
+          }
+
+          var failures =  [ ];
+          try {
+            if (result.skipped) {
+              var information = result.skipped_reason;
+
+              var re = /Bug ([\d]+)/g.exec(information);
+              if (re) {
+                var tmpl = '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=%s">Bug %s</a>';
+                var link = tmpl.replace(/\%s/g, re[1]);
+                failures.push(information.replace(re[0], link));
+              }
+            } else {
+              for (var j = 0; j < result.fails.length; j++) {
+                failures.push(result.fails[j].comment);
+              }
+            }
+          } catch (ex) { }
+
+          context.results.push({
+            filename : filename,
+            test : result.name,
+            status : status,
+            failures: failures
+          });
+        }
+
+        context.render(template).replace('#content').then(function () {
+          $("#all").fadeOut();
+          $("#all").click(function (event) {
+            $("#filter a").fadeIn();
+            $("#all").fadeOut();
+            $("tr.passed").fadeIn("slow");
+            $("tr.failed").fadeIn("slow");
+            $("tr.skipped").fadeIn("slow");
+             event.preventDefault();
+          });
+
+          $("#passed").click(function (event) {
+            $("#filter a").fadeIn();
+            $("#passed").fadeOut();
+            $("tr.passed").fadeIn("slow");
+            $("tr.failed").fadeOut("slow");
+            $("tr.skipped").fadeOut("slow");
+             event.preventDefault();
+          });
+
+          $("#failed").click(function (event) {
+            $("#filter a").fadeIn();
+            $("#failed").fadeOut();
+            $("tr.passed").fadeOut("slow");
+            $("tr.failed").fadeIn("slow");
+            $("tr.skipped").fadeOut("slow");
+             event.preventDefault();
+          });
+
+          $("#skipped").click(function (event) {
+            $("#filter a").fadeIn();
+            $("#skipped").fadeOut();
+            $("tr.passed").fadeOut("slow");
+            $("tr.failed").fadeOut("slow");
+            $("tr.skipped").fadeIn("slow");
+             event.preventDefault();
+          });
+
+          $("#subtitle").text("Report Details");
+
+          $(".selection").change(function() {
+            window.location = this.value;
+          });
+
+        });
+      });
+    }
+
     // Index of all databases
     // Database view
     this.get('#/general', general_topFailures);
@@ -858,6 +1037,9 @@
     this.get('#/update/detail', update_detail);
     this.get('#/update/reports', update_reports);
     this.get('#/update/report/:id', update_report);
+    this.get('#/l10n', l10n_reports);
+    this.get('#/l10n/reports', l10n_reports);
+    this.get('#/l10n/report/:id', l10n_report);
   });
 
   $(function() {
