@@ -964,7 +964,12 @@
               }
             } else {
               for (var j = 0; j < result.fails.length; j++) {
-                failures.push(result.fails[j].comment);
+                if ("exception" in result.fails[j])
+                  failures.push(result.fails[j].exception.message);
+                else if ("assertion" in result.fails[j])
+                  failures.push(result.fails[j].assertion.message);
+                else
+                  failures.push("unknown failure");
               }
             }
           } catch (ex) { }
