@@ -37,12 +37,12 @@
         </tr><tr>
           {{#build_pre}}
           <th>Build (pre):</th>
-          <td>{{user_agent}} ({{locale}}, <a href="{{sourcestamp}}">{{buildid}}</a>)</td>
+          <td>{{user_agent}} ({{locale}}, <a href="{{sourcestamp}}">{{buildid}}</a>) - Snippet: <a href="{{url_aus}}">AUS</a></td>
           {{/build_pre}}
         </tr><tr>
           {{#build_post}}
           <th>Build (post):</th>
-          <td>{{user_agent}} ({{locale}}, <a href="{{sourcestamp}}">{{buildid}}</a>)</td>
+          <td>{{user_agent}} ({{locale}}, <a href="{{sourcestamp}}">{{buildid}}</a>) - Snippet: <a href="{{url_aus}}">AUS</a></td>
           {{/build_post}}
         </tr><tr>
           {{#patch}}
@@ -71,7 +71,7 @@
         </tr><tr>
           {{#patch}}
           <th>Download:</td>
-          <td><a href="{{url}}">{{url}}</a> ({{size}} Byte, {{download_duration}} ms)</td>
+          <td><a href="{{url_mirror}}">{{url_mirror}}</a> ({{size}} Byte, {{download_duration}} ms)</td>
           {{/patch}}
         </tr><tr>
           {{#build_post}}
