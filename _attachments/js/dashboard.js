@@ -317,9 +317,7 @@
           var types = {
             'firefox-general' : 'firefox',
             'mozmill-test' : 'firefox',
-            'mozmill-restart-test' : 'firefox',
-            'firefox-update' : 'softwareUpdate',
-            'firefox-addons' : 'addons'
+            'mozmill-restart-test' : 'firefox'
           };
 
           var type = types[resp.report_type];
@@ -755,15 +753,16 @@
           var result = resp.results[i];
 
           var types = {
-            'firefox-general' : 'firefox',
-            'mozmill-test' : 'firefox',
-            'mozmill-restart-test' : 'firefox',
-            'firefox-update' : 'softwareUpdate',
-            'firefox-addons' : 'addons'
+            'firefox-update' : 'update'
           };
 
-          var type = types[resp.report_type];
-          var filename = result.filename.split(type)[1].replace(/\\/g, '/');
+          var filename = result.filename;
+          try {
+            var type = types[resp.report_type];
+            filename = filename.split(type)[1].replace(/\\/g, '/');
+          }
+          catch (ex) {
+          }
 
           var status = "passed";
           if (result.skipped) {
