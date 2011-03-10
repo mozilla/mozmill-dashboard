@@ -20,9 +20,12 @@ var generalReportsMap = function(doc) {
   };
 
   const REPORT_TYPES = [
-    'firefox-general',
+    'firefox-functional',
     'mozmill',
-    'mozmill-restart'
+    'mozmill-restart',
+
+    // For compatibility with older reports
+    'firefox-general'
   ];
 
   if (doc.time_start &&
@@ -57,9 +60,12 @@ var generalReportsMap = function(doc) {
 
 var generalFailuresMap = function(doc) {
   const REPORT_TYPES = [
-    'firefox-general',
+    'firefox-functional',
     'mozmill',
-    'mozmill-restart'
+    'mozmill-restart',
+
+    // For compatibility with older reports
+    'firefox-general'
   ];
 
   if (doc.time_start &&

@@ -316,8 +316,9 @@
 
           var types = {
             'firefox-general' : 'firefox',
-            'mozmill-test' : 'firefox',
-            'mozmill-restart-test' : 'firefox'
+            'firefox-functional' : 'functional',
+            'mozmill-test' : 'functional',
+            'mozmill-restart-test' : 'functional'
           };
 
           var type = types[resp.report_type];
