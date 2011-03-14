@@ -21,11 +21,27 @@
       var branch = this.params.branch ? this.params.branch : 'All';
       var platform = this.params.platform ? this.params.platform : 'All';
 
+      var fromDate;
+      if (this.params.from) {
+        fromDate = new Date(this.params.from);
+      }
+      else {
+        fromDate = new Date();
+        fromDate.setDate(fromDate.getDate() - 3);
+      }
+
+      var toDate;
+      if (this.params.to) {
+        toDate = new Date(this.params.to);
+      }
+      else {
+        toDate = new Date();
+      }
+
       var query = {
-        startkey: JSON.stringify([branch, platform, {}]),
-        endkey: JSON.stringify([branch, platform]),
-        descending: "true",
-        limit: 300
+        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        descending: "true"
       };
 
       var context = this;
@@ -36,7 +52,7 @@
         resp.rows.forEach(function (report) {
           var value = report.value;
           value.report_link = "#/general/report/" + report.id;
-          value.time = new Date(value.time).format("yyyy/mm/dd HH:MM:ss");
+          value.time = new Date(value.time).toISOString();
           context.reports.push(value);
         })
 
@@ -50,7 +66,9 @@
           })
 
           $('#branch-selection span').click(function () {
-            window.location = '/#/general/reports?branch=' + this.textContent + '&platform=' + platform;
+            window.location = '/#/general/reports?branch=' + this.textContent +
+                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
           })
 
           $('#os-selection span').each(function (i, elem) {
@@ -60,15 +78,31 @@
           })
 
           $('#os-selection span').click(function () {
-            window.location = '/#/general/reports?branch=' + branch + '&platform=' + this.textContent
+            window.location = '/#/general/reports?branch=' + branch +
+                              '&platform=' + this.textContent +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val()
           })
+
+          $(".datepicker").datepicker();
+          $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+
+          $('#start-date').datepicker().val(fromDate.format()).trigger('change');
+          $('#end-date').datepicker().val(toDate.format()).trigger('change');
+
+          $(".datepicker").change(function() {
+            window.location = '/#/general/reports?branch=' + branch + "&platform=" + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $("#subtitle").text("General Reports");
 
           $("#results").tablesorter({
             // sort on the first column and third column, order asc
             sortList: [[0,1]]
           });
 
-          $("#subtitle").text("General Reports");
         });
       });
 
@@ -86,23 +120,25 @@
       var test_func = this.params.func ? this.params.func : {};
 
       var fromDate;
-      if (this.params.from)
+      if (this.params.from) {
         fromDate = new Date(this.params.from);
+      }
       else {
         fromDate = new Date();
         fromDate.setDate(fromDate.getDate() - 7);
       }
 
       var toDate;
-      if (this.params.to)
+      if (this.params.to) {
         toDate = new Date(this.params.to);
+      }
       else {
         toDate = new Date();
       }
 
       var query = {
-        startkey : JSON.stringify([branch, platform, test, toDate.format("yyyy-mm-dd") + "T23:59:59"]),
-        endkey : JSON.stringify([branch, platform, test, fromDate.format("yyyy-mm-dd") + "T00:00:00"]),
+        startkey : JSON.stringify([branch, platform, test, toDate.format() + "T23:59:59"]),
+        endkey : JSON.stringify([branch, platform, test, fromDate.format() + "T00:00:00"]),
         descending : true
       };
 
@@ -116,7 +152,7 @@
           var value = row.value;
 
           if (test_func == {} || value.test_function == test_func) {
-            value.time = new Date(row.key[3]).format("yyyy/mm/dd HH:MM:ss");
+            value.time = new Date(row.key[3]).toISOString();
             value.report_link = "#/general/report/" + row.id;
 
             context.reports.push(value);
@@ -125,8 +161,6 @@
 
         var template = '/templates/general_failure.mustache';
         context.render(template).replace('#content').then(function () {
-          var limit = 0;
-          var skip = 0;
 
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
@@ -135,8 +169,8 @@
           })
           $('#branch-selection span').click(function () {
             window.location = '/#/general/failure?branch=' + this.textContent +
-                              '&platform=' + platform + '&from=' + fromDate.format("yyyy-mm-dd") +
-                              '&to=' + toDate.format("yyyy-mm-dd") + "&test=" +
+                              '&platform=' + platform + '&from=' + fromDate.format() +
+                              '&to=' + toDate.format() + "&test=" +
                               encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
           })
 
@@ -147,8 +181,21 @@
           })
           $('#os-selection span').click(function () {
             window.location = '/#/general/failure?branch=' + branch +
-                              '&platform=' + this.textContent + '&from=' + fromDate.format("yyyy-mm-dd") +
-                              '&to=' + toDate.format("yyyy-mm-dd") + "&test=" +
+                              '&platform=' + this.textContent + '&from=' + fromDate.format() +
+                              '&to=' + toDate.format() + "&test=" +
+                              encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
+          })
+
+          $(".datepicker").datepicker();
+          $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+
+          $('#start-date').datepicker().val(fromDate.format()).trigger('change');
+          $('#end-date').datepicker().val(toDate.format()).trigger('change');
+
+          $(".datepicker").change(function() {
+            window.location = '/#/general/failure?branch=' + branch + "&platform=" + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val() + "&test=" +
                               encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
           })
 
@@ -190,8 +237,8 @@
       }
 
       var query = {
-        startkey : JSON.stringify([branch, platform, 'All', toDate.format("yyyy-mm-dd", true) + "T23:59:59"]),
-        endkey : JSON.stringify([branch, platform, 'All', fromDate.format("yyyy-mm-dd", true) + "T00:00:00"]),
+        startkey : JSON.stringify([branch, platform, 'All', toDate.format() + "T23:59:59"]),
+        endkey : JSON.stringify([branch, platform, 'All', fromDate.format()]),
         descending : true
       };
 
@@ -221,8 +268,8 @@
             application_branch : entries[2],
             system_name : entries[3],
             failure_link : '/#/general/failure?branch=' + entries[2] + "&platform=" +
-                           entries[3] + '&from=' + fromDate.format("yyyy-mm-dd", true) +
-                          '&to=' + toDate.format("yyyy-mm-dd", true) + "&test=" +
+                           entries[3] + '&from=' + fromDate.format() +
+                          '&to=' + toDate.format() + "&test=" +
                           encodeURIComponent(entries[0]) + "&func=" +
                           encodeURIComponent(entries[1]),
             failure_count : failures[key]
@@ -231,8 +278,6 @@
 
         var template = '/templates/general_failures.mustache';
         context.render(template).replace('#content').then(function () {
-          var limit = 0;
-          var skip = 0;
 
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
@@ -259,8 +304,8 @@
           $(".datepicker").datepicker();
           $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
 
-          $('#start-date').datepicker().val(fromDate.format("yyyy-mm-dd", true)).trigger('change');
-          $('#end-date').datepicker().val(toDate.format("yyyy-mm-dd", true)).trigger('change');
+          $('#start-date').datepicker().val(fromDate.format()).trigger('change');
+          $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
             window.location = '/#/general/top?branch=' + branch + "&platform=" + platform +
@@ -401,10 +446,8 @@
           $(".selection").change(function() {
             window.location = this.value;
           });
-
         });
       });
-
     }
 
     var update_overview = function () {
@@ -431,8 +474,8 @@
       }
 
       var query = {
-        startkey : JSON.stringify([branch, channel, 'All', 'All', toDate.format("yyyy-mm-dd", true) + "T23:59:59"]),
-        endkey : JSON.stringify([branch, channel, 'All', 'All', fromDate.format("yyyy-mm-dd", true) + "T00:00:00"]),
+        startkey : JSON.stringify([branch, channel, 'All', 'All', toDate.format() + "T23:59:59"]),
+        endkey : JSON.stringify([branch, channel, 'All', 'All', fromDate.format() + "T00:00:00"]),
         descending : true
       };
 
@@ -469,16 +512,14 @@
             testrun_count : updates[key].testruns,
             failure_count : updates[key].failures,
             detail_url : '/#/update/detail?branch=' + branch + "&channel=" +
-                         entries[2] + '&from=' + fromDate.format("yyyy-mm-dd", true) +
-                         '&to=' + toDate.format("yyyy-mm-dd", true) + "&target=" +
+                         entries[2] + '&from=' + fromDate.format() +
+                         '&to=' + toDate.format() + "&target=" +
                          encodeURIComponent(entries[0])
           });
         };
 
         var template = '/templates/update_overview.mustache';
         context.render(template).replace('#content').then(function () {
-          var limit = 0;
-          var skip = 0;
 
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
@@ -505,8 +546,8 @@
           $(".datepicker").datepicker();
           $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
 
-          $('#start-date').datepicker().val(fromDate.format("yyyy-mm-dd", true)).trigger('change');
-          $('#end-date').datepicker().val(toDate.format("yyyy-mm-dd", true)).trigger('change');
+          $('#start-date').datepicker().val(fromDate.format()).trigger('change');
+          $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
             window.location = '/#/update/overview?branch=' + branch + "&channel=" + channel +
@@ -552,8 +593,8 @@
       }
 
       var query = {
-        startkey : JSON.stringify([branch, channel, 'All', target, toDate.format("yyyy-mm-dd", true) + "T23:59:59"]),
-        endkey : JSON.stringify([branch, channel, 'All', target, fromDate.format("yyyy-mm-dd", true) + "T00:00:00"]),
+        startkey : JSON.stringify([branch, channel, 'All', target, toDate.format() + "T23:59:59"]),
+        endkey : JSON.stringify([branch, channel, 'All', target, fromDate.format() + "T00:00:00"]),
         descending : true,
         include_docs: true
       };
@@ -619,8 +660,6 @@
 
         var template = '/templates/update_detail.mustache';
         context.render(template).replace('#content').then(function () {
-          var limit = 0;
-          var skip = 0;
 
           $('#channel-selection span').each(function (i, elem) {
             if (elem.textContent == channel) {
@@ -636,8 +675,8 @@
           $(".datepicker").datepicker();
           $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
 
-          $('#start-date').datepicker().val(fromDate.format("yyyy-mm-dd", true)).trigger('change');
-          $('#end-date').datepicker().val(toDate.format("yyyy-mm-dd", true)).trigger('change');
+          $('#start-date').datepicker().val(fromDate.format()).trigger('change');
+          $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
             window.location = '/#/update/detail?branch=' + branch + "&channel=" + channel +
@@ -662,11 +701,27 @@
       var branch = this.params.branch ? this.params.branch : 'All';
       var platform = this.params.platform ? this.params.platform : 'All';
 
+      var fromDate;
+      if (this.params.from) {
+        fromDate = new Date(this.params.from);
+      }
+      else {
+        fromDate = new Date();
+        fromDate.setDate(fromDate.getDate() - 3);
+      }
+
+      var toDate;
+      if (this.params.to) {
+        toDate = new Date(this.params.to);
+      }
+      else {
+        toDate = new Date();
+      }
+
       var query = {
-        startkey: JSON.stringify([branch, platform, {}]),
-        endkey: JSON.stringify([branch, platform]),
-        descending: "true",
-        limit: 100
+        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        descending: "true"
       };
 
       var context = this;
@@ -677,7 +732,7 @@
         resp.rows.forEach(function (report) {
           var value = report.value;
           value.report_link = "#/update/report/" + report.id;
-          value.time = new Date(value.time).format("yyyy/mm/dd HH:MM:ss", true);
+          value.time = new Date(value.time).toISOString();
           context.reports.push(value);
         })
 
@@ -691,7 +746,9 @@
           })
 
           $('#branch-selection span').click(function () {
-            window.location = '/#/update/reports?branch=' + this.textContent + '&platform=' + platform;
+            window.location = '/#/update/reports?branch=' + this.textContent +
+                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
           })
 
           $('#os-selection span').each(function (i, elem) {
@@ -701,15 +758,29 @@
           })
 
           $('#os-selection span').click(function () {
-            window.location = '/#/update/reports?branch=' + branch + '&platform=' + this.textContent
+            window.location = '/#/update/reports?branch=' + branch + '&platform=' +
+                              this.textContent + '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
           })
+
+          $(".datepicker").datepicker();
+          $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+
+          $('#start-date').datepicker().val(fromDate.format()).trigger('change');
+          $('#end-date').datepicker().val(toDate.format()).trigger('change');
+
+          $(".datepicker").change(function() {
+            window.location = '/#/update/reports?branch=' + branch + "&platform=" + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $("#subtitle").text("Update Reports");
 
           $("#results").tablesorter({
             // sort on the first column and third column, order asc
             sortList: [[0,1]]
           });
-
-          $("#subtitle").text("Update Reports");
         });
       });
 
@@ -850,11 +921,28 @@
       var branch = this.params.branch ? this.params.branch : 'All';
       var platform = this.params.platform ? this.params.platform : 'All';
 
+      var fromDate;
+      if (this.params.from) {
+        fromDate = new Date(this.params.from);
+      }
+      else {
+        fromDate = new Date();
+        fromDate.setDate(fromDate.getDate() - 3);
+      }
+
+      var toDate;
+      if (this.params.to) {
+        toDate = new Date(this.params.to);
+        toDate.setHours(toDate.getHours() + tzOffset);
+      }
+      else {
+        toDate = new Date();
+      }
+
       var query = {
-        startkey: JSON.stringify([branch, platform, {}]),
-        endkey: JSON.stringify([branch, platform]),
-        descending: "true",
-        limit: 300
+        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        descending: "true"
       };
 
       var context = this;
@@ -865,7 +953,7 @@
         resp.rows.forEach(function (report) {
           var value = report.value;
           value.report_link = "#/l10n/report/" + report.id;
-          value.time = new Date(value.time).format("yyyy/mm/dd HH:MM:ss");
+          value.time = new Date(value.time).toISOString();
           context.reports.push(value);
         })
 
@@ -879,7 +967,9 @@
           })
 
           $('#branch-selection span').click(function () {
-            window.location = '/#/l10n/reports?branch=' + this.textContent + '&platform=' + platform;
+            window.location = '/#/l10n/reports?branch=' + this.textContent +
+                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
           })
 
           $('#os-selection span').each(function (i, elem) {
@@ -889,15 +979,29 @@
           })
 
           $('#os-selection span').click(function () {
-            window.location = '/#/l10n/reports?branch=' + branch + '&platform=' + this.textContent
+            window.location = '/#/l10n/reports?branch=' + branch + '&platform=' +
+                              this.textContent + '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
           })
+
+          $(".datepicker").datepicker();
+          $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+
+          $('#start-date').datepicker().val(fromDate.format()).trigger('change');
+          $('#end-date').datepicker().val(toDate.format()).trigger('change');
+
+          $(".datepicker").change(function() {
+            window.location = '/#/l10n/reports?branch=' + branch + "&platform=" + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $("#subtitle").text("General Reports");
 
           $("#results").tablesorter({
             // sort on the first column and third column, order asc
             sortList: [[0,1]]
           });
-
-          $("#subtitle").text("General Reports");
         });
       });
 
