@@ -78,7 +78,14 @@ var generalFailuresMap = function(doc) {
     var application_branch = doc.application_version.match(/(\d\.\d)\.*/)[1];
 
     doc.results.forEach(function(result) {
-      var path = result.filename.match('.*(firefox.*)')[1];
+      var path = null;
+
+      try {
+        path = result.filename.match('.*functional(.*)')[1];
+      }
+      catch (ex) {
+        path = result.filename.match('.*firefox(.*)')[1];
+      }
       path = path.replace(/\\/g, "/");
 
       if (result.failed > 0) {
