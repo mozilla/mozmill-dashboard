@@ -1,0 +1,70 @@
+    <fieldset id="filter">
+      <legend>Filter</legend>
+      <div id="branch-selection">
+        <span>Branch:</span>
+        <span>All</span>
+        <span>4.0</span>
+        <span>3.6</span>
+        <span>3.5</span>
+      </div>
+
+      <div id="os-selection">
+        <span>OS: </span>
+        <span>All</span>
+        <span>Linux</span>
+        <span>Mac</span>
+        <span>Windows NT</span>
+      </div>
+
+      <div id="date">
+        <span>From: </span>
+        <input id="start-date" class="datepicker" type="text" value="" size="11" />
+        <span>To: </span>
+        <input id="end-date" class="datepicker" type="text" value="" size="11" />
+      </div>
+    </fieldset>
+
+    <h2>Reports</h2>
+
+    <table id="results">
+      <thead>
+        <tr>
+          <th rowspan="2">Date</th>
+          <th rowspan="2">Version</th>
+          <th rowspan="2">Build</th>
+          <th rowspan="2">Locale</th>
+          <th rowspan="2">Platform</th>
+          <th rowspan="2">Version</th>
+          <th rowspan="2">CPU</th>
+          <th rowspan="2">Delay</th>
+          <th rowspan="2"># Iterations</th>
+          <th colspan="2">Allocated Memory</th>
+          <th rowspan="2"># Pass</th>
+          <th rowspan="2"># Skip</th>
+          <th rowspan="2"># Fail</th>
+        </tr><tr>
+          <th>min</th>
+          <th>max</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{#reports}}
+        <tr>
+          <td><a href="{{report_link}}">{{time}}</a></td>
+          <td>{{application_version}}</td>
+          <td>{{build_id}}</td>
+          <td>{{locale}}</td>
+          <td>{{system_name}}</td>
+          <td>{{system_version}}</td>
+          <td>{{processor}}</td>
+          <td>{{delay}}s</td>
+          <td>{{iterations}}</td>
+          <td>{{min_allocated_memory}}&nbsp;MB</td>
+          <td>{{max_allocated_memory}}&nbsp;MB</td>
+          <td class="results">{{tests_passed}}</td>
+          <td class="results">{{tests_skipped}}</td>
+          <td class="results">{{tests_failed}}</td>
+        </tr>
+      {{/reports}}
+      </tbody>
+    </table>

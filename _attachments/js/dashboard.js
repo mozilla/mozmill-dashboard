@@ -1,3 +1,5 @@
+var BYTE_TO_MEGABYTE = 1/1048576;
+
 (function($) {
 
   var request = function (options, callback) {
@@ -1134,6 +1136,214 @@
       });
     }
 
+    var endurance_reports = function() {
+      var branch = this.params.branch ? this.params.branch : 'All';
+      var platform = this.params.platform ? this.params.platform : 'All';
+
+      var fromDate;
+      if (this.params.from) {
+        fromDate = new Date(this.params.from);
+      }
+      else {
+        fromDate = new Date();
+        fromDate.setDate(fromDate.getDate() - 3);
+      }
+
+      var toDate;
+      if (this.params.to) {
+        toDate = new Date(this.params.to);
+      }
+      else {
+        toDate = new Date();
+      }
+
+      var query = {
+        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        descending: "true"
+      };
+
+      var context = this;
+      request({url: '/_view/endurance_reports?' + $.param(query)}, function (err, resp) {
+        if (err) window.alert(err);
+
+        context.reports = [ ];
+        resp.rows.forEach(function (report) {
+          var value = report.value;
+          value.report_link = "#/endurance/report/" + report.id;
+          value.time = new Date(value.time).toISOString();
+          value.delay = value.delay * 1/1000;
+          value.min_allocated_memory = Math.round(value.allocated_memory.min() * BYTE_TO_MEGABYTE);
+          value.max_allocated_memory = Math.round(value.allocated_memory.max() * BYTE_TO_MEGABYTE);
+          context.reports.push(value);
+        })
+
+        var template = '/templates/endurance_reports.mustache';
+        context.render(template).replace('#content').then(function () {
+
+          $('#branch-selection span').each(function (i, elem) {
+            if (elem.textContent == branch) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#branch-selection span').click(function () {
+            window.location = '/#/endurance/reports?branch=' + this.textContent +
+                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $('#os-selection span').each(function (i, elem) {
+            if (elem.textContent == platform) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#os-selection span').click(function () {
+            window.location = '/#/endurance/reports?branch=' + branch +
+                              '&platform=' + this.textContent +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val()
+          })
+
+          $(".datepicker").datepicker();
+          $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+
+          $('#start-date').datepicker().val(fromDate.format()).trigger('change');
+          $('#end-date').datepicker().val(toDate.format()).trigger('change');
+
+          $(".datepicker").change(function() {
+            window.location = '/#/endurance/reports?branch=' + branch + "&platform=" + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $("#results").tablesorter({
+            // sort on the first column and third column, order asc
+            sortList: [[0,1]]
+          });
+
+          $("#subtitle").text("Endurance Reports");
+        });
+      });
+
+      $(".selection").change(function() {
+        window.location = this.value;
+      });
+    }
+
+    var endurance_report = function() {
+      var context = this;
+
+      var id = this.params.id ? this.params.id : 'null';
+      var template = '/templates/endurance_report.mustache';
+
+      request({url: '/db/' + id}, function (err, resp) {
+        if (err) window.alert(err);
+
+        context.id = resp._id;
+        context.app_name = resp.application_name;
+        context.app_version = resp.application_version;
+        context.platform_version = resp.platform_version;
+        context.platform_buildId = resp.platform_buildid;
+        context.app_locale = resp.application_locale;
+        context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
+        context.system = resp.system_info.system,
+        context.system_version = resp.system_info.version,
+        context.service_pack = resp.system_info.service_pack,
+        context.cpu = resp.system_info.processor,
+        context.time_start = resp.time_start;
+        context.time_end = resp.time_end;
+        context.passed = resp.tests_passed;
+        context.failed = resp.tests_failed;
+        context.skipped = resp.tests_skipped;
+        context.tests = [];
+        context.checkpoints = [];
+
+        var tests = resp.endurance.results;
+        var testCount = tests.length;
+        var allocatedMemoryResults = [];
+        var mappedMemoryResults = [];
+        var testAverageAllocatedMemoryResults = [];
+        var testAverageMappedMemoryResults = [];
+
+        for (var i=0; i < testCount; i++) {
+            var testAllocatedMemoryResults = [];
+            var testMappedMemoryResults = [];
+            var testIterationCount = tests[i].iterations.length;
+            var testCheckpointCount = tests[i].iterations[0].checkpoints.length;
+
+            var types = {
+              'firefox-endurance' : 'endurance'
+            };
+
+            for (var j=0; j < testIterationCount; j++) {
+              for (var k=0; k < testCheckpointCount; k++) {
+
+                var filename = tests[i].testFile;
+                try {
+                  var type = types[resp.report_type];
+                  filename = filename.split(type)[1].replace(/\\/g, '/');
+                }
+                catch (ex) {
+                }
+
+                context.checkpoints.push({
+                  testFile : filename,
+                  testMethod : tests[i].testMethod,
+                  label : tests[i].iterations[j].checkpoints[k].label,
+                  allocatedMemory : Math.round(tests[i].iterations[j].checkpoints[k].allocated * BYTE_TO_MEGABYTE),
+                  mappedMemory : Math.round(tests[i].iterations[j].checkpoints[k].mapped * BYTE_TO_MEGABYTE)
+                });
+
+                testAllocatedMemoryResults.push(Math.round(tests[i].iterations[j].checkpoints[k].allocated * BYTE_TO_MEGABYTE));
+                testMappedMemoryResults.push(Math.round(tests[i].iterations[j].checkpoints[k].mapped * BYTE_TO_MEGABYTE));
+              }
+            }
+
+            allocatedMemoryResults = allocatedMemoryResults.concat(testAllocatedMemoryResults);
+            mappedMemoryResults = mappedMemoryResults.concat(testMappedMemoryResults);
+            testAverageAllocatedMemoryResults.push(testAllocatedMemoryResults.average());
+            testAverageMappedMemoryResults.push(testMappedMemoryResults.average());
+
+            context.tests.push({
+              testFile : tests[i].testFile.split(type)[1].replace(/\\/g, '/'),
+              testMethod : tests[i].testMethod,
+              checkpointCount : testCheckpointCount,
+              minAllocatedMemory : testAllocatedMemoryResults.min(),
+              maxAllocatedMemory : testAllocatedMemoryResults.max(),
+              averageAllocatedMemory : Math.round(testAllocatedMemoryResults.average()),
+              minMappedMemory : testMappedMemoryResults.min(),
+              maxMappedMemory : testMappedMemoryResults.max(),
+              averageMappedMemory : Math.round(testMappedMemoryResults.average())
+            });
+        }
+
+        context.delay = resp.endurance.delay * 1/1000;
+        context.iterations = resp.endurance.iterations;
+        context.testCount = testCount;
+        context.checkpointCount = context.checkpoints.length;
+        context.checkpointsPerTest = Math.round(context.checkpoints.length / testCount);
+        context.allocatedMemoryResults = allocatedMemoryResults;
+        context.minAllocatedMemory = allocatedMemoryResults.min();
+        context.maxAllocatedMemory = allocatedMemoryResults.max();
+        context.averageAllocatedMemory = Math.round(allocatedMemoryResults.average());
+        context.testAverageAllocatedMemoryResults = testAverageAllocatedMemoryResults;
+        context.mappedMemoryResults = mappedMemoryResults;
+        context.minMappedMemory = mappedMemoryResults.min();
+        context.maxMappedMemory = mappedMemoryResults.max();
+        context.averageMappedMemory = Math.round(mappedMemoryResults.average());
+        context.testAverageMappedMemoryResults = testAverageMappedMemoryResults;
+
+        context.render(template).replace('#content').then(function () {
+
+          $("#results").tablesorter();
+ 
+        });
+     });
+
+    }
+
     // Index of all databases
     // Database view
     this.get('#/general', general_topFailures);
@@ -1149,6 +1359,9 @@
     this.get('#/l10n', l10n_reports);
     this.get('#/l10n/reports', l10n_reports);
     this.get('#/l10n/report/:id', l10n_report);
+    this.get('#/endurance', endurance_reports);
+    this.get('#/endurance/reports', endurance_reports);
+    this.get('#/endurance/report/:id', endurance_report);
   });
 
   $(function() {
