@@ -1,14 +1,14 @@
-Array.prototype.max = function max() {
-  return Math.max.apply(Math, this);
+function max(array) {
+  return Math.max.apply(Math, array);
 };
 
-Array.prototype.min = function min() {
-  return Math.min.apply(Math, this);
+function min(array) {
+  return Math.min.apply(Math, array);
 };
 
-Array.prototype.average = function average() {
-  var length = this.length;
+function average(array) {
+  var length = array.length;
   for (var i = 0, sum = 0; i < length;
-    sum+=Number(this[i++]));
-  return sum/length;
+    sum += Number(array[i++]));
+  return sum / length;
 }

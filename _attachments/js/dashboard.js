@@ -1173,8 +1173,8 @@ var BYTE_TO_MEGABYTE = 1/1048576;
           value.report_link = "#/endurance/report/" + report.id;
           value.time = new Date(value.time).toISOString();
           value.delay = value.delay * 1/1000;
-          value.min_allocated_memory = Math.round(value.allocated_memory.min() * BYTE_TO_MEGABYTE);
-          value.max_allocated_memory = Math.round(value.allocated_memory.max() * BYTE_TO_MEGABYTE);
+          value.min_allocated_memory = Math.round(min(value.allocated_memory) * BYTE_TO_MEGABYTE);
+          value.max_allocated_memory = Math.round(max(value.allocated_memory) * BYTE_TO_MEGABYTE);
           context.reports.push(value);
         })
 
@@ -1303,19 +1303,19 @@ var BYTE_TO_MEGABYTE = 1/1048576;
 
             allocatedMemoryResults = allocatedMemoryResults.concat(testAllocatedMemoryResults);
             mappedMemoryResults = mappedMemoryResults.concat(testMappedMemoryResults);
-            testAverageAllocatedMemoryResults.push(testAllocatedMemoryResults.average());
-            testAverageMappedMemoryResults.push(testMappedMemoryResults.average());
+            testAverageAllocatedMemoryResults.push(average(testAllocatedMemoryResults));
+            testAverageMappedMemoryResults.push(average(testMappedMemoryResults));
 
             context.tests.push({
               testFile : tests[i].testFile.split(type)[1].replace(/\\/g, '/'),
               testMethod : tests[i].testMethod,
               checkpointCount : testCheckpointCount,
-              minAllocatedMemory : testAllocatedMemoryResults.min(),
-              maxAllocatedMemory : testAllocatedMemoryResults.max(),
-              averageAllocatedMemory : Math.round(testAllocatedMemoryResults.average()),
-              minMappedMemory : testMappedMemoryResults.min(),
-              maxMappedMemory : testMappedMemoryResults.max(),
-              averageMappedMemory : Math.round(testMappedMemoryResults.average())
+              minAllocatedMemory : min(testAllocatedMemoryResults),
+              maxAllocatedMemory : max(testAllocatedMemoryResults),
+              averageAllocatedMemory : Math.round(average(testAllocatedMemoryResults)),
+              minMappedMemory : min(testMappedMemoryResults),
+              maxMappedMemory : max(testMappedMemoryResults),
+              averageMappedMemory : Math.round(average(testMappedMemoryResults))
             });
         }
 
@@ -1325,14 +1325,14 @@ var BYTE_TO_MEGABYTE = 1/1048576;
         context.checkpointCount = context.checkpoints.length;
         context.checkpointsPerTest = Math.round(context.checkpoints.length / testCount);
         context.allocatedMemoryResults = allocatedMemoryResults;
-        context.minAllocatedMemory = allocatedMemoryResults.min();
-        context.maxAllocatedMemory = allocatedMemoryResults.max();
-        context.averageAllocatedMemory = Math.round(allocatedMemoryResults.average());
+        context.minAllocatedMemory = min(allocatedMemoryResults);
+        context.maxAllocatedMemory = max(allocatedMemoryResults);
+        context.averageAllocatedMemory = Math.round(average(allocatedMemoryResults));
         context.testAverageAllocatedMemoryResults = testAverageAllocatedMemoryResults;
         context.mappedMemoryResults = mappedMemoryResults;
-        context.minMappedMemory = mappedMemoryResults.min();
-        context.maxMappedMemory = mappedMemoryResults.max();
-        context.averageMappedMemory = Math.round(mappedMemoryResults.average());
+        context.minMappedMemory = min(mappedMemoryResults);
+        context.maxMappedMemory = max(mappedMemoryResults);
+        context.averageMappedMemory = Math.round(average(mappedMemoryResults));
         context.testAverageMappedMemoryResults = testAverageMappedMemoryResults;
 
         context.render(template).replace('#content').then(function () {
