@@ -13,6 +13,7 @@ ddoc = {
 
 var generalReportsMap = function(doc) {
   const APP_TO_PLATFORM_BRANCH = {
+    '4.2' : 'mozilla2.2',
     '4.0' : 'mozilla2.0',
     '3.7' : 'mozilla1.9.3',
     '3.6' : 'mozilla1.9.2',
@@ -121,6 +122,7 @@ var generalFailuresMap = function(doc) {
 
 var updateReportsMap = function(doc) {
   const APP_TO_PLATFORM_BRANCH = {
+    '4.2' : 'mozilla2.2',
     '4.0' : 'mozilla2.0',
     '3.7' : 'mozilla1.9.3',
     '3.6' : 'mozilla1.9.2',
@@ -222,6 +224,7 @@ var updateDefaultMap = function(doc) {
 
 var l10nReportsMap = function (doc) {
   const APP_TO_PLATFORM_BRANCH = {
+    '4.2' : 'mozilla2.2',
     '4.0' : 'mozilla2.0',
     '3.7' : 'mozilla1.9.3',
     '3.6' : 'mozilla1.9.2',
@@ -264,6 +267,7 @@ var l10nReportsMap = function (doc) {
 
 var enduranceReportsMap = function(doc) {
   const APP_TO_PLATFORM_BRANCH = {
+    '4.2' : 'mozilla2.2',
     '4.0' : 'mozilla2.0',
     '3.7' : 'mozilla1.9.3',
     '3.6' : 'mozilla1.9.2',
