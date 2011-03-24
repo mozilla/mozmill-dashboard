@@ -37,9 +37,9 @@
           <th rowspan="2">Platform</th>
           <th rowspan="2">Version</th>
           <th rowspan="2">CPU</th>
-          <th rowspan="2">Delay</th>
+          <th rowspan="2">Delay (s)</th>
           <th rowspan="2"># Iterations</th>
-          <th colspan="2">Allocated Memory</th>
+          <th colspan="2">Memory (MB)</th>
           <th rowspan="2"># Pass</th>
           <th rowspan="2"># Skip</th>
           <th rowspan="2"># Fail</th>
@@ -58,10 +58,10 @@
           <td>{{system_name}}</td>
           <td>{{system_version}}</td>
           <td>{{processor}}</td>
-          <td>{{delay}}s</td>
-          <td>{{iterations}}</td>
-          <td>{{min_allocated_memory}}&nbsp;MB</td>
-          <td>{{max_allocated_memory}}&nbsp;MB</td>
+          <td class="results">{{delay}}</td>
+          <td class="results">{{iterations}}</td>
+          <td class="results">{{min_allocated_memory}}</td>
+          <td class="results">{{max_allocated_memory}}</td>
           <td class="results">{{tests_passed}}</td>
           <td class="results">{{tests_skipped}}</td>
           <td class="results">{{tests_failed}}</td>
