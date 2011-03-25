@@ -200,6 +200,7 @@ table {
 table th {
   padding: 5px 10px 5px 20px;
   background-color: #eee;
+  vertical-align: top;
 }
 
 table td {
@@ -306,6 +307,21 @@ span.pagination {
 .chart {
   margin-bottom: 20px;
   margin-right: 20px;
-  width:450px;
-  height:300px;
+  width: 450px;
+  height: 300px;
+}
+
+ul.addons {
+  list-style:none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.addons ul {
+  margin: 0;
+  padding: 0;
+}
+
+ul.addons ul li {
+  margin-left: 2em;
 }
