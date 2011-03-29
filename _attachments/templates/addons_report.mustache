@@ -1,0 +1,71 @@
+    <h2>Information</h2>
+    <table id="information" class="clean">
+      <tr>
+       <th>Result ID:</th>
+       <td><a href="{{path}}">{{id}}</a></td>
+      </tr><tr>
+       <th>Application:</th>
+       <td>{{app_name}} {{app_version}} ({{platform_version}}, {{app_locale}}, {{platform_buildId}})</td>
+      </tr><tr>
+        <th>Sourcestamp:</th>
+        <td><a href="{{app_sourcestamp}}">{{app_sourcestamp}}</a></td>
+      </tr><tr>
+        <th>Platform:</th>
+        <td>{{system}} {{system_version}} {{service_pack}} ({{cpu}})</td>
+      </tr><tr>
+        <th>Duration:</th>
+        <td>{{time_start}} - {{time_end}}</td>
+      </tr><tr>
+        <th>Results:</th>
+        <td>Pass: <strong>{{passed}}</strong> / Fail: <strong>{{failed}}</strong> / Skip: <strong>{{skipped}}</td>
+      </tr>
+    </table>
+
+    <h2>Target Add-on</h2>
+    <table class="clean">
+      {{#target_addon}}
+      <tr>
+        <th>ID:</th>
+        <td>{{id}}</td>
+      </tr><tr>
+        <th>Name:</th>
+        <td>{{name}}</td>
+      </tr><tr>
+        <th>Version:</th>
+        <td>{{version}}</td>
+      </tr>
+      {{/target_addon}}
+    </table>
+
+    <h2>Results</h2>
+    <p id="filter">
+      Filter:
+      <a href="#" id="all">All</a>
+      <a href="#" id="passed">Passed</a>
+      <a href="#" id="failed">Failed</a>
+      <a href="#" id="skipped">Skipped</a>
+    </p>
+
+    <table id="result">
+      <thead>
+        <th>Status</th>
+        <th>Filename</th>
+        <th>Test</th>
+        <th>Information</th>
+      </thead>
+      <tbody>
+        {{#results}}
+        <tr class="{{status}}">
+          <td>{{status}}</td>
+          <td>{{filename}}</td>
+          <td>{{test}}</td>
+          <td class="information">
+            {{{information}}}
+            <div class="tooltip">{{{stack}}}<div>
+          </td>
+        </tr>
+        {{/results}}
+      </tbody>
+    </table>
+  </body>
+
