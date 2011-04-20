@@ -1267,6 +1267,7 @@ var BYTE_TO_MEGABYTE = 1/1048576;
 
         var tests = resp.endurance.results;
         var testCount = tests.length;
+        var allCheckpoints = [];
         var allocatedMemoryResults = [];
         var mappedMemoryResults = [];
         var testAverageAllocatedMemoryResults = [];
@@ -1293,7 +1294,7 @@ var BYTE_TO_MEGABYTE = 1/1048576;
                 catch (ex) {
                 }
 
-                context.checkpoints.push({
+                allCheckpoints.push({
                   testFile : filename,
                   testMethod : tests[i].testMethod,
                   label : tests[i].iterations[j].checkpoints[k].label,
@@ -1323,6 +1324,18 @@ var BYTE_TO_MEGABYTE = 1/1048576;
               averageMappedMemory : Math.round(average(testMappedMemoryResults))
             });
         }
+
+        var maximumCheckpoints = 450;
+        var divisor = Math.ceil(allCheckpoints.length / maximumCheckpoints);
+        if (allCheckpoints.length < maximumCheckpoints) {
+          context.checkpoints = allCheckpoints;
+        } else {
+          for (var i=0; i < allCheckpoints.length; i++) {
+            if (i % divisor === 0) {
+              context.checkpoints.push(allCheckpoints[i]);
+            }
+          }
+        };
 
         context.delay = resp.endurance.delay * 1/1000;
         context.iterations = resp.endurance.iterations;
