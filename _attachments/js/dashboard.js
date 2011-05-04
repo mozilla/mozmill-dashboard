@@ -1,4 +1,5 @@
 var BYTE_TO_MEGABYTE = 1/1048576;
+var MAX_CHART_CHECKPOINTS = 450;
 
 (function($) {
 
@@ -1325,13 +1326,12 @@ var BYTE_TO_MEGABYTE = 1/1048576;
             });
         }
 
-        var maximumCheckpoints = 450;
-        var divisor = Math.ceil(allCheckpoints.length / maximumCheckpoints);
-        if (allCheckpoints.length < maximumCheckpoints) {
+        if (allCheckpoints.length < MAX_CHART_CHECKPOINTS) {
           context.checkpoints = allCheckpoints;
         } else {
-          for (var i=0; i < allCheckpoints.length; i++) {
-            if (i % divisor === 0) {
+          var divisor = allCheckpoints.length / MAX_CHART_CHECKPOINTS;
+          for (var i = 0; i < allCheckpoints.length; i++) {
+            if (i % divisor < 1) {
               context.checkpoints.push(allCheckpoints[i]);
             }
           }
