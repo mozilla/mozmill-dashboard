@@ -1,4 +1,5 @@
 var BYTE_TO_MEGABYTE = 1/1048576;
+var MAX_CHART_CHECKPOINTS = 450;
 
 (function($) {
 
@@ -1267,6 +1268,7 @@ var BYTE_TO_MEGABYTE = 1/1048576;
 
         var tests = resp.endurance.results;
         var testCount = tests.length;
+        var allCheckpoints = [];
         var allocatedMemoryResults = [];
         var mappedMemoryResults = [];
         var testAverageAllocatedMemoryResults = [];
@@ -1293,7 +1295,7 @@ var BYTE_TO_MEGABYTE = 1/1048576;
                 catch (ex) {
                 }
 
-                context.checkpoints.push({
+                allCheckpoints.push({
                   testFile : filename,
                   testMethod : tests[i].testMethod,
                   label : tests[i].iterations[j].checkpoints[k].label,
@@ -1324,10 +1326,23 @@ var BYTE_TO_MEGABYTE = 1/1048576;
             });
         }
 
+        if (allCheckpoints.length <= MAX_CHART_CHECKPOINTS) {
+          context.checkpoints = allCheckpoints;
+        }
+        else {
+          //reduce the number of checkpoints to improve chart rendering performance
+          var divisor = allCheckpoints.length / MAX_CHART_CHECKPOINTS;
+          for (var i = 0; i < allCheckpoints.length; i++) {
+            if ((i % divisor) < 1) {
+              context.checkpoints.push(allCheckpoints[i]);
+            }
+          }
+        };
+
         context.delay = resp.endurance.delay * 1/1000;
         context.iterations = resp.endurance.iterations;
         context.testCount = testCount;
-        context.checkpointCount = context.checkpoints.length;
+        context.checkpointCount = allCheckpoints.length;
         context.checkpointsPerTest = Math.round(context.checkpoints.length / testCount);
         context.allocatedMemoryResults = allocatedMemoryResults;
         context.minAllocatedMemory = min(allocatedMemoryResults);
