@@ -1326,12 +1326,14 @@ var MAX_CHART_CHECKPOINTS = 450;
             });
         }
 
-        if (allCheckpoints.length < MAX_CHART_CHECKPOINTS) {
+        if (allCheckpoints.length <= MAX_CHART_CHECKPOINTS) {
           context.checkpoints = allCheckpoints;
-        } else {
+        }
+        else {
+          //reduce the number of checkpoints to improve chart rendering performance
           var divisor = allCheckpoints.length / MAX_CHART_CHECKPOINTS;
           for (var i = 0; i < allCheckpoints.length; i++) {
-            if (i % divisor < 1) {
+            if ((i % divisor) < 1) {
               context.checkpoints.push(allCheckpoints[i]);
             }
           }
