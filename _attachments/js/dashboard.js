@@ -1326,6 +1326,7 @@ var BYTE_TO_MEGABYTE = 1/1048576;
 
         context.delay = resp.endurance.delay * 1/1000;
         context.iterations = resp.endurance.iterations;
+        context.restart = resp.endurance.restart;
         context.testCount = testCount;
         context.checkpointCount = context.checkpoints.length;
         context.checkpointsPerTest = Math.round(context.checkpoints.length / testCount);
