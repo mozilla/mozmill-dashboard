@@ -407,6 +407,8 @@ var MAX_CHART_CHECKPOINTS = 450;
         }
 
         context.render(template).replace('#content').then(function () {
+          $("#result").tablesorter();
+          
           $("#all").fadeOut();
           $("#all").click(function (event) {
             $("#filter a").fadeIn();
@@ -874,6 +876,8 @@ var MAX_CHART_CHECKPOINTS = 450;
         }
 
         context.render(template).replace('#content').then(function () {
+          $("#result").tablesorter();
+          
           $("#all").fadeOut();
           $("#all").click(function (event) {
             $("#filter a").fadeIn();
@@ -1090,6 +1094,8 @@ var MAX_CHART_CHECKPOINTS = 450;
         }
 
         context.render(template).replace('#content').then(function () {
+          $("#result").tablesorter();
+          
           $("#all").fadeOut();
           $("#all").click(function (event) {
             $("#filter a").fadeIn();
@@ -1621,6 +1627,8 @@ var MAX_CHART_CHECKPOINTS = 450;
         }
 
         context.render(template).replace('#content').then(function () {
+          $("#result").tablesorter();
+          
           $("#all").fadeOut();
           $("#all").click(function (event) {
             $("#filter a").fadeIn();
