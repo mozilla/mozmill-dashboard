@@ -1,4 +1,5 @@
 var BYTE_TO_MEGABYTE = 1/1048576;
+var MAX_CHART_CHECKPOINTS = 450;
 
 (function($) {
 
@@ -1267,6 +1268,7 @@ var BYTE_TO_MEGABYTE = 1/1048576;
 
         var tests = resp.endurance.results;
         var testCount = tests.length;
+        var allCheckpoints = [];
         var allocatedMemoryResults = [];
         var mappedMemoryResults = [];
         var testAverageAllocatedMemoryResults = [];
@@ -1293,7 +1295,7 @@ var BYTE_TO_MEGABYTE = 1/1048576;
                 catch (ex) {
                 }
 
-                context.checkpoints.push({
+                allCheckpoints.push({
                   testFile : filename,
                   testMethod : tests[i].testMethod,
                   label : tests[i].iterations[j].checkpoints[k].label,
@@ -1324,11 +1326,24 @@ var BYTE_TO_MEGABYTE = 1/1048576;
             });
         }
 
+        if (allCheckpoints.length <= MAX_CHART_CHECKPOINTS) {
+          context.checkpoints = allCheckpoints;
+        }
+        else {
+          //reduce the number of checkpoints to improve chart rendering performance
+          var divisor = allCheckpoints.length / MAX_CHART_CHECKPOINTS;
+          for (var i = 0; i < allCheckpoints.length; i++) {
+            if ((i % divisor) < 1) {
+              context.checkpoints.push(allCheckpoints[i]);
+            }
+          }
+        };
+
         context.delay = resp.endurance.delay * 1/1000;
         context.iterations = resp.endurance.iterations;
         context.restart = resp.endurance.restart;
         context.testCount = testCount;
-        context.checkpointCount = context.checkpoints.length;
+        context.checkpointCount = allCheckpoints.length;
         context.checkpointsPerTest = Math.round(context.checkpoints.length / testCount);
         context.allocatedMemoryResults = allocatedMemoryResults;
         context.minAllocatedMemory = min(allocatedMemoryResults);
@@ -1341,10 +1356,99 @@ var BYTE_TO_MEGABYTE = 1/1048576;
         context.averageMappedMemory = Math.round(average(mappedMemoryResults));
         context.testAverageMappedMemoryResults = testAverageMappedMemoryResults;
 
-        context.render(template).replace('#content').then(function () {
+        context.results = [];
 
-          $("#results").tablesorter();
- 
+        for (var i = 0; i < resp.results.length; i++) {
+          var result = resp.results[i];
+
+          var types = {
+            'firefox-endurance' : 'endurance'
+          };
+
+          var type = types[resp.report_type];
+          var filename = result.filename.split(type)[1].replace(/\\/g, '/');
+
+          var status = "passed";
+          if (result.skipped) {
+            status = "skipped";
+          } else if (result.failed) {
+            status = "failed";
+          }
+
+          var information = "";
+          var stack = "";
+          try {
+            if (result.skipped) {
+              information = result.skipped_reason;
+
+              var re = /Bug ([\d]+)/g.exec(information);
+              if (re) {
+                var tmpl = '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=%s">Bug %s</a>';
+                var link = tmpl.replace(/\%s/g, re[1]);
+                information = information.replace(re[0], link);
+              }
+            } else {
+              information = result.fails[0].exception.message;
+              stack = result.fails[0].exception.stack;
+            }
+          } catch (ex) { }
+
+          context.results.push({
+            filename : filename,
+            test : result.name,
+            status : status,
+            information: information,
+            stack : stack
+          });
+        }
+
+        context.render(template).replace('#content').then(function () {
+          $("#endurance_result").tablesorter();
+          $("#result").tablesorter();
+          
+          $("#all").fadeOut();
+          $("#all").click(function (event) {
+            $("#filter a").fadeIn();
+            $("#all").fadeOut();
+            $("tr.passed").fadeIn("slow");
+            $("tr.failed").fadeIn("slow");
+            $("tr.skipped").fadeIn("slow");
+             event.preventDefault();
+          });
+
+          $("#passed").click(function (event) {
+            $("#filter a").fadeIn();
+            $("#passed").fadeOut();
+            $("tr.passed").fadeIn("slow");
+            $("tr.failed").fadeOut("slow");
+            $("tr.skipped").fadeOut("slow");
+             event.preventDefault();
+          });
+
+          $("#failed").click(function (event) {
+            $("#filter a").fadeIn();
+            $("#failed").fadeOut();
+            $("tr.passed").fadeOut("slow");
+            $("tr.failed").fadeIn("slow");
+            $("tr.skipped").fadeOut("slow");
+             event.preventDefault();
+          });
+
+          $("#skipped").click(function (event) {
+            $("#filter a").fadeIn();
+            $("#skipped").fadeOut();
+            $("tr.passed").fadeOut("slow");
+            $("tr.failed").fadeOut("slow");
+            $("tr.skipped").fadeIn("slow");
+             event.preventDefault();
+          });
+
+          $("#subtitle").text("Report Details");
+
+          $(".selection").change(function() {
+            window.location = this.value;
+          });
+
         });
      });
     }
