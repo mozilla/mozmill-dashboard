@@ -940,7 +940,6 @@ var MAX_CHART_CHECKPOINTS = 450;
       var toDate;
       if (this.params.to) {
         toDate = new Date(this.params.to);
-        toDate.setHours(toDate.getHours() + tzOffset);
       }
       else {
         toDate = new Date();
