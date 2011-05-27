@@ -49,7 +49,7 @@ var MAX_CHART_CHECKPOINTS = 450;
       $("#failed").click();
     }
 
-    var general_reports = function() {
+    var functional_reports = function() {
       var branch = this.params.branch ? this.params.branch : 'All';
       var platform = this.params.platform ? this.params.platform : 'All';
 
@@ -77,18 +77,18 @@ var MAX_CHART_CHECKPOINTS = 450;
       };
 
       var context = this;
-      request({url: '/_view/general_reports?' + $.param(query)}, function (err, resp) {
+      request({url: '/_view/functional_reports?' + $.param(query)}, function (err, resp) {
         if (err) window.alert(err);
 
         context.reports = [ ];
         resp.rows.forEach(function (report) {
           var value = report.value;
-          value.report_link = "#/general/report/" + report.id;
+          value.report_link = "#/functional/report/" + report.id;
           value.time = new Date(value.time).toISOString();
           context.reports.push(value);
         })
 
-        var template = '/templates/general_reports.mustache';
+        var template = '/templates/functional_reports.mustache';
         context.render(template).replace('#content').then(function () {
 
           $('#branch-selection span').each(function (i, elem) {
@@ -98,7 +98,7 @@ var MAX_CHART_CHECKPOINTS = 450;
           })
 
           $('#branch-selection span').click(function () {
-            window.location = '/#/general/reports?branch=' + this.textContent +
+            window.location = '/#/functional/reports?branch=' + this.textContent +
                               '&platform=' + platform + '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -110,7 +110,7 @@ var MAX_CHART_CHECKPOINTS = 450;
           })
 
           $('#os-selection span').click(function () {
-            window.location = '/#/general/reports?branch=' + branch +
+            window.location = '/#/functional/reports?branch=' + branch +
                               '&platform=' + this.textContent +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val()
@@ -123,12 +123,10 @@ var MAX_CHART_CHECKPOINTS = 450;
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/general/reports?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/functional/reports?branch=' + branch + "&platform=" + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
-
-          $("#subtitle").text("General Reports");
 
           $("#results").tablesorter({
             // sort on the first column and third column, order asc
@@ -143,7 +141,7 @@ var MAX_CHART_CHECKPOINTS = 450;
       });
     }
 
-    var general_failure = function() {
+    var functional_failure = function() {
       var context = this;
 
       var branch = this.params.branch ? this.params.branch : 'All';
@@ -174,7 +172,7 @@ var MAX_CHART_CHECKPOINTS = 450;
         descending : true
       };
 
-      request({url:'/_view/general_failures?'+$.param(query)}, function (err, resp) {
+      request({url:'/_view/functional_failures?'+$.param(query)}, function (err, resp) {
         if (err) console.og(err);
 
         context.reports = [ ];
@@ -185,13 +183,13 @@ var MAX_CHART_CHECKPOINTS = 450;
 
           if (test_func == {} || value.test_function == test_func) {
             value.time = new Date(row.key[3]).toISOString();
-            value.report_link = "#/general/report/" + row.id;
+            value.report_link = "#/functional/report/" + row.id;
 
             context.reports.push(value);
           }
         });
 
-        var template = '/templates/general_failure.mustache';
+        var template = '/templates/functional_failure.mustache';
         context.render(template).replace('#content').then(function () {
 
           $('#branch-selection span').each(function (i, elem) {
@@ -200,7 +198,7 @@ var MAX_CHART_CHECKPOINTS = 450;
             }
           })
           $('#branch-selection span').click(function () {
-            window.location = '/#/general/failure?branch=' + this.textContent +
+            window.location = '/#/functional/failure?branch=' + this.textContent +
                               '&platform=' + platform + '&from=' + fromDate.format() +
                               '&to=' + toDate.format() + "&test=" +
                               encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
@@ -212,7 +210,7 @@ var MAX_CHART_CHECKPOINTS = 450;
             }
           })
           $('#os-selection span').click(function () {
-            window.location = '/#/general/failure?branch=' + branch +
+            window.location = '/#/functional/failure?branch=' + branch +
                               '&platform=' + this.textContent + '&from=' + fromDate.format() +
                               '&to=' + toDate.format() + "&test=" +
                               encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
@@ -225,7 +223,7 @@ var MAX_CHART_CHECKPOINTS = 450;
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/general/failure?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/functional/failure?branch=' + branch + "&platform=" + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val() + "&test=" +
                               encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
@@ -245,7 +243,7 @@ var MAX_CHART_CHECKPOINTS = 450;
       });
     }
 
-    var general_topFailures = function () {
+    var functional_topFailures = function () {
       var context = this;
 
       var branch = this.params.branch ? this.params.branch : 'All';
@@ -274,7 +272,7 @@ var MAX_CHART_CHECKPOINTS = 450;
         descending : true
       };
 
-      request({url:'/_view/general_failures?'+$.param(query)}, function (err, resp) {
+      request({url:'/_view/functional_failures?'+$.param(query)}, function (err, resp) {
         if (err) window.alert(err);
 
         // Build up the failures array
@@ -299,7 +297,7 @@ var MAX_CHART_CHECKPOINTS = 450;
             test_function : entries[1],
             application_branch : entries[2],
             system_name : entries[3],
-            failure_link : '/#/general/failure?branch=' + entries[2] + "&platform=" +
+            failure_link : '/#/functional/failure?branch=' + entries[2] + "&platform=" +
                            entries[3] + '&from=' + fromDate.format() +
                           '&to=' + toDate.format() + "&test=" +
                           encodeURIComponent(entries[0]) + "&func=" +
@@ -308,7 +306,7 @@ var MAX_CHART_CHECKPOINTS = 450;
           });
         };
 
-        var template = '/templates/general_failures.mustache';
+        var template = '/templates/functional_failures.mustache';
         context.render(template).replace('#content').then(function () {
 
           $('#branch-selection span').each(function (i, elem) {
@@ -317,7 +315,7 @@ var MAX_CHART_CHECKPOINTS = 450;
             }
           })
           $('#branch-selection span').click(function () {
-            window.location = '/#/general/top?branch=' + this.textContent + "&platform=" + platform +
+            window.location = '/#/functional/top?branch=' + this.textContent + "&platform=" + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -328,7 +326,7 @@ var MAX_CHART_CHECKPOINTS = 450;
             }
           })
           $('#os-selection span').click(function () {
-            window.location = '/#/general/top?branch=' + branch + "&platform=" + this.textContent +
+            window.location = '/#/functional/top?branch=' + branch + "&platform=" + this.textContent +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -340,7 +338,7 @@ var MAX_CHART_CHECKPOINTS = 450;
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/general/top?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/functional/top?branch=' + branch + "&platform=" + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -360,11 +358,11 @@ var MAX_CHART_CHECKPOINTS = 450;
       });
     }
 
-    function general_report() {
+    function functional_report() {
       var context = this;
 
       var id = this.params.id ? this.params.id : 'null';
-      var template = '/templates/general_report.mustache';
+      var template = '/templates/functional_report.mustache';
 
       request({url: '/db/' + id}, function (err, resp) {
         if (err) window.alert(err);
@@ -392,7 +390,6 @@ var MAX_CHART_CHECKPOINTS = 450;
           var result = resp.results[i];
 
           var types = {
-            'firefox-general' : 'firefox',
             'firefox-functional' : 'functional',
             'mozmill-test' : 'functional',
             'mozmill-restart-test' : 'functional'
@@ -735,7 +732,7 @@ var MAX_CHART_CHECKPOINTS = 450;
           context.reports.push(value);
         })
 
-        var template = '/templates/general_reports.mustache';
+        var template = '/templates/functional_reports.mustache';
         context.render(template).replace('#content').then(function () {
 
           $('#branch-selection span').each(function (i, elem) {
@@ -961,7 +958,7 @@ var MAX_CHART_CHECKPOINTS = 450;
                               '&to=' + $("#end-date").val();
           })
 
-          $("#subtitle").text("General Reports");
+          $("#subtitle").text("Functional Reports");
 
           $("#results").tablesorter({
             // sort on the first column and third column, order asc
@@ -1426,7 +1423,7 @@ var MAX_CHART_CHECKPOINTS = 450;
                               '&to=' + $("#end-date").val();
           })
 
-          $("#subtitle").text("General Reports");
+          $("#subtitle").text("Functional Reports");
 
           $("#results").tablesorter({
             // sort on the first column and third column, order asc
@@ -1531,11 +1528,11 @@ var MAX_CHART_CHECKPOINTS = 450;
 
     // Index of all databases
     // Database view
-    this.get('#/general', general_topFailures);
-    this.get('#/general/top', general_topFailures);
-    this.get('#/general/failure', general_failure);
-    this.get('#/general/reports', general_reports);
-    this.get('#/general/report/:id', general_report);
+    this.get('#/functional', functional_topFailures);
+    this.get('#/functional/top', functional_topFailures);
+    this.get('#/functional/failure', functional_failure);
+    this.get('#/functional/reports', functional_reports);
+    this.get('#/functional/report/:id', functional_report);
     this.get('#/update', update_reports);
     this.get('#/update/overview', update_overview);
     this.get('#/update/detail', update_detail);
@@ -1553,7 +1550,7 @@ var MAX_CHART_CHECKPOINTS = 450;
   });
 
   $(function() {
-    app.run('#/general');
+    app.run('#/functional');
   });
 
 })(jQuery);

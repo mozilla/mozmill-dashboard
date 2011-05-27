@@ -11,7 +11,7 @@ ddoc = {
 };
 
 
-var generalReportsMap = function(doc) {
+var functionalReportsMap = function(doc) {
   const APP_TO_PLATFORM_BRANCH = {
     '4.2' : 'mozilla2.2',
     '4.0' : 'mozilla2.0',
@@ -24,9 +24,6 @@ var generalReportsMap = function(doc) {
     'firefox-functional',
     'mozmill',
     'mozmill-restart',
-
-    // For compatibility with older reports
-    'firefox-general'
   ];
 
   if (doc.time_start &&
@@ -59,14 +56,11 @@ var generalReportsMap = function(doc) {
   }
 }
 
-var generalFailuresMap = function(doc) {
+var functionalFailuresMap = function(doc) {
   const REPORT_TYPES = [
     'firefox-functional',
     'mozmill',
     'mozmill-restart',
-
-    // For compatibility with older reports
-    'firefox-general'
   ];
 
   if (doc.time_start &&
@@ -367,8 +361,8 @@ var addonsReportsMap = function(doc) {
 
 
 ddoc.views = {
-  general_reports : { map: generalReportsMap },
-  general_failures : { map: generalFailuresMap },
+  functional_reports : { map: functionalReportsMap },
+  functional_failures : { map: functionalFailuresMap },
   update_reports : { map: updateReportsMap },
   update_default : { map: updateDefaultMap },
   l10n_reports : { map: l10nReportsMap },

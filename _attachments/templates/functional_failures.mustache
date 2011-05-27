@@ -27,36 +27,28 @@
       </div>
     </fieldset>
 
-    <h2>Reports</h2>
+    <h2>Top Failures for Functional Tests</h2>
 
     <table id="results">
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Version</th>
-          <th>Build</th>
-          <th>Locale</th>
+          <th>Module</th>
+          <th>Function</th>
+          <th>Branch</th>
           <th>Platform</th>
-          <th>Version</th>
-          <th>CPU</th>
-          <th># Pass</th>
-          <th># Skip</th>
           <th># Fail</th>
+          <!--<th>Bugs</th>-->
         </tr>
       </thead>
       <tbody>
       {{#reports}}
         <tr>
-          <td><a href="{{report_link}}">{{time}}</a></td>
-          <td>{{application_version}}</td>
-          <td>{{build_id}}</td>
-          <td>{{locale}}</td>
+          <td>{{test_module}}</td>
+          <td><a href="{{failure_link}}">{{test_function}}</a></td>
+          <td>{{application_branch}}</td>
           <td>{{system_name}}</td>
-          <td>{{system_version}}</td>
-          <td>{{processor}}</td>
-          <td class="results">{{tests_passed}}</td>
-          <td class="results">{{tests_skipped}}</td>
-          <td class="results">{{tests_failed}}</td>
+          <td>{{failure_count}}</td>
+          <!--<td>{{bugs}}</td>-->
         </tr>
       {{/reports}}
       </tbody>
