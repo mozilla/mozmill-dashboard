@@ -119,6 +119,13 @@ html ul.topnav li ul.subnav li a:hover {
   cursor: pointer;
 }
 
+#filter a.selected {
+  color: #000;
+  font-weight: bold;
+  cursor: default;
+  text-decoration: none;
+}
+
 #content #navigation {
   margin: 0 35px 10px;
   text-align: right;

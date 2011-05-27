@@ -20,6 +20,35 @@ var MAX_CHART_CHECKPOINTS = 450;
   var app = $.sammy(function () {
     this.use('Mustache');
 
+    function setFilters() {
+
+      var filters = [
+        { link : "#all", match : "#result tbody tr" },
+        { link : "#passed", match : "#result tr.passed" },
+        { link : "#failed", match : "#result tr.failed" },
+        { link : "#skipped", match : "#result tr.skipped" }
+      ];
+
+      filters.forEach(function (filter) {
+        $(filter.link).click(function (event) {
+          $('#filter a').removeClass('selected');
+          $(filter.link).addClass('selected');
+          $('#result tbody tr').hide();
+          $(filter.match).show();
+          $('#noresults').remove();
+          if ($('#result tbody tr:visible').length === 0) {
+            $('#result tbody').append('<tr id="noresults">' +'<td colspan="' +
+            $('#result tr th').length +
+            '">No results match the current filter.</td></tr>');
+          }
+          event.preventDefault();
+        });
+      });
+
+      // apply the failed filter by default
+      $("#failed").click();
+    }
+
     var general_reports = function() {
       var branch = this.params.branch ? this.params.branch : 'All';
       var platform = this.params.platform ? this.params.platform : 'All';
@@ -408,43 +437,8 @@ var MAX_CHART_CHECKPOINTS = 450;
 
         context.render(template).replace('#content').then(function () {
           $("#result").tablesorter();
-          
-          $("#all").fadeOut();
-          $("#all").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#all").fadeOut();
-            $("tr.passed").fadeIn("slow");
-            $("tr.failed").fadeIn("slow");
-            $("tr.skipped").fadeIn("slow");
-             event.preventDefault();
-          });
 
-          $("#passed").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#passed").fadeOut();
-            $("tr.passed").fadeIn("slow");
-            $("tr.failed").fadeOut("slow");
-            $("tr.skipped").fadeOut("slow");
-             event.preventDefault();
-          });
-
-          $("#failed").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#failed").fadeOut();
-            $("tr.passed").fadeOut("slow");
-            $("tr.failed").fadeIn("slow");
-            $("tr.skipped").fadeOut("slow");
-             event.preventDefault();
-          });
-
-          $("#skipped").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#skipped").fadeOut();
-            $("tr.passed").fadeOut("slow");
-            $("tr.failed").fadeOut("slow");
-            $("tr.skipped").fadeIn("slow");
-             event.preventDefault();
-          });
+          setFilters();
 
           $("#subtitle").text("Report Details");
 
@@ -877,43 +871,8 @@ var MAX_CHART_CHECKPOINTS = 450;
 
         context.render(template).replace('#content').then(function () {
           $("#result").tablesorter();
-          
-          $("#all").fadeOut();
-          $("#all").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#all").fadeOut();
-            $("tr.passed").fadeIn("slow");
-            $("tr.failed").fadeIn("slow");
-            $("tr.skipped").fadeIn("slow");
-             event.preventDefault();
-          });
 
-          $("#passed").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#passed").fadeOut();
-            $("tr.passed").fadeIn("slow");
-            $("tr.failed").fadeOut("slow");
-            $("tr.skipped").fadeOut("slow");
-             event.preventDefault();
-          });
-
-          $("#failed").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#failed").fadeOut();
-            $("tr.passed").fadeOut("slow");
-            $("tr.failed").fadeIn("slow");
-            $("tr.skipped").fadeOut("slow");
-             event.preventDefault();
-          });
-
-          $("#skipped").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#skipped").fadeOut();
-            $("tr.passed").fadeOut("slow");
-            $("tr.failed").fadeOut("slow");
-            $("tr.skipped").fadeIn("slow");
-             event.preventDefault();
-          });
+          setFilters();
 
           $("#subtitle").text("Report Details");
 
@@ -1094,43 +1053,8 @@ var MAX_CHART_CHECKPOINTS = 450;
 
         context.render(template).replace('#content').then(function () {
           $("#result").tablesorter();
-          
-          $("#all").fadeOut();
-          $("#all").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#all").fadeOut();
-            $("tr.passed").fadeIn("slow");
-            $("tr.failed").fadeIn("slow");
-            $("tr.skipped").fadeIn("slow");
-             event.preventDefault();
-          });
 
-          $("#passed").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#passed").fadeOut();
-            $("tr.passed").fadeIn("slow");
-            $("tr.failed").fadeOut("slow");
-            $("tr.skipped").fadeOut("slow");
-             event.preventDefault();
-          });
-
-          $("#failed").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#failed").fadeOut();
-            $("tr.passed").fadeOut("slow");
-            $("tr.failed").fadeIn("slow");
-            $("tr.skipped").fadeOut("slow");
-             event.preventDefault();
-          });
-
-          $("#skipped").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#skipped").fadeOut();
-            $("tr.passed").fadeOut("slow");
-            $("tr.failed").fadeOut("slow");
-            $("tr.skipped").fadeIn("slow");
-             event.preventDefault();
-          });
+          setFilters();
 
           $("#subtitle").text("Report Details");
 
@@ -1410,43 +1334,8 @@ var MAX_CHART_CHECKPOINTS = 450;
         context.render(template).replace('#content').then(function () {
           $("#endurance_result").tablesorter();
           $("#result").tablesorter();
-          
-          $("#all").fadeOut();
-          $("#all").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#all").fadeOut();
-            $("tr.passed").fadeIn("slow");
-            $("tr.failed").fadeIn("slow");
-            $("tr.skipped").fadeIn("slow");
-             event.preventDefault();
-          });
 
-          $("#passed").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#passed").fadeOut();
-            $("tr.passed").fadeIn("slow");
-            $("tr.failed").fadeOut("slow");
-            $("tr.skipped").fadeOut("slow");
-             event.preventDefault();
-          });
-
-          $("#failed").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#failed").fadeOut();
-            $("tr.passed").fadeOut("slow");
-            $("tr.failed").fadeIn("slow");
-            $("tr.skipped").fadeOut("slow");
-             event.preventDefault();
-          });
-
-          $("#skipped").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#skipped").fadeOut();
-            $("tr.passed").fadeOut("slow");
-            $("tr.failed").fadeOut("slow");
-            $("tr.skipped").fadeIn("slow");
-             event.preventDefault();
-          });
+          setFilters();
 
           $("#subtitle").text("Report Details");
 
@@ -1627,43 +1516,8 @@ var MAX_CHART_CHECKPOINTS = 450;
 
         context.render(template).replace('#content').then(function () {
           $("#result").tablesorter();
-          
-          $("#all").fadeOut();
-          $("#all").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#all").fadeOut();
-            $("tr.passed").fadeIn("slow");
-            $("tr.failed").fadeIn("slow");
-            $("tr.skipped").fadeIn("slow");
-             event.preventDefault();
-          });
 
-          $("#passed").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#passed").fadeOut();
-            $("tr.passed").fadeIn("slow");
-            $("tr.failed").fadeOut("slow");
-            $("tr.skipped").fadeOut("slow");
-             event.preventDefault();
-          });
-
-          $("#failed").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#failed").fadeOut();
-            $("tr.passed").fadeOut("slow");
-            $("tr.failed").fadeIn("slow");
-            $("tr.skipped").fadeOut("slow");
-             event.preventDefault();
-          });
-
-          $("#skipped").click(function (event) {
-            $("#filter a").fadeIn();
-            $("#skipped").fadeOut();
-            $("tr.passed").fadeOut("slow");
-            $("tr.failed").fadeOut("slow");
-            $("tr.skipped").fadeIn("slow");
-             event.preventDefault();
-          });
+          setFilters();
 
           $("#subtitle").text("Report Details");
 
