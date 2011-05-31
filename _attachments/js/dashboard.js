@@ -1,5 +1,6 @@
 var BYTE_TO_MEGABYTE = 1/1048576;
 var MAX_CHART_CHECKPOINTS = 450;
+var METRIC_UNAVAILABLE = "--";
 
 (function($) {
 
@@ -1100,8 +1101,8 @@ var MAX_CHART_CHECKPOINTS = 450;
           value.report_link = "#/endurance/report/" + report.id;
           value.time = new Date(value.time).toISOString();
           value.delay = value.delay * 1/1000;
-          value.min_allocated_memory = Math.round(min(value.allocated_memory) * BYTE_TO_MEGABYTE);
-          value.max_allocated_memory = Math.round(max(value.allocated_memory) * BYTE_TO_MEGABYTE);
+          value.min_allocated_memory = value.stats ? Math.round(value.stats.allocated.min * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
+          value.max_allocated_memory = value.stats ? Math.round(value.stats.allocated.max * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
           context.reports.push(value);
         })
 
@@ -1192,17 +1193,12 @@ var MAX_CHART_CHECKPOINTS = 450;
         context.tests = [];
         context.checkpoints = [];
 
+        var stats_available = resp.endurance.stats;
         var tests = resp.endurance.results;
         var testCount = tests.length;
         var allCheckpoints = [];
-        var allocatedMemoryResults = [];
-        var mappedMemoryResults = [];
-        var testAverageAllocatedMemoryResults = [];
-        var testAverageMappedMemoryResults = [];
 
         for (var i=0; i < testCount; i++) {
-            var testAllocatedMemoryResults = [];
-            var testMappedMemoryResults = [];
             var testIterationCount = tests[i].iterations.length;
             var testCheckpointCount = tests[i].iterations[0].checkpoints.length;
 
@@ -1229,26 +1225,21 @@ var MAX_CHART_CHECKPOINTS = 450;
                   mappedMemory : Math.round(tests[i].iterations[j].checkpoints[k].mapped * BYTE_TO_MEGABYTE)
                 });
 
-                testAllocatedMemoryResults.push(Math.round(tests[i].iterations[j].checkpoints[k].allocated * BYTE_TO_MEGABYTE));
-                testMappedMemoryResults.push(Math.round(tests[i].iterations[j].checkpoints[k].mapped * BYTE_TO_MEGABYTE));
               }
             }
-
-            allocatedMemoryResults = allocatedMemoryResults.concat(testAllocatedMemoryResults);
-            mappedMemoryResults = mappedMemoryResults.concat(testMappedMemoryResults);
-            testAverageAllocatedMemoryResults.push(average(testAllocatedMemoryResults));
-            testAverageMappedMemoryResults.push(average(testMappedMemoryResults));
 
             context.tests.push({
               testFile : tests[i].testFile.split(type)[1].replace(/\\/g, '/'),
               testMethod : tests[i].testMethod,
               checkpointCount : testCheckpointCount,
-              minAllocatedMemory : min(testAllocatedMemoryResults),
-              maxAllocatedMemory : max(testAllocatedMemoryResults),
-              averageAllocatedMemory : Math.round(average(testAllocatedMemoryResults)),
-              minMappedMemory : min(testMappedMemoryResults),
-              maxMappedMemory : max(testMappedMemoryResults),
-              averageMappedMemory : Math.round(average(testMappedMemoryResults))
+
+              minAllocatedMemory : stats_available ? Math.round(tests[i].stats.allocated.min * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE,
+              maxAllocatedMemory : stats_available ? Math.round(tests[i].stats.allocated.max * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE,
+              averageAllocatedMemory : stats_available ? Math.round(tests[i].stats.allocated.average * BYTE_TO_MEGABYTE) : 0,
+
+              minMappedMemory : stats_available ? Math.round(tests[i].stats.mapped.min * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE,
+              maxMappedMemory : stats_available ? Math.round(tests[i].stats.mapped.max * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE,
+              averageMappedMemory : stats_available ? Math.round(tests[i].stats.mapped.average * BYTE_TO_MEGABYTE) : 0
             });
         }
 
@@ -1271,16 +1262,14 @@ var MAX_CHART_CHECKPOINTS = 450;
         context.testCount = testCount;
         context.checkpointCount = allCheckpoints.length;
         context.checkpointsPerTest = Math.round(context.checkpoints.length / testCount);
-        context.allocatedMemoryResults = allocatedMemoryResults;
-        context.minAllocatedMemory = min(allocatedMemoryResults);
-        context.maxAllocatedMemory = max(allocatedMemoryResults);
-        context.averageAllocatedMemory = Math.round(average(allocatedMemoryResults));
-        context.testAverageAllocatedMemoryResults = testAverageAllocatedMemoryResults;
-        context.mappedMemoryResults = mappedMemoryResults;
-        context.minMappedMemory = min(mappedMemoryResults);
-        context.maxMappedMemory = max(mappedMemoryResults);
-        context.averageMappedMemory = Math.round(average(mappedMemoryResults));
-        context.testAverageMappedMemoryResults = testAverageMappedMemoryResults;
+
+        context.minAllocatedMemory = stats_available ? Math.round(resp.endurance.stats.allocated.min * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
+        context.maxAllocatedMemory = stats_available ? Math.round(resp.endurance.stats.allocated.max * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
+        context.averageAllocatedMemory = stats_available ? Math.round(resp.endurance.stats.allocated.average * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
+
+        context.minMappedMemory = stats_available ? Math.round(resp.endurance.stats.mapped.min * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
+        context.maxMappedMemory = stats_available ? Math.round(resp.endurance.stats.mapped.max * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
+        context.averageMappedMemory = stats_available ? Math.round(resp.endurance.stats.mapped.average * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
 
         context.results = [];
 

@@ -281,15 +281,6 @@ var enduranceReportsMap = function(doc) {
     var application_branch = doc.application_version.match(/(\d\.\d)\.*/)[1];
     var platform_branch = APP_TO_PLATFORM_BRANCH[application_branch];
 
-    var allocatedMemory = [ ];
-    doc.endurance.results.forEach(function (result) {
-      result.iterations.forEach(function (iteration) {
-        iteration.checkpoints.forEach(function (checkpoint) {
-          allocatedMemory.push(checkpoint.allocated);
-        });
-      });
-    });
-
     var r = {
       time : doc.time_start,
       application_version : doc.application_version,
@@ -304,7 +295,7 @@ var enduranceReportsMap = function(doc) {
       tests_skipped : doc.tests_skipped,
       delay : doc.endurance.delay,
       iterations : doc.endurance.iterations,
-      allocated_memory : allocatedMemory
+      stats : doc.endurance.stats
     };
 
     emit([application_branch, r.system_name, doc.time_start], r);
