@@ -1101,8 +1101,9 @@ var METRIC_UNAVAILABLE = "--";
           value.report_link = "#/endurance/report/" + report.id;
           value.time = new Date(value.time).toISOString();
           value.delay = value.delay * 1/1000;
-          value.min_allocated_memory = value.stats ? Math.round(value.stats.allocated.min * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
-          value.max_allocated_memory = value.stats ? Math.round(value.stats.allocated.max * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
+          memory_label = (value.stats && value.stats.explicit) ? "explicit" : "allocated";
+          value.min_memory = (value.stats && value.stats[memory_label]) ? Math.round(value.stats[memory_label].min * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
+          value.max_memory = (value.stats && value.stats[memory_label]) ? Math.round(value.stats[memory_label].max * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
           context.reports.push(value);
         })
 
@@ -1192,8 +1193,9 @@ var METRIC_UNAVAILABLE = "--";
         context.skipped = resp.tests_skipped;
         context.tests = [];
         context.checkpoints = [];
-
         var stats_available = resp.endurance.stats;
+        context.stats_available = stats_available;
+
         var tests = resp.endurance.results;
         var testCount = tests.length;
         var allCheckpoints = [];
@@ -1217,29 +1219,41 @@ var METRIC_UNAVAILABLE = "--";
                 catch (ex) {
                 }
 
+                var checkpointMemory = {};
+
+                if (tests[i].iterations[j].checkpoints[k].allocated) {
+                  checkpointMemory.allocated = Math.round(tests[i].iterations[j].checkpoints[k].allocated * BYTE_TO_MEGABYTE);
+                }
+    
+                if (tests[i].iterations[j].checkpoints[k].mapped) {
+                  checkpointMemory.mapped = Math.round(tests[i].iterations[j].checkpoints[k].mapped * BYTE_TO_MEGABYTE);
+                }
+    
+                if (tests[i].iterations[j].checkpoints[k].explicit) {
+                  checkpointMemory.explicit = Math.round(tests[i].iterations[j].checkpoints[k].explicit * BYTE_TO_MEGABYTE);
+                }
+    
+                if (tests[i].iterations[j].checkpoints[k].resident) {
+                  checkpointMemory.resident = Math.round(tests[i].iterations[j].checkpoints[k].resident * BYTE_TO_MEGABYTE);
+                }
+
                 allCheckpoints.push({
                   testFile : filename,
                   testMethod : tests[i].testMethod,
                   label : tests[i].iterations[j].checkpoints[k].label,
-                  allocatedMemory : Math.round(tests[i].iterations[j].checkpoints[k].allocated * BYTE_TO_MEGABYTE),
-                  mappedMemory : Math.round(tests[i].iterations[j].checkpoints[k].mapped * BYTE_TO_MEGABYTE)
+                  memory : checkpointMemory
                 });
 
               }
             }
 
+            var testMemory = stats_available ? get_memory_stats(tests[i].stats) : {};
+
             context.tests.push({
               testFile : tests[i].testFile.split(type)[1].replace(/\\/g, '/'),
               testMethod : tests[i].testMethod,
               checkpointCount : testCheckpointCount,
-
-              minAllocatedMemory : stats_available ? Math.round(tests[i].stats.allocated.min * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE,
-              maxAllocatedMemory : stats_available ? Math.round(tests[i].stats.allocated.max * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE,
-              averageAllocatedMemory : stats_available ? Math.round(tests[i].stats.allocated.average * BYTE_TO_MEGABYTE) : 0,
-
-              minMappedMemory : stats_available ? Math.round(tests[i].stats.mapped.min * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE,
-              maxMappedMemory : stats_available ? Math.round(tests[i].stats.mapped.max * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE,
-              averageMappedMemory : stats_available ? Math.round(tests[i].stats.mapped.average * BYTE_TO_MEGABYTE) : 0
+              memory : testMemory
             });
         }
 
@@ -1262,15 +1276,7 @@ var METRIC_UNAVAILABLE = "--";
         context.testCount = testCount;
         context.checkpointCount = allCheckpoints.length;
         context.checkpointsPerTest = Math.round(context.checkpoints.length / testCount);
-
-        context.minAllocatedMemory = stats_available ? Math.round(resp.endurance.stats.allocated.min * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
-        context.maxAllocatedMemory = stats_available ? Math.round(resp.endurance.stats.allocated.max * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
-        context.averageAllocatedMemory = stats_available ? Math.round(resp.endurance.stats.allocated.average * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
-
-        context.minMappedMemory = stats_available ? Math.round(resp.endurance.stats.mapped.min * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
-        context.maxMappedMemory = stats_available ? Math.round(resp.endurance.stats.mapped.max * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
-        context.averageMappedMemory = stats_available ? Math.round(resp.endurance.stats.mapped.average * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
-
+        context.memory = stats_available ? get_memory_stats(resp.endurance.stats) : {};
         context.results = [];
 
         for (var i = 0; i < resp.results.length; i++) {
@@ -1331,6 +1337,44 @@ var METRIC_UNAVAILABLE = "--";
 
         });
      });
+    }
+
+    function get_memory_stats(stats) {
+      var memory = {};
+
+      if (stats.allocated) {
+        memory.allocated = {
+          min : Math.round(stats.allocated.min * BYTE_TO_MEGABYTE),
+          max : Math.round(stats.allocated.max * BYTE_TO_MEGABYTE),
+          average : Math.round(stats.allocated.average * BYTE_TO_MEGABYTE)
+        }
+      }
+
+      if (stats.mapped) {
+        memory.mapped = {
+          min : Math.round(stats.mapped.min * BYTE_TO_MEGABYTE),
+          max : Math.round(stats.mapped.max * BYTE_TO_MEGABYTE),
+          average : Math.round(stats.mapped.average * BYTE_TO_MEGABYTE)
+        }
+      }
+
+      if (stats.explicit) {
+        memory.explicit = {
+          min : Math.round(stats.explicit.min * BYTE_TO_MEGABYTE),
+          max : Math.round(stats.explicit.max * BYTE_TO_MEGABYTE),
+          average : Math.round(stats.explicit.average * BYTE_TO_MEGABYTE)
+        }
+      }
+
+      if (stats.resident) {
+        memory.resident = {
+          min : Math.round(stats.resident.min * BYTE_TO_MEGABYTE),
+          max : Math.round(stats.resident.max * BYTE_TO_MEGABYTE),
+          average : Math.round(stats.resident.average * BYTE_TO_MEGABYTE)
+        }
+      }
+
+      return memory;
     }
 
     var addons_reports = function() {

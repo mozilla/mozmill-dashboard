@@ -64,13 +64,27 @@
           <th>Number of checkpoints:</th>
           <td>{{checkpointCount}} ({{checkpointsPerTest}} per test)
           </td>
-        </tr><tr>
-          <th>Allocated memory (MB):</th>
-          <td>Minimum: <strong>{{minAllocatedMemory}}</strong> / Maximum: <strong>{{maxAllocatedMemory}}</strong> / Average: <strong>{{averageAllocatedMemory}}</strong></td>
-        </tr><tr>
-          <th>Mapped memory (MB):</th>
-          <td>Minimum: <strong>{{minMappedMemory}}</strong> / Maximum: <strong>{{maxMappedMemory}}</strong> / Average: <strong>{{averageMappedMemory}}</strong></td>
         </tr>
+        {{#stats_available}}
+          {{#memory}}
+            {{#allocated}}<tr>
+              <th>Allocated memory (MB):</th>
+              <td>Minimum: <strong>{{min}}</strong> / Maximum: <strong>{{max}}</strong> / Average: <strong>{{average}}</strong></td>
+            </tr>{{/allocated}}
+            {{#mapped}}<tr>
+              <th>Mapped memory (MB):</th>
+              <td>Minimum: <strong>{{min}}</strong> / Maximum: <strong>{{max}}</strong> / Average: <strong>{{average}}</strong></td>
+            </tr>{{/mapped}}
+            {{#explicit}}<tr>
+              <th>Explicit memory (MB):</th>
+              <td>Minimum: <strong>{{min}}</strong> / Maximum: <strong>{{max}}</strong> / Average: <strong>{{average}}</strong></td>
+            </tr>{{/explicit}}
+            {{#resident}}<tr>
+              <th>Resident memory (MB):</th>
+              <td>Minimum: <strong>{{min}}</strong> / Maximum: <strong>{{max}}</strong> / Average: <strong>{{average}}</strong></td>
+            </tr>{{/resident}}
+          {{/memory}}
+        {{/stats_available}}
       </tbody>
     </table>
 
@@ -100,13 +114,25 @@
                 name: 'Allocated',
                 data: [{{#checkpoints}}{
                     name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}<br/><strong>Checkpoint:</strong> {{label}}",
-                    y: {{allocatedMemory}}
+                    y: {{#memory}}{{allocated}}{{^allocated}}""{{/allocated}}{{/memory}}
                 },{{/checkpoints}}]
             }, {
                 name: 'Mapped',
                 data: [{{#checkpoints}}{
                     name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}<br/><strong>Checkpoint:</strong> {{label}}",
-                    y: {{mappedMemory}}
+                    y: {{#memory}}{{mapped}}{{^mapped}}""{{/mapped}}{{/memory}}
+                },{{/checkpoints}}]
+            }, {
+                name: 'Explicit',
+                data: [{{#checkpoints}}{
+                    name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}<br/><strong>Checkpoint:</strong> {{label}}",
+                    y: {{#memory}}{{explicit}}{{^explicit}}""{{/explicit}}{{/memory}}
+                },{{/checkpoints}}]
+            }, {
+                name: 'Resident',
+                data: [{{#checkpoints}}{
+                    name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}<br/><strong>Checkpoint:</strong> {{label}}",
+                    y: {{#memory}}{{resident}}{{^resident}}""{{/resident}}{{/memory}}
                 },{{/checkpoints}}]
             }],
             title: {
@@ -136,6 +162,7 @@
             },
         });
 
+        {{#stats_available}}
         chart1 = new Highcharts.Chart({
             chart: {
                 borderColor: '#AAAAAA',
@@ -161,13 +188,25 @@
                 name: 'Allocated',
                 data: [{{#tests}}{
                     name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}",
-                    y: {{averageAllocatedMemory}}
+                    y: {{#memory}}{{#allocated}}{{average}}{{/allocated}}{{^allocated}}""{{/allocated}}{{/memory}}
                 },{{/tests}}]
             }, {
                 name: 'Mapped',
                 data: [{{#tests}}{
                     name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}",
-                    y: {{averageMappedMemory}}
+                    y: {{#memory}}{{#mapped}}{{average}}{{/mapped}}{{^mapped}}""{{/mapped}}{{/memory}}
+                },{{/tests}}]
+            }, {
+                name: 'Explicit',
+                data: [{{#tests}}{
+                    name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}",
+                    y: {{#memory}}{{#explicit}}{{average}}{{/explicit}}{{^explicit}}""{{/explicit}}{{/memory}}
+                },{{/tests}}]
+            }, {
+                name: 'Resident',
+                data: [{{#tests}}{
+                    name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}",
+                    y: {{#memory}}{{#resident}}{{average}}{{/resident}}{{^resident}}""{{/resident}}{{/memory}}
                 },{{/tests}}]
             }],
             title: {
@@ -193,6 +232,7 @@
                 min: 0
             }
         });
+        {{/stats_available}}
     </script>
 
     <div id="checkpoints-memory-usage-chart" class="chart" style="float:left"></div>
@@ -203,15 +243,26 @@
         <tr>
           <th rowspan="2">Filename</th>
           <th rowspan="2">Test</th>
-          <th colspan="3">Allocated Memory (MB)</th>
-          <th colspan="3">Mapped Memory (MB)</th>
-        </tr><tr>
-          <th>min</th>
-          <th>max</th>
-          <th>average</th>
-          <th>min</th>
-          <th>max</th>
-          <th>average</th>
+          {{#stats_available}}
+            {{#memory}}
+              {{#allocated}}<th colspan="3">Allocated Memory (MB)</th>{{/allocated}}
+              {{#mapped}}<th colspan="3">Mapped Memory (MB)</th>{{/mapped}}
+              {{#explicit}}<th colspan="3">Explicit Memory (MB)</th>{{/explicit}}
+              {{#resident}}<th colspan="3">Resident Memory (MB)</th>{{/resident}}
+            {{/memory}}
+          {{/stats_available}}
+        </tr>
+        {{#stats_available}}
+          <tr>
+            <th>min</th>
+            <th>max</th>
+            <th>average</th>
+            <th>min</th>
+            <th>max</th>
+            <th>average</th>
+          </tr>
+        {{/stats_available}}
+
         </tr>
       </thead>
       <tbody>
@@ -219,12 +270,28 @@
         <tr>
           <td>{{testFile}}</td>
           <td>{{testMethod}}</td>
-          <td class="results">{{minAllocatedMemory}}</td>
-          <td class="results">{{maxAllocatedMemory}}</td>
-          <td class="results">{{averageAllocatedMemory}}</td>
-          <td class="results">{{minMappedMemory}}</td>
-          <td class="results">{{maxMappedMemory}}</td>
-          <td class="results">{{averageMappedMemory}}</td>
+          {{#memory}}
+            {{#allocated}}
+              <td class="results">{{min}}</td>
+              <td class="results">{{max}}</td>
+              <td class="results">{{average}}</td>
+            {{/allocated}}
+            {{#mapped}}
+              <td class="results">{{min}}</td>
+              <td class="results">{{max}}</td>
+              <td class="results">{{average}}</td>
+            {{/mapped}}
+            {{#explicit}}
+              <td class="results">{{min}}</td>
+              <td class="results">{{max}}</td>
+              <td class="results">{{average}}</td>
+            {{/explicit}}
+            {{#resident}}
+              <td class="results">{{min}}</td>
+              <td class="results">{{max}}</td>
+              <td class="results">{{average}}</td>
+            {{/resident}}
+          {{/memory}}
         </tr>
         {{/tests}}
       </tbody>
