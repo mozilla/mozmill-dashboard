@@ -1033,8 +1033,8 @@ var METRIC_UNAVAILABLE = "--";
               for (var j = 0; j < result.fails.length; j++) {
                 if ("exception" in result.fails[j])
                   failures.push(result.fails[j].exception.message);
-                else if ("assertion" in result.fails[j])
-                  failures.push(result.fails[j].assertion.message);
+                else if ("fail" in result.fails[j])
+                  failures.push(result.fails[j].fail.message);
                 else
                   failures.push("unknown failure");
               }
