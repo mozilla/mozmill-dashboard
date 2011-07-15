@@ -1272,6 +1272,7 @@ var METRIC_UNAVAILABLE = "--";
 
         context.delay = resp.endurance.delay * 1/1000;
         context.iterations = resp.endurance.iterations;
+        context.microIterations = resp.endurance.micro_iterations ? resp.endurance.micro_iterations : 1;
         context.restart = resp.endurance.restart;
         context.testCount = testCount;
         context.checkpointCount = allCheckpoints.length;
