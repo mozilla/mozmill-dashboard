@@ -112,9 +112,15 @@
           <td>{{status}}</td>
           <td>{{filename}}</td>
           <td>{{test}}</td>
-          <td class="information">
-            {{{information}}}
-            <div class="tooltip">{{{stack}}}<div>
+          <td>
+            <ul class="information">
+            {{#info}}
+              <li>
+                {{{message}}}
+                {{#stack}}<div class="tooltip">{{{stack}}}<div>{{/stack}}
+              </li>
+            {{/info}}
+            </ul>
           </td>
         </tr>
         {{/results}}

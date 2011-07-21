@@ -2,6 +2,84 @@ var BYTE_TO_MEGABYTE = 1/1048576;
 var MAX_CHART_CHECKPOINTS = 450;
 var METRIC_UNAVAILABLE = "--";
 
+var report_type_mappings = {
+  'firefox-functional' : 'functional',
+  'firefox-update' : 'update',
+  'firefox-l10n' : 'l10n',
+  'firefox-endurance' : 'endurance',
+  'firefox-addons' : 'addons',
+
+  'mozmill-test' : 'functional',
+  'mozmill-restart-test' : 'functional'
+};
+
+
+/**
+ * Process all results of a test method and build list with failure information
+ *
+ * @param {Object} aTestResults Results of a test method
+ * @returns {[Object]} Array of failure information
+ */
+function processTestResults(aReport) {
+  var report_type = report_type_mappings[aReport.report_type];
+  var results = [ ];
+
+  for (var i = 0; i < aReport.results.length; i++) {
+    var result = aReport.results[i];
+    var info = [ ];
+
+    // Split absolute path and only keep the relative path below the test-run folder
+    var filename = result.filename.split(report_type)[1].replace(/\\/g, '/');
+
+    var status = "passed";
+    if (result.skipped)
+      status = "skipped";
+    else if (result.failed)
+      status = "failed";
+
+    // Test has been skipped
+    if (result.skipped) {
+      var message = result.skipped_reason;
+      var re = /Bug ([\d]+)/g.exec(message);
+      if (re) {
+        var tmpl = '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=%s">Bug %s</a>';
+        var link = tmpl.replace(/\%s/g, re[1]);
+        message = message.replace(re[0], link);
+      }
+
+      info.push({message: message});
+    }
+    // Test has been failed
+    else if (result.fails) {
+      for (var j = 0; j < result.fails.length; j++) {
+        var failure = result.fails[j];
+        var message = "Unkown Failure";
+        var stack;
+  
+        if ("exception" in failure) {
+          message = failure.exception.message;
+          stack = failure.exception.stack;
+        }
+        else if ("fail" in failure) {
+          message = failure.fail.message;
+        }
+
+        info.push({message: message, stack: stack});
+      }
+    }
+
+    results.push({
+      filename : filename,
+      test : result.name,
+      status : status,
+      info: info
+    });
+  }
+
+  return results;
+}
+
+
 (function($) {
 
   var request = function (options, callback) {
@@ -384,54 +462,7 @@ var METRIC_UNAVAILABLE = "--";
         context.passed = resp.tests_passed;
         context.failed = resp.tests_failed;
         context.skipped = resp.tests_skipped;
-
-        context.results = [];
-
-        for (var i = 0; i < resp.results.length; i++) {
-          var result = resp.results[i];
-
-          var types = {
-            'firefox-functional' : 'functional',
-            'mozmill-test' : 'functional',
-            'mozmill-restart-test' : 'functional'
-          };
-
-          var type = types[resp.report_type];
-          var filename = result.filename.split(type)[1].replace(/\\/g, '/');
-
-          var status = "passed";
-          if (result.skipped) {
-            status = "skipped";
-          } else if (result.failed) {
-            status = "failed";
-          }
-
-          var information = "";
-          var stack = "";
-          try {
-            if (result.skipped) {
-              information = result.skipped_reason;
-
-              var re = /Bug ([\d]+)/g.exec(information);
-              if (re) {
-                var tmpl = '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=%s">Bug %s</a>';
-                var link = tmpl.replace(/\%s/g, re[1]);
-                information = information.replace(re[0], link);
-              }
-            } else {
-              information = result.fails[0].exception.message;
-              stack = result.fails[0].exception.stack;
-            }
-          } catch (ex) { }
-
-          context.results.push({
-            filename : filename,
-            test : result.name,
-            status : status,
-            information: information,
-            stack : stack
-          });
-        }
+        context.results = processTestResults(resp);
 
         context.render(template).replace('#content').then(function () {
           $("#result").tablesorter();
@@ -813,59 +844,8 @@ var METRIC_UNAVAILABLE = "--";
         context.post_platform_buildId = resp.platform_buildid;
         context.post_app_locale = resp.application_locale;
         context.post_app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
-
-
         context.updates = resp.updates;
-        context.results = [];
-
-        for (var i = 0; i < resp.results.length; i++) {
-          var result = resp.results[i];
-
-          var types = {
-            'firefox-update' : 'update'
-          };
-
-          var filename = result.filename;
-          try {
-            var type = types[resp.report_type];
-            filename = filename.split(type)[1].replace(/\\/g, '/');
-          }
-          catch (ex) {
-          }
-
-          var status = "passed";
-          if (result.skipped) {
-            status = "skipped";
-          } else if (result.failed) {
-            status = "failed";
-          }
-
-          var information = "";
-          var stack = "";
-          try {
-            if (result.skipped) {
-              information = result.skipped_reason;
-
-              var re = /Bug ([\d]+)/g.exec(information);
-              if (re) {
-                var tmpl = '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=%s">Bug %s</a>';
-                var link = tmpl.replace(/\%s/g, re[1]);
-                information = information.replace(re[0], link);
-              }
-            } else {
-              information = result.fails[0].exception.message;
-              stack = result.fails[0].exception.stack;
-            }
-          } catch (ex) { }
-
-          context.results.push({
-            filename : filename,
-            test : result.name,
-            status : status,
-            information: information,
-            stack : stack
-          });
-        }
+        context.results = processTestResults(resp);
 
         context.render(template).replace('#content').then(function () {
           $("#result").tablesorter();
@@ -998,56 +978,7 @@ var METRIC_UNAVAILABLE = "--";
         context.passed = resp.tests_passed;
         context.failed = resp.tests_failed;
         context.skipped = resp.tests_skipped;
-
-        context.results = [];
-
-        for (var i = 0; i < resp.results.length; i++) {
-          var result = resp.results[i];
-
-          var types = {
-            'firefox-l10n' : 'l10n'
-          };
-
-          var type = types[resp.report_type];
-          var filename = result.filename.split(type)[1].replace(/\\/g, '/');
-
-          var status = "passed";
-          if (result.skipped) {
-            status = "skipped";
-          } else if (result.failed) {
-            status = "failed";
-          }
-
-          var failures =  [ ];
-          try {
-            if (result.skipped) {
-              var information = result.skipped_reason;
-
-              var re = /Bug ([\d]+)/g.exec(information);
-              if (re) {
-                var tmpl = '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=%s">Bug %s</a>';
-                var link = tmpl.replace(/\%s/g, re[1]);
-                failures.push(information.replace(re[0], link));
-              }
-            } else {
-              for (var j = 0; j < result.fails.length; j++) {
-                if ("exception" in result.fails[j])
-                  failures.push(result.fails[j].exception.message);
-                else if ("fail" in result.fails[j])
-                  failures.push(result.fails[j].fail.message);
-                else
-                  failures.push("unknown failure");
-              }
-            }
-          } catch (ex) { }
-
-          context.results.push({
-            filename : filename,
-            test : result.name,
-            status : status,
-            failures: failures
-          });
-        }
+        context.results = processTestResults(resp);
 
         context.render(template).replace('#content').then(function () {
           $("#result").tablesorter();
@@ -1278,51 +1209,7 @@ var METRIC_UNAVAILABLE = "--";
         context.checkpointCount = allCheckpoints.length;
         context.checkpointsPerTest = Math.round(context.checkpoints.length / testCount);
         context.memory = stats_available ? get_memory_stats(resp.endurance.stats) : {};
-        context.results = [];
-
-        for (var i = 0; i < resp.results.length; i++) {
-          var result = resp.results[i];
-
-          var types = {
-            'firefox-endurance' : 'endurance'
-          };
-
-          var type = types[resp.report_type];
-          var filename = result.filename.split(type)[1].replace(/\\/g, '/');
-
-          var status = "passed";
-          if (result.skipped) {
-            status = "skipped";
-          } else if (result.failed) {
-            status = "failed";
-          }
-
-          var information = "";
-          var stack = "";
-          try {
-            if (result.skipped) {
-              information = result.skipped_reason;
-
-              var re = /Bug ([\d]+)/g.exec(information);
-              if (re) {
-                var tmpl = '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=%s">Bug %s</a>';
-                var link = tmpl.replace(/\%s/g, re[1]);
-                information = information.replace(re[0], link);
-              }
-            } else {
-              information = result.fails[0].exception.message;
-              stack = result.fails[0].exception.stack;
-            }
-          } catch (ex) { }
-
-          context.results.push({
-            filename : filename,
-            test : result.name,
-            status : status,
-            information: information,
-            stack : stack
-          });
-        }
+        context.results = processTestResults(resp);
 
         context.render(template).replace('#content').then(function () {
           $("#endurance_result").tablesorter();
@@ -1498,52 +1385,7 @@ var METRIC_UNAVAILABLE = "--";
         context.failed = resp.tests_failed;
         context.skipped = resp.tests_skipped;
         context.target_addon = resp.target_addon;
-
-        context.results = [];
-
-        for (var i = 0; i < resp.results.length; i++) {
-          var result = resp.results[i];
-
-          var types = {
-            'firefox-addons' : 'addons'
-          };
-
-          var type = types[resp.report_type];
-          var filename = result.filename.split(type)[1].replace(/\\/g, '/');
-
-          var status = "passed";
-          if (result.skipped) {
-            status = "skipped";
-          } else if (result.failed) {
-            status = "failed";
-          }
-
-          var information = "";
-          var stack = "";
-          try {
-            if (result.skipped) {
-              information = result.skipped_reason;
-
-              var re = /Bug ([\d]+)/g.exec(information);
-              if (re) {
-                var tmpl = '<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=%s">Bug %s</a>';
-                var link = tmpl.replace(/\%s/g, re[1]);
-                information = information.replace(re[0], link);
-              }
-            } else {
-              information = result.fails[0].exception.message;
-              stack = result.fails[0].exception.stack;
-            }
-          } catch (ex) { }
-
-          context.results.push({
-            filename : filename,
-            test : result.name,
-            status : status,
-            information: information,
-            stack : stack
-          });
-        }
+        context.results = processTestResults(resp);
 
         context.render(template).replace('#content').then(function () {
           $("#result").tablesorter();

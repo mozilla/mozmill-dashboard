@@ -228,6 +228,7 @@ table#results td.results {
 
 table.clean td {
   border: none;
+  vertical-align: top;
 }
 
 table.clean th {
@@ -255,7 +256,13 @@ table#result tr.skipped td {
   display: none;
 }
 
-table#result tr.failed td.information:hover .tooltip{
+table .information {
+  vertical-align: top;
+  margin: 0;
+  padding: 0 10px;
+}
+
+table#result tr.failed .information:hover .tooltip {
   position: absolute;
   display: block;
   overflow: scroll;

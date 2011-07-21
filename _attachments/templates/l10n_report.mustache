@@ -43,11 +43,14 @@
           <td>{{status}}</td>
           <td>{{filename}}</td>
           <td>{{test}}</td>
-          <td class="information">
-            <ul>
-            {{#failures}}
-              <li>{{{.}}}</li>
-            {{/failures}}
+          <td>
+            <ul class="information">
+            {{#info}}
+              <li>
+                {{{message}}}
+                {{#stack}}<div class="tooltip">{{{stack}}}<div>{{/stack}}
+              </li>
+            {{/info}}
             </ul>
           </td>
         </tr>
