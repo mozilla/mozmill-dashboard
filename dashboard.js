@@ -12,14 +12,6 @@ ddoc = {
 
 
 var functionalReportsMap = function(doc) {
-  const APP_TO_PLATFORM_BRANCH = {
-    '4.2' : 'mozilla2.2',
-    '4.0' : 'mozilla2.0',
-    '3.7' : 'mozilla1.9.3',
-    '3.6' : 'mozilla1.9.2',
-    '3.5' : 'mozilla1.9.1'
-  };
-
   const REPORT_TYPES = [
     'firefox-functional',
     'mozmill',
@@ -33,13 +25,11 @@ var functionalReportsMap = function(doc) {
       REPORT_TYPES.indexOf(doc.report_type) != -1) {
 
     var application_branch = doc.application_version.match(/(\d\.\d)\.*/)[1];
-    var platform_branch = APP_TO_PLATFORM_BRANCH[application_branch];
 
     var r = {
       time : doc.time_start,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
-      platform_branch : platform_branch,
       system_name : doc.system_info.system,
       system_version : doc.system_info.version,
       processor : doc.system_info.processor,
@@ -83,46 +73,51 @@ var functionalFailuresMap = function(doc) {
       }
       path = path.replace(/\\/g, "/");
 
+      // Only map result if failures are present
       if (result.failed > 0) {
-        var r = {
-          application_locale : doc.application_locale,
-          application_version : doc.application_version,
-          application_branch : application_branch,
-          platform_buildId : doc.platform_buildid,
-          platform_repository : doc.platform_repository,
-          platform_changeset : doc.platform_changeset,
-          system_name : doc.system_info.system,
-          system_version : doc.system_info.version,
-          test_module : path,
-          test_function : result.name,
-          message : (result.fails.length > 0) ? result.fails[0].exception.message : ""
-        };
+        for (var i = 0; i < result.fails.length; i++) {
+          var failure = result.fails[i];
+          var message = "Unknown Failure";
 
-        emit([application_branch, doc.system_info.system, path, doc.time_start], r);
-        emit([application_branch, doc.system_info.system, 'All', doc.time_start], r);
+          if ("exception" in failure)
+            message = failure.exception.message;
+          else if ("fail" in failure)
+            message = failure.fail.message;
 
-        emit([application_branch, 'All', path, doc.time_start], r);
-        emit([application_branch, 'All', 'All', doc.time_start], r);
+          // The result object has to be created inside the loop, otherwise the
+          // message is always the one from the last iteration. No idea why.
+          var r = {
+            application_locale : doc.application_locale,
+            application_version : doc.application_version,
+            application_branch : application_branch,
+            platform_buildId : doc.platform_buildid,
+            platform_repository : doc.platform_repository,
+            platform_changeset : doc.platform_changeset,
+            system_name : doc.system_info.system,
+            system_version : doc.system_info.version,
+            test_module : path,
+            test_function : result.name,
+            message : message
+          };
 
-        emit(['All', doc.system_info.system, path, doc.time_start], r);
-        emit(['All', doc.system_info.system, 'All', doc.time_start], r);
-
-        emit(['All', 'All', path, doc.time_start], r);
-        emit(['All', 'All', 'All', doc.time_start], r);
+          emit([application_branch, doc.system_info.system, path, doc.time_start, i], r);
+          emit([application_branch, doc.system_info.system, 'All', doc.time_start, i], r);
+  
+          emit([application_branch, 'All', path, doc.time_start, i], r);
+          emit([application_branch, 'All', 'All', doc.time_start, i], r);
+  
+          emit(['All', doc.system_info.system, path, doc.time_start, i ], r);
+          emit(['All', doc.system_info.system, 'All', doc.time_start, i], r);
+  
+          emit(['All', 'All', path, doc.time_start, i], r);
+          emit(['All', 'All', 'All', doc.time_start, i], r);
+        }
       }
     });
   }
 }
 
 var updateReportsMap = function(doc) {
-  const APP_TO_PLATFORM_BRANCH = {
-    '4.2' : 'mozilla2.2',
-    '4.0' : 'mozilla2.0',
-    '3.7' : 'mozilla1.9.3',
-    '3.6' : 'mozilla1.9.2',
-    '3.5' : 'mozilla1.9.1'
-  };
-
   const REPORT_TYPES = [
     'firefox-update'
   ];
@@ -134,13 +129,11 @@ var updateReportsMap = function(doc) {
       REPORT_TYPES.indexOf(doc.report_type) != -1) {
 
     var application_branch = doc.application_version.match(/(\d\.\d)\.*/)[1];
-    var platform_branch = APP_TO_PLATFORM_BRANCH[application_branch];
 
     var r = {
       time : doc.time_start,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
-      platform_branch : platform_branch,
       system_name : doc.system_info.system,
       system_version : doc.system_info.version,
       processor : doc.system_info.processor,
@@ -217,14 +210,6 @@ var updateDefaultMap = function(doc) {
 }
 
 var l10nReportsMap = function (doc) {
-  const APP_TO_PLATFORM_BRANCH = {
-    '4.2' : 'mozilla2.2',
-    '4.0' : 'mozilla2.0',
-    '3.7' : 'mozilla1.9.3',
-    '3.6' : 'mozilla1.9.2',
-    '3.5' : 'mozilla1.9.1'
-  };
-
   const REPORT_TYPES = [
     'firefox-l10n'
   ];
@@ -236,13 +221,11 @@ var l10nReportsMap = function (doc) {
       REPORT_TYPES.indexOf(doc.report_type) != -1) {
 
     var application_branch = doc.application_version.match(/(\d\.\d)\.*/)[1];
-    var platform_branch = APP_TO_PLATFORM_BRANCH[application_branch];
 
     var r = {
       time : doc.time_start,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
-      platform_branch : platform_branch,
       system_name : doc.system_info.system,
       system_version : doc.system_info.version,
       processor : doc.system_info.processor,
@@ -260,14 +243,6 @@ var l10nReportsMap = function (doc) {
 }
 
 var enduranceReportsMap = function(doc) {
-  const APP_TO_PLATFORM_BRANCH = {
-    '4.2' : 'mozilla2.2',
-    '4.0' : 'mozilla2.0',
-    '3.7' : 'mozilla1.9.3',
-    '3.6' : 'mozilla1.9.2',
-    '3.5' : 'mozilla1.9.1'
-  };
-
   const REPORT_TYPES = [
     'firefox-endurance'
   ];
@@ -279,13 +254,11 @@ var enduranceReportsMap = function(doc) {
       REPORT_TYPES.indexOf(doc.report_type) != -1) {
 
     var application_branch = doc.application_version.match(/(\d\.\d)\.*/)[1];
-    var platform_branch = APP_TO_PLATFORM_BRANCH[application_branch];
 
     var r = {
       time : doc.time_start,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
-      platform_branch : platform_branch,
       system_name : doc.system_info.system,
       system_version : doc.system_info.version,
       processor : doc.system_info.processor,
@@ -306,14 +279,6 @@ var enduranceReportsMap = function(doc) {
 }
 
 var addonsReportsMap = function(doc) {
-  const APP_TO_PLATFORM_BRANCH = {
-    '4.2' : 'mozilla2.2',
-    '4.0' : 'mozilla2.0',
-    '3.7' : 'mozilla1.9.3',
-    '3.6' : 'mozilla1.9.2',
-    '3.5' : 'mozilla1.9.1'
-  };
-
   const REPORT_TYPES = [
     'firefox-addons'
   ];
@@ -325,13 +290,11 @@ var addonsReportsMap = function(doc) {
       REPORT_TYPES.indexOf(doc.report_type) != -1) {
 
     var application_branch = doc.application_version.match(/(\d\.\d)\.*/)[1];
-    var platform_branch = APP_TO_PLATFORM_BRANCH[application_branch];
 
     var r = {
       time : doc.time_start,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
-      platform_branch : platform_branch,
       system_name : doc.system_info.system,
       system_version : doc.system_info.version,
       processor : doc.system_info.processor,
