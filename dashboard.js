@@ -278,6 +278,39 @@ var enduranceReportsMap = function(doc) {
   }
 }
 
+var remoteReportsMap = function(doc) {
+  const REPORT_TYPES = [
+    'firefox-remote'
+  ];
+
+  if (doc.time_start &&
+      doc.application_version &&
+      doc.system_info.system &&
+      doc.report_type &&
+      REPORT_TYPES.indexOf(doc.report_type) != -1) {
+
+    var application_branch = doc.application_version.match(/(\d\.\d)\.*/)[1];
+
+    var r = {
+      time : doc.time_start,
+      application_version : doc.application_version,
+      build_id : doc.platform_buildid,
+      system_name : doc.system_info.system,
+      system_version : doc.system_info.version,
+      processor : doc.system_info.processor,
+      locale : doc.application_locale,
+      tests_passed : doc.tests_passed,
+      tests_failed : doc.tests_failed,
+      tests_skipped : doc.tests_skipped
+    };
+
+    emit([application_branch, r.system_name, doc.time_start], r);
+    emit(['All', r.system_name, doc.time_start], r);
+    emit([application_branch, 'All', doc.time_start], r);
+    emit(['All', 'All', doc.time_start], r);
+  }
+}
+
 var addonsReportsMap = function(doc) {
   const REPORT_TYPES = [
     'firefox-addons'
@@ -321,6 +354,7 @@ ddoc.views = {
   update_default : { map: updateDefaultMap },
   l10n_reports : { map: l10nReportsMap },
   endurance_reports : { map: enduranceReportsMap },
+  remote_reports : { map: remoteReportsMap },
   addons_reports : { map: addonsReportsMap }
 }
 

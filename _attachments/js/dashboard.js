@@ -7,6 +7,7 @@ var report_type_mappings = {
   'firefox-update' : 'update',
   'firefox-l10n' : 'l10n',
   'firefox-endurance' : 'endurance',
+  'firefox-remote' : 'remote',
   'firefox-addons' : 'addons',
 
   'mozmill-test' : 'functional',
@@ -1265,6 +1266,139 @@ function processTestResults(aReport) {
       return memory;
     }
 
+    var remote_reports = function() {
+      var branch = this.params.branch ? this.params.branch : 'All';
+      var platform = this.params.platform ? this.params.platform : 'All';
+
+      var fromDate;
+      if (this.params.from) {
+        fromDate = new Date(this.params.from);
+      }
+      else {
+        fromDate = new Date();
+        fromDate.setDate(fromDate.getDate() - 3);
+      }
+
+      var toDate;
+      if (this.params.to) {
+        toDate = new Date(this.params.to);
+      }
+      else {
+        toDate = new Date();
+      }
+
+      var query = {
+        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        descending: "true"
+      };
+
+      var context = this;
+      request({url: '/_view/remote_reports?' + $.param(query)}, function (err, resp) {
+        if (err) window.alert(err);
+
+        context.reports = [ ];
+        resp.rows.forEach(function (report) {
+          var value = report.value;
+          value.report_link = "#/remote/report/" + report.id;
+          value.time = new Date(value.time).toISOString();
+          context.reports.push(value);
+        })
+
+        var template = '/templates/remote_reports.mustache';
+        context.render(template).replace('#content').then(function () {
+
+          $('#branch-selection span').each(function (i, elem) {
+            if (elem.textContent == branch) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#branch-selection span').click(function () {
+            window.location = '/#/remote/reports?branch=' + this.textContent +
+                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $('#os-selection span').each(function (i, elem) {
+            if (elem.textContent == platform) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#os-selection span').click(function () {
+            window.location = '/#/remote/reports?branch=' + branch +
+                              '&platform=' + this.textContent +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val()
+          })
+
+          $(".datepicker").datepicker();
+          $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+
+          $('#start-date').datepicker().val(fromDate.format()).trigger('change');
+          $('#end-date').datepicker().val(toDate.format()).trigger('change');
+
+          $(".datepicker").change(function() {
+            window.location = '/#/remote/reports?branch=' + branch + "&platform=" + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $("#results").tablesorter({
+            // sort on the first column and third column, order asc
+            sortList: [[0,1]]
+          });
+
+        });
+      });
+
+      $(".selection").change(function() {
+        window.location = this.value;
+      });
+    }
+
+    function remote_report() {
+      var context = this;
+
+      var id = this.params.id ? this.params.id : 'null';
+      var template = '/templates/remote_report.mustache';
+
+      request({url: '/db/' + id}, function (err, resp) {
+        if (err) window.alert(err);
+
+        context.id = resp._id;
+        context.app_name = resp.application_name;
+        context.app_version = resp.application_version;
+        context.platform_version = resp.platform_version;
+        context.platform_buildId = resp.platform_buildid;
+        context.app_locale = resp.application_locale;
+        context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
+        context.system = resp.system_info.system;
+        context.system_version = resp.system_info.version;
+        context.service_pack = resp.system_info.service_pack;
+        context.cpu = resp.system_info.processor;
+        context.time_start = resp.time_start;
+        context.time_end = resp.time_end;
+        context.passed = resp.tests_passed;
+        context.failed = resp.tests_failed;
+        context.skipped = resp.tests_skipped;
+        context.results = processTestResults(resp);
+
+        context.render(template).replace('#content').then(function () {
+          $("#result").tablesorter();
+
+          setFilters();
+
+          $("#subtitle").text("Report Details");
+
+          $(".selection").change(function() {
+            window.location = this.value;
+          });
+        });
+      });
+    }
+
     var addons_reports = function() {
       var branch = this.params.branch ? this.params.branch : 'All';
       var platform = this.params.platform ? this.params.platform : 'All';
@@ -1420,6 +1554,9 @@ function processTestResults(aReport) {
     this.get('#/endurance', endurance_reports);
     this.get('#/endurance/reports', endurance_reports);
     this.get('#/endurance/report/:id', endurance_report);
+    this.get('#/remote', remote_reports);
+    this.get('#/remote/reports', remote_reports);
+    this.get('#/remote/report/:id', remote_report);
     this.get('#/addons', addons_reports);
     this.get('#/addons/reports', addons_reports);
     this.get('#/addons/report/:id', addons_report);
