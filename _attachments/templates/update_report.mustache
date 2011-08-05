@@ -1,6 +1,9 @@
     <h2>Information</h2>
     <table id="information" class="clean">
       <tr>
+       <th>Report:</th>
+       <td><a href="{{path}}">{{id}}</a></td>
+      </tr><tr>
         <th>Build:</th>
         <td>
          {{post_app_name}} {{post_app_version}} ({{post_platform_version}}, {{post_app_locale}}, <a href="{{post_app_sourcestamp}}">{{post_platform_buildId}}</a>)
@@ -12,8 +15,8 @@
         <th>Duration:</th>
         <td>{{time_start}} - {{time_end}}</td>
       </tr><tr>
-       <th>Report:</th>
-       <td><a href="/db/{{id}}">{{id}}</a></td>
+        <th>Mozmill:</th>
+        <td>{{mozmill_version}}</td>
       </tr><tr>
         <th>Results:</th>
         <td>Pass: <strong>{{passed}}</strong> / Fail: <strong>{{failed}}</strong> / Skip: <strong>{{skipped}}</td>

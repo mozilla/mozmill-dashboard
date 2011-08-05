@@ -463,6 +463,7 @@ function processTestResults(aReport) {
         context.passed = resp.tests_passed;
         context.failed = resp.tests_failed;
         context.skipped = resp.tests_skipped;
+        context.mozmill_version = resp.mozmill_version || "n/a";
         context.results = processTestResults(resp);
 
         context.render(template).replace('#content').then(function () {
@@ -846,6 +847,7 @@ function processTestResults(aReport) {
         context.post_app_locale = resp.application_locale;
         context.post_app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
         context.updates = resp.updates;
+        context.mozmill_version = resp.mozmill_version || "n/a";
         context.results = processTestResults(resp);
 
         context.render(template).replace('#content').then(function () {
@@ -979,6 +981,7 @@ function processTestResults(aReport) {
         context.passed = resp.tests_passed;
         context.failed = resp.tests_failed;
         context.skipped = resp.tests_skipped;
+        context.mozmill_version = resp.mozmill_version || "n/a";
         context.results = processTestResults(resp);
 
         context.render(template).replace('#content').then(function () {
@@ -1210,6 +1213,7 @@ function processTestResults(aReport) {
         context.checkpointCount = allCheckpoints.length;
         context.checkpointsPerTest = Math.round(context.checkpoints.length / testCount);
         context.memory = stats_available ? get_memory_stats(resp.endurance.stats) : {};
+        context.mozmill_version = resp.mozmill_version || "n/a";
         context.results = processTestResults(resp);
 
         context.render(template).replace('#content').then(function () {
@@ -1383,6 +1387,7 @@ function processTestResults(aReport) {
         context.passed = resp.tests_passed;
         context.failed = resp.tests_failed;
         context.skipped = resp.tests_skipped;
+        context.mozmill_version = resp.mozmill_version || "n/a";
         context.results = processTestResults(resp);
 
         context.render(template).replace('#content').then(function () {
@@ -1519,6 +1524,7 @@ function processTestResults(aReport) {
         context.failed = resp.tests_failed;
         context.skipped = resp.tests_skipped;
         context.target_addon = resp.target_addon;
+        context.mozmill_version = resp.mozmill_version || "n/a";
         context.results = processTestResults(resp);
 
         context.render(template).replace('#content').then(function () {
