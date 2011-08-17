@@ -1218,7 +1218,7 @@ function processTestResults(aReport) {
         context.restart = resp.endurance.restart;
         context.testCount = testCount;
         context.checkpointCount = allCheckpoints.length;
-        context.checkpointsPerTest = Math.round(context.checkpoints.length / testCount);
+        context.checkpointsPerTest = Math.round(allCheckpoints.length / testCount);
         context.memory = stats_available ? get_memory_stats(resp.endurance.stats) : {};
         context.mozmill_version = resp.mozmill_version || "n/a";
         context.results = processTestResults(resp);
