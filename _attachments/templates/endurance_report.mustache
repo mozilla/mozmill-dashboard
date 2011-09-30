@@ -42,7 +42,24 @@
       </tr><tr>
         <th>Platform:</th>
         <td>{{system}} {{system_version}} {{service_pack}} ({{cpu}})</td>
-      </tr><tr>
+      </tr>
+      {{#graphics}}
+        <tr>
+          <th>Graphics:</th>
+          <td>
+           <a id="toggle_graphics" href="#">Expand</a>
+            <table id="graphics">
+              {{#info}}
+                <tr><th>{{label}}</th><td>{{value}}</td></tr>
+              {{/info}}
+              {{#failures}}
+                <tr><td colspan="2">{{.}}</td></tr>
+              {{/failures}}
+            </table>
+          </td>
+        </tr>
+      {{/graphics}}
+      <tr>
         <th>Duration:</th>
         <td>{{time_start}} - {{time_end}}</td>
       </tr><tr>

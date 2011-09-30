@@ -1117,10 +1117,17 @@ function processTestResults(aReport) {
           context.themes = resp.addons.filter(function (item) { return (item.type === "theme") });
           context.plugins = resp.addons.filter(function (item) { return (item.type === "plugin") });
         }
-        context.system = resp.system_info.system,
-        context.system_version = resp.system_info.version,
-        context.service_pack = resp.system_info.service_pack,
-        context.cpu = resp.system_info.processor,
+        context.system = resp.system_info.system;
+        context.system_version = resp.system_info.version;
+        context.service_pack = resp.system_info.service_pack;
+        context.cpu = resp.system_info.processor;
+        if (resp.report_version >= 1.2) {
+          context.graphics = resp.system_info.graphics;
+          context.graphics.info.forEach(function(info) {
+            if (info.value === null || info.value === "")
+              info.value = "Unknown";
+          });
+        }
         context.time_start = resp.time_start;
         context.time_end = resp.time_end;
         context.passed = resp.tests_passed;
@@ -1224,6 +1231,13 @@ function processTestResults(aReport) {
         context.results = processTestResults(resp);
 
         context.render(template).replace('#content').then(function () {
+          $("#toggle_graphics").toggle(function() {
+            $('#graphics').show("slow");
+            $(this).text("Collapse");
+          }, function () {
+            $('#graphics').hide("slow");
+            $(this).html('Expand');
+          });
           $("#endurance_result").tablesorter();
           $("#result").tablesorter();
 

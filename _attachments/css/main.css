@@ -218,6 +218,11 @@ table td {
   text-align: left;
 }
 
+table#graphics {
+  display: none;
+  margin: 10px 0 0 0;
+}
+
 table#results td, table#results th {
   margin: 0;
 }
