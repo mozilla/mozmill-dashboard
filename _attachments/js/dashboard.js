@@ -1034,13 +1034,13 @@ function processTestResults(aReport) {
       request({url: '/_view/endurance_reports?' + $.param(query)}, function (err, resp) {
         if (err) window.alert(err);
 
-        context.reports = [ ];
+        context.reports = [];
         resp.rows.forEach(function (report) {
           var value = report.value;
           value.report_link = "#/endurance/report/" + report.id;
           value.time_start = new Date(value.time_start).toISOString();
           value.delay = value.delay * 1/1000;
-          value.memory = value.stats ? get_memory_stats(value.stats) : {};
+          value.memory = get_memory_stats(value.stats);
           context.reports.push(value);
         })
 
@@ -1090,6 +1090,112 @@ function processTestResults(aReport) {
           });
 
           $("#subtitle").text("Endurance Reports");
+
+        });
+      });
+
+      $(".selection").change(function() {
+        window.location = this.value;
+      });
+    }
+
+    var endurance_charts = function() {
+      var branch = this.params.branch ? this.params.branch : FIREFOX_VERSIONS[0];
+      var platform = this.params.platform ? this.params.platform : 'All';
+
+      var fromDate;
+      if (this.params.from) {
+        fromDate = new Date(this.params.from);
+      }
+      else {
+        fromDate = new Date();
+        fromDate.setDate(fromDate.getDate() - 28);
+      }
+
+      var toDate;
+      if (this.params.to) {
+        toDate = new Date(this.params.to);
+      }
+      else {
+        toDate = new Date();
+      }
+
+      var query = {
+        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        descending: "true"
+      };
+
+      var context = this;
+      context.firefox_versions = FIREFOX_VERSIONS;
+      request({url: '/_view/endurance_charts?' + $.param(query)}, function (err, resp) {
+        if (err) window.alert(err);
+
+        platform_reports = {};
+        context.reports = [];
+        resp.rows.forEach(function (report) {
+          var value = report.value;
+          value.duration = new Date(value.time_end) - new Date(value.time_start);
+          value.memory = get_memory_stats(value.stats);
+          context.reports.push(value);
+
+          current_platform = value.system_name + " " + value.system_version + " " + value.processor;
+          if (platform_reports[current_platform] == undefined) {
+            platform_reports[current_platform] = {
+              "name": current_platform,
+              "reports": [value]
+            }
+          } else {
+            platform_reports[current_platform].reports.push(value);
+          }
+        })
+
+        context.platform_reports = [];
+        for (var key in platform_reports) {
+          context.platform_reports.push(platform_reports[key]);
+        }
+
+        var template = '/templates/endurance_charts.mustache';
+        context.render(template).replace('#content').then(function () {
+          
+          $('#branch-selection span').each(function (i, elem) {
+            if (elem.textContent == branch) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#branch-selection span').click(function () {
+            window.location = '/#/endurance/charts?branch=' + this.textContent +
+                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $('#os-selection span').each(function (i, elem) {
+            if (elem.textContent == platform) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#os-selection span').click(function () {
+            window.location = '/#/endurance/charts?branch=' + branch +
+                              '&platform=' + this.textContent +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val()
+          })
+
+          $(".datepicker").datepicker();
+          $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+
+          $('#start-date').datepicker().val(fromDate.format()).trigger('change');
+          $('#end-date').datepicker().val(toDate.format()).trigger('change');
+
+          $(".datepicker").change(function() {
+            window.location = '/#/endurance/charts?branch=' + branch + "&platform=" + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+          
+          $("#subtitle").text("Endurance Charts");
         });
       });
 
@@ -1183,7 +1289,7 @@ function processTestResults(aReport) {
               }
             }
 
-            var testMemory = stats_available ? get_memory_stats(tests[i].stats) : {};
+            var testMemory = get_memory_stats(tests[i].stats);
 
             context.tests.push({
               testFile : tests[i].testFile.split(type)[1].replace(/\\/g, '/'),
@@ -1220,7 +1326,7 @@ function processTestResults(aReport) {
         context.testCount = testCount;
         context.checkpointCount = allCheckpoints.length;
         context.checkpointsPerTest = Math.round(allCheckpoints.length / testCount);
-        context.memory = stats_available ? get_memory_stats(resp.endurance.stats) : {};
+        context.memory = get_memory_stats(resp.endurance.stats);
         context.mozmill_version = resp.mozmill_version || "n/a";
         context.results = processTestResults(resp);
 
@@ -1250,22 +1356,25 @@ function processTestResults(aReport) {
     function get_memory_stats(stats) {
       var memory = {};
 
-      if (stats.explicit) {
-        memory.explicit = {
-          min : Math.round(stats.explicit.min * BYTE_TO_MEGABYTE),
-          max : Math.round(stats.explicit.max * BYTE_TO_MEGABYTE),
-          average : Math.round(stats.explicit.average * BYTE_TO_MEGABYTE)
-        }
-      }
+      if (stats) {
 
-      if (stats.resident) {
-        memory.resident = {
-          min : Math.round(stats.resident.min * BYTE_TO_MEGABYTE),
-          max : Math.round(stats.resident.max * BYTE_TO_MEGABYTE),
-          average : Math.round(stats.resident.average * BYTE_TO_MEGABYTE)
+        if ("explicit" in stats) {
+          memory.explicit = {
+            min : Math.round(stats.explicit.min * BYTE_TO_MEGABYTE),
+            max : Math.round(stats.explicit.max * BYTE_TO_MEGABYTE),
+            average : Math.round(stats.explicit.average * BYTE_TO_MEGABYTE)
+          }
         }
-      }
+  
+        if ("resident" in stats) {
+          memory.resident = {
+            min : Math.round(stats.resident.min * BYTE_TO_MEGABYTE),
+            max : Math.round(stats.resident.max * BYTE_TO_MEGABYTE),
+            average : Math.round(stats.resident.average * BYTE_TO_MEGABYTE)
+          }
+        }
 
+      }
       return memory;
     }
 
@@ -1558,7 +1667,8 @@ function processTestResults(aReport) {
     this.get('#/l10n', l10n_reports);
     this.get('#/l10n/reports', l10n_reports);
     this.get('#/l10n/report/:id', l10n_report);
-    this.get('#/endurance', endurance_reports);
+    this.get('#/endurance', endurance_charts);
+    this.get('#/endurance/charts', endurance_charts);
     this.get('#/endurance/reports', endurance_reports);
     this.get('#/endurance/report/:id', endurance_report);
     this.get('#/remote', remote_reports);

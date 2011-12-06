@@ -360,6 +360,7 @@ ddoc.views = {
   update_default : { map: updateDefaultMap },
   l10n_reports : { map: l10nReportsMap },
   endurance_reports : { map: enduranceReportsMap },
+  endurance_charts : { map: enduranceReportsMap },
   remote_reports : { map: remoteReportsMap },
   addons_reports : { map: addonsReportsMap }
 }
