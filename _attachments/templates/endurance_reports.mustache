@@ -40,7 +40,7 @@
           <th rowspan="2">CPU</th>
           <th rowspan="2">Delay (s)</th>
           <th rowspan="2"># Iterations</th>
-          <th colspan="2">Memory (MB)</th>
+          <th colspan="2" title="Explicit">Memory (MB)</th>
           <th rowspan="2"># Pass</th>
           <th rowspan="2"># Skip</th>
           <th rowspan="2"># Fail</th>
@@ -61,8 +61,8 @@
           <td>{{processor}}</td>
           <td class="results">{{delay}}</td>
           <td class="results">{{iterations}}</td>
-          <td class="results">{{min_memory}}</td>
-          <td class="results">{{max_memory}}</td>
+          <td class="results">{{#memory}}{{#explicit}}{{min}}{{/explicit}}{{/memory}}</td>
+          <td class="results">{{#memory}}{{#explicit}}{{max}}{{/explicit}}{{/memory}}</td>
           <td class="results">{{tests_passed}}</td>
           <td class="results">{{tests_skipped}}</td>
           <td class="results">{{tests_failed}}</td>

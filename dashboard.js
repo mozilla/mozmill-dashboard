@@ -256,7 +256,8 @@ var enduranceReportsMap = function(doc) {
     var application_branch = doc.application_version.match(/(\d+\.\d+)\.*/)[1];
 
     var r = {
-      time : doc.time_start,
+      time_start : doc.time_start,
+      time_end : doc.time_end,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
       system_name : doc.system_info.system,
@@ -354,6 +355,7 @@ ddoc.views = {
   update_default : { map: updateDefaultMap },
   l10n_reports : { map: l10nReportsMap },
   endurance_reports : { map: enduranceReportsMap },
+  endurance_charts : { map: enduranceReportsMap },
   remote_reports : { map: remoteReportsMap },
   addons_reports : { map: addonsReportsMap }
 }
