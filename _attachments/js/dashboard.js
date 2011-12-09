@@ -1036,9 +1036,7 @@ function processTestResults(aReport) {
           value.report_link = "#/endurance/report/" + report.id;
           value.time = new Date(value.time).toISOString();
           value.delay = value.delay * 1/1000;
-          memory_label = (value.stats && value.stats.explicit) ? "explicit" : "allocated";
-          value.min_memory = (value.stats && value.stats[memory_label]) ? Math.round(value.stats[memory_label].min * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
-          value.max_memory = (value.stats && value.stats[memory_label]) ? Math.round(value.stats[memory_label].max * BYTE_TO_MEGABYTE) : METRIC_UNAVAILABLE;
+          value.memory = value.stats ? get_memory_stats(value.stats) : {};
           context.reports.push(value);
         })
 
@@ -1163,14 +1161,6 @@ function processTestResults(aReport) {
 
                 var checkpointMemory = {};
 
-                if (tests[i].iterations[j].checkpoints[k].allocated) {
-                  checkpointMemory.allocated = Math.round(tests[i].iterations[j].checkpoints[k].allocated * BYTE_TO_MEGABYTE);
-                }
-    
-                if (tests[i].iterations[j].checkpoints[k].mapped) {
-                  checkpointMemory.mapped = Math.round(tests[i].iterations[j].checkpoints[k].mapped * BYTE_TO_MEGABYTE);
-                }
-    
                 if (tests[i].iterations[j].checkpoints[k].explicit) {
                   checkpointMemory.explicit = Math.round(tests[i].iterations[j].checkpoints[k].explicit * BYTE_TO_MEGABYTE);
                 }
@@ -1255,22 +1245,6 @@ function processTestResults(aReport) {
 
     function get_memory_stats(stats) {
       var memory = {};
-
-      if (stats.allocated) {
-        memory.allocated = {
-          min : Math.round(stats.allocated.min * BYTE_TO_MEGABYTE),
-          max : Math.round(stats.allocated.max * BYTE_TO_MEGABYTE),
-          average : Math.round(stats.allocated.average * BYTE_TO_MEGABYTE)
-        }
-      }
-
-      if (stats.mapped) {
-        memory.mapped = {
-          min : Math.round(stats.mapped.min * BYTE_TO_MEGABYTE),
-          max : Math.round(stats.mapped.max * BYTE_TO_MEGABYTE),
-          average : Math.round(stats.mapped.average * BYTE_TO_MEGABYTE)
-        }
-      }
 
       if (stats.explicit) {
         memory.explicit = {

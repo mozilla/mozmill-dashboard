@@ -87,14 +87,6 @@
         </tr>
         {{#stats_available}}
           {{#memory}}
-            {{#allocated}}<tr>
-              <th>Allocated memory (MB):</th>
-              <td>Minimum: <strong>{{min}}</strong> / Maximum: <strong>{{max}}</strong> / Average: <strong>{{average}}</strong></td>
-            </tr>{{/allocated}}
-            {{#mapped}}<tr>
-              <th>Mapped memory (MB):</th>
-              <td>Minimum: <strong>{{min}}</strong> / Maximum: <strong>{{max}}</strong> / Average: <strong>{{average}}</strong></td>
-            </tr>{{/mapped}}
             {{#explicit}}<tr>
               <th>Explicit memory (MB):</th>
               <td>Minimum: <strong>{{min}}</strong> / Maximum: <strong>{{max}}</strong> / Average: <strong>{{average}}</strong></td>
@@ -131,18 +123,6 @@
                     }
             },
             series: [{
-                name: 'Allocated',
-                data: [{{#checkpoints}}{
-                    name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}<br/><strong>Checkpoint:</strong> {{label}}",
-                    y: {{#memory}}{{allocated}}{{^allocated}}""{{/allocated}}{{/memory}}
-                },{{/checkpoints}}]
-            }, {
-                name: 'Mapped',
-                data: [{{#checkpoints}}{
-                    name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}<br/><strong>Checkpoint:</strong> {{label}}",
-                    y: {{#memory}}{{mapped}}{{^mapped}}""{{/mapped}}{{/memory}}
-                },{{/checkpoints}}]
-            }, {
                 name: 'Explicit',
                 data: [{{#checkpoints}}{
                     name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}<br/><strong>Checkpoint:</strong> {{label}}",
@@ -205,18 +185,6 @@
                     }
             },
             series: [{
-                name: 'Allocated',
-                data: [{{#tests}}{
-                    name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}",
-                    y: {{#memory}}{{#allocated}}{{average}}{{/allocated}}{{^allocated}}""{{/allocated}}{{/memory}}
-                },{{/tests}}]
-            }, {
-                name: 'Mapped',
-                data: [{{#tests}}{
-                    name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}",
-                    y: {{#memory}}{{#mapped}}{{average}}{{/mapped}}{{^mapped}}""{{/mapped}}{{/memory}}
-                },{{/tests}}]
-            }, {
                 name: 'Explicit',
                 data: [{{#tests}}{
                     name: "<strong>File:</strong> {{testFile}}<br/><strong>Method:</strong> {{testMethod}}",
@@ -265,8 +233,6 @@
           <th rowspan="2">Test</th>
           {{#stats_available}}
             {{#memory}}
-              {{#allocated}}<th colspan="3">Allocated Memory (MB)</th>{{/allocated}}
-              {{#mapped}}<th colspan="3">Mapped Memory (MB)</th>{{/mapped}}
               {{#explicit}}<th colspan="3">Explicit Memory (MB)</th>{{/explicit}}
               {{#resident}}<th colspan="3">Resident Memory (MB)</th>{{/resident}}
             {{/memory}}
@@ -291,16 +257,6 @@
           <td>{{testFile}}</td>
           <td>{{testMethod}}</td>
           {{#memory}}
-            {{#allocated}}
-              <td class="results">{{min}}</td>
-              <td class="results">{{max}}</td>
-              <td class="results">{{average}}</td>
-            {{/allocated}}
-            {{#mapped}}
-              <td class="results">{{min}}</td>
-              <td class="results">{{max}}</td>
-              <td class="results">{{average}}</td>
-            {{/mapped}}
             {{#explicit}}
               <td class="results">{{min}}</td>
               <td class="results">{{max}}</td>
