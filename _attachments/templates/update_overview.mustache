@@ -4,11 +4,9 @@
       <div id="branch-selection">
         <span>Branch:</span>
         <span>All</span>
-        <span>11.0</span>
-        <span>10.0</span>
-        <span>9.0</span>
-        <span>8.0</span>
-        <span>3.6</span>
+        {{#firefox_versions}}
+          <span>{{{.}}}</span>
+        {{/firefox_versions}}
       </div>
 
       <div id="channel-selection">

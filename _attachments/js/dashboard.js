@@ -100,6 +100,8 @@ function processTestResults(aReport) {
   var app = $.sammy(function () {
     this.use('Mustache');
 
+    this.firefox_versions = FIREFOX_VERSIONS;
+
     function setFilters() {
 
       var filters = [
