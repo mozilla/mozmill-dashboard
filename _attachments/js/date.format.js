@@ -8,6 +8,16 @@ function ISODateString(aDate) {
          pad(aDate.getUTCDate());
 }
 
+function UTCDate(aDate) {
+  return Date.UTC(
+    aDate.getUTCFullYear(),
+    aDate.getUTCMonth(),
+    aDate.getUTCDate(),
+    aDate.getUTCHours(),
+    aDate.getUTCMinutes(),
+    aDate.getUTCSeconds())
+}
+
 // For convenience...
 Date.prototype.format = function () {
   return ISODateString(this);

@@ -2,7 +2,6 @@
       <legend>Filter</legend>
       <div id="branch-selection">
         <span>Branch:</span>
-        <span>All</span>
         <span>11.0</span>
         <span>10.0</span>
         <span>9.0</span>
@@ -29,149 +28,141 @@
     <h2>Endurance Tests</h2>
 
     <script>
-        function convertDateToUTC(date) {
-            return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
-        }
+      chart1 = new Highcharts.Chart({
+        chart: {
+          borderColor: '#AAAAAA',
+          borderRadius: 10,
+          borderWidth: 1,
+          renderTo: 'test-result-chart',
+          defaultSeriesType: 'line'
+        },
+        credits: {
+          enabled: false
+        },
+        series: [{
+          name: "Passed",
+          data: [{{#reports}}
+            [UTCDate(new Date("{{time_start}}")), {{tests_passed}}],
+          {{/reports}}],
+          color: "green"
+        },{
+          name: "Skipped",
+          data: [{{#reports}}
+            [UTCDate(new Date("{{time_start}}")), {{tests_skipped}}],
+          {{/reports}}],
+          color: "orange"
+        },{
+          name: "Failed",
+          data: [{{#reports}}
+            [UTCDate(new Date("{{time_start}}")), {{tests_failed}}],
+          {{/reports}}],
+          color: "red"
+        }],
+        title: {
+          text: 'Test Results'
+        },
+        xAxis: {
+          type: 'datetime'
+        },
+        yAxis: {
+          title: {
+            text: 'Tests'
+          }
+        },
+      });
 
-        chart1 = new Highcharts.Chart({
-            chart: {
-                borderColor: '#AAAAAA',
-                borderRadius: 10,
-                borderWidth: 1,
-                renderTo: 'test-result-chart',
-                defaultSeriesType: 'line'
-            },
-            credits: {
-                enabled: false
-            },
-            series: [{
-                name: "Passed",
-                data: [{{#reports}}
-                    [convertDateToUTC(new Date("{{time_start}}")), {{tests_passed}}],
-                {{/reports}}],
-                color: "green"
-            },{
-                name: "Skipped",
-                data: [{{#reports}}
-                    [convertDateToUTC(new Date("{{time_start}}")), {{tests_skipped}}],
-                {{/reports}}],
-                color: "orange"
-            },{
-                name: "Failed",
-                data: [{{#reports}}
-                    [convertDateToUTC(new Date("{{time_start}}")), {{tests_failed}}],
-                {{/reports}}],
-                color: "red"
-            }],
-            title: {
-                text: 'Test Results'
-            },
-            xAxis: {
-                type: 'datetime'
-            },
-            yAxis: {
-                title: {
-                    text: 'Tests'
-                },
-                min: 0
-            },
-        });
-    
-        chart1 = new Highcharts.Chart({
-            chart: {
-                borderColor: '#AAAAAA',
-                borderRadius: 10,
-                borderWidth: 1,
-                renderTo: 'max-explicit-chart',
-                defaultSeriesType: 'line'
-            },
-            credits: {
-                enabled: false
-            },
-            series: [{{#platform_reports}}{
-                name: "{{name}}",
-                data: [
-                    {{#reports}}
-                        [convertDateToUTC(new Date("{{time_start}}")), {{#memory}}{{#explicit}}{{max}}{{/explicit}}{{^explicit}}""{{/explicit}}{{/memory}}],
-                    {{/reports}}],
-            },{{/platform_reports}}],
-            title: {
-                text: 'Max Explicit Memory'
-            },
-            xAxis: {
-                type: 'datetime'
-            },
-            yAxis: {
-                title: {
-                    text: 'Memory Usage (MB)'
-                },
-                min: 0
-            },
-        });
+      chart1 = new Highcharts.Chart({
+        chart: {
+          borderColor: '#AAAAAA',
+          borderRadius: 10,
+          borderWidth: 1,
+          renderTo: 'max-explicit-chart',
+          defaultSeriesType: 'line'
+        },
+        credits: {
+          enabled: false
+        },
+        series: [{{#platform_reports}}{
+          name: "{{name}}",
+          data: [
+            {{#reports}}
+              [UTCDate(new Date("{{time_start}}")), {{#memory}}{{#explicit}}{{max}}{{/explicit}}{{^explicit}}""{{/explicit}}{{/memory}}],
+            {{/reports}}],
+        },{{/platform_reports}}],
+        title: {
+          text: 'Max Explicit Memory'
+        },
+        xAxis: {
+          type: 'datetime'
+        },
+        yAxis: {
+          title: {
+            text: 'Memory Usage (MB)'
+          }
+        },
+      });
 
-        chart1 = new Highcharts.Chart({
-            chart: {
-                borderColor: '#AAAAAA',
-                borderRadius: 10,
-                borderWidth: 1,
-                renderTo: 'max-resident-chart',
-                defaultSeriesType: 'line'
-            },
-            credits: {
-                enabled: false
-            },
-            series: [{{#platform_reports}}{
-                name: "{{name}}",
-                data: [
-                    {{#reports}}
-                        [convertDateToUTC(new Date("{{time_start}}")), {{#memory}}{{#resident}}{{max}}{{/resident}}{{^resident}}""{{/resident}}{{/memory}}],
-                    {{/reports}}],
-            },{{/platform_reports}}],
-            title: {
-                text: 'Max Resident Memory'
-            },
-            xAxis: {
-                type: 'datetime'
-            },
-            yAxis: {
-                title: {
-                    text: 'Memory Usage (MB)'
-                },
-                min: 0
-            },
-        });
+      chart1 = new Highcharts.Chart({
+        chart: {
+          borderColor: '#AAAAAA',
+          borderRadius: 10,
+          borderWidth: 1,
+          renderTo: 'max-resident-chart',
+          defaultSeriesType: 'line'
+        },
+        credits: {
+          enabled: false
+        },
+        series: [{{#platform_reports}}{
+          name: "{{name}}",
+          data: [
+            {{#reports}}
+              [UTCDate(new Date("{{time_start}}")), {{#memory}}{{#resident}}{{max}}{{/resident}}{{^resident}}""{{/resident}}{{/memory}}],
+            {{/reports}}],
+        },{{/platform_reports}}],
+        title: {
+          text: 'Max Resident Memory'
+        },
+        xAxis: {
+          type: 'datetime'
+        },
+        yAxis: {
+          title: {
+            text: 'Memory Usage (MB)'
+          }
+        },
+      });
 
-        chart1 = new Highcharts.Chart({
-            chart: {
-                borderColor: '#AAAAAA',
-                borderRadius: 10,
-                borderWidth: 1,
-                renderTo: 'duration-chart',
-                defaultSeriesType: 'line'
-            },
-            credits: {
-                enabled: false
-            },
-            series: [{{#platform_reports}}{
-                name: "{{name}}",
-                data: [
-                    {{#reports}}
-                        [convertDateToUTC(new Date("{{time_start}}")), {{duration}} / 1000],
-                    {{/reports}}],
-            },{{/platform_reports}}],
-            title: {
-                text: 'Duration'
-            },
-            xAxis: {
-                type: 'datetime'
-            },
-            yAxis: {
-                title: {
-                    text: 'Duration (s)'
-                },
-                min: 0
-            },
-        });
+      chart1 = new Highcharts.Chart({
+        chart: {
+          borderColor: '#AAAAAA',
+          borderRadius: 10,
+          borderWidth: 1,
+          renderTo: 'duration-chart',
+          defaultSeriesType: 'line'
+        },
+        credits: {
+          enabled: false
+        },
+        series: [{{#platform_reports}}{
+          name: "{{name}}",
+          data: [
+            {{#reports}}
+              [UTCDate(new Date("{{time_start}}")), {{duration}} / 1000],
+            {{/reports}}],
+        },{{/platform_reports}}],
+        title: {
+          text: 'Duration'
+        },
+        xAxis: {
+          type: 'datetime'
+        },
+        yAxis: {
+          title: {
+            text: 'Duration (s)'
+          }
+        },
+      });
     </script>
 
     <div id="test-result-chart" class="chart" style="float:left"></div>
