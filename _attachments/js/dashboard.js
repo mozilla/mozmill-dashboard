@@ -1,6 +1,5 @@
 var BYTE_TO_MEGABYTE = 1/1048576;
 var MAX_CHART_CHECKPOINTS = 450;
-var METRIC_UNAVAILABLE = "--";
 
 var report_type_mappings = {
   'firefox-functional' : 'functional',
@@ -166,7 +165,7 @@ function processTestResults(aReport) {
         resp.rows.forEach(function (report) {
           var value = report.value;
           value.report_link = "#/functional/report/" + report.id;
-          value.time = new Date(value.time).toISOString();
+          value.time_start = new Date(value.time_start).toISOString();
           context.reports.push(value);
         })
 
@@ -264,7 +263,7 @@ function processTestResults(aReport) {
           var value = row.value;
 
           if (test_func == {} || value.test_function == test_func) {
-            value.time = new Date(row.key[3]).toISOString();
+            value.time_start = new Date(row.key[3]).toISOString();
             value.report_link = "#/functional/report/" + row.id;
 
             context.reports.push(value);
@@ -764,7 +763,7 @@ function processTestResults(aReport) {
         resp.rows.forEach(function (report) {
           var value = report.value;
           value.report_link = "#/update/report/" + report.id;
-          value.time = new Date(value.time).toISOString();
+          value.time_start = new Date(value.time_start).toISOString();
           context.reports.push(value);
         })
 
@@ -901,7 +900,7 @@ function processTestResults(aReport) {
         resp.rows.forEach(function (report) {
           var value = report.value;
           value.report_link = "#/l10n/report/" + report.id;
-          value.time = new Date(value.time).toISOString();
+          value.time_start = new Date(value.time_start).toISOString();
           context.reports.push(value);
         })
 
@@ -1036,7 +1035,7 @@ function processTestResults(aReport) {
         resp.rows.forEach(function (report) {
           var value = report.value;
           value.report_link = "#/endurance/report/" + report.id;
-          value.time = new Date(value.time).toISOString();
+          value.time_start = new Date(value.time_start).toISOString();
           value.delay = value.delay * 1/1000;
           value.memory = value.stats ? get_memory_stats(value.stats) : {};
           context.reports.push(value);
@@ -1302,7 +1301,7 @@ function processTestResults(aReport) {
         resp.rows.forEach(function (report) {
           var value = report.value;
           value.report_link = "#/remote/report/" + report.id;
-          value.time = new Date(value.time).toISOString();
+          value.time_start = new Date(value.time_start).toISOString();
           context.reports.push(value);
         })
 
@@ -1436,7 +1435,7 @@ function processTestResults(aReport) {
         resp.rows.forEach(function (report) {
           var value = report.value;
           value.report_link = "#/addons/report/" + report.id;
-          value.time = new Date(value.time).toISOString();
+          value.time_start = new Date(value.time_start).toISOString();
           context.reports.push(value);
         })
 
