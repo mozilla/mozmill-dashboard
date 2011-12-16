@@ -1103,7 +1103,7 @@ function processTestResults(aReport) {
     }
 
     var endurance_charts = function() {
-      var branch = this.params.branch ? this.params.branch : '11.0';
+      var branch = this.params.branch ? this.params.branch : FIREFOX_VERSIONS[0];
       var platform = this.params.platform ? this.params.platform : 'All';
 
       var fromDate;
@@ -1130,6 +1130,7 @@ function processTestResults(aReport) {
       };
 
       var context = this;
+      context.firefox_versions = FIREFOX_VERSIONS;
       request({url: '/_view/endurance_charts?' + $.param(query)}, function (err, resp) {
         if (err) window.alert(err);
 

@@ -2,11 +2,9 @@
       <legend>Filter</legend>
       <div id="branch-selection">
         <span>Branch:</span>
-        <span>11.0</span>
-        <span>10.0</span>
-        <span>9.0</span>
-        <span>8.0</span>
-        <span>3.6</span>
+        {{#firefox_versions}}
+          <span>{{{.}}}</span>
+        {{/firefox_versions}}
       </div>
 
       <div id="os-selection">
@@ -35,6 +33,13 @@
           borderWidth: 1,
           renderTo: 'test-result-chart',
           defaultSeriesType: 'line'
+        },
+        plotOptions: {
+          series: {
+            marker: {
+              enabled: false
+            }
+          }
         },
         credits: {
           enabled: false
@@ -79,6 +84,13 @@
           renderTo: 'max-explicit-chart',
           defaultSeriesType: 'line'
         },
+        plotOptions: {
+          series: {
+            marker: {
+              enabled: false
+            }
+          }
+        },
         credits: {
           enabled: false
         },
@@ -110,6 +122,13 @@
           renderTo: 'max-resident-chart',
           defaultSeriesType: 'line'
         },
+        plotOptions: {
+          series: {
+            marker: {
+              enabled: false
+            }
+          }
+        },
         credits: {
           enabled: false
         },
@@ -140,6 +159,13 @@
           borderWidth: 1,
           renderTo: 'duration-chart',
           defaultSeriesType: 'line'
+        },
+        plotOptions: {
+          series: {
+            marker: {
+              enabled: false
+            }
+          }
         },
         credits: {
           enabled: false
