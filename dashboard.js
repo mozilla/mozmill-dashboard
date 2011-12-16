@@ -27,7 +27,8 @@ var functionalReportsMap = function(doc) {
     var application_branch = doc.application_version.match(/(\d+\.\d+)\.*/)[1];
 
     var r = {
-      time : doc.time_start,
+      time_start : doc.time_start,
+      time_end : doc.time_end,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
       system_name : doc.system_info.system,
@@ -131,7 +132,8 @@ var updateReportsMap = function(doc) {
     var application_branch = doc.application_version.match(/(\d+\.\d+)\.*/)[1];
 
     var r = {
-      time : doc.time_start,
+      time_start : doc.time_start,
+      time_end : doc.time_end,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
       system_name : doc.system_info.system,
@@ -223,7 +225,8 @@ var l10nReportsMap = function (doc) {
     var application_branch = doc.application_version.match(/(\d+\.\d+)\.*/)[1];
 
     var r = {
-      time : doc.time_start,
+      time_start : doc.time_start,
+      time_end : doc.time_end,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
       system_name : doc.system_info.system,
@@ -293,7 +296,8 @@ var remoteReportsMap = function(doc) {
     var application_branch = doc.application_version.match(/(\d+\.\d+)\.*/)[1];
 
     var r = {
-      time : doc.time_start,
+      time_start : doc.time_start,
+      time_end : doc.time_end,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
       system_name : doc.system_info.system,
@@ -326,7 +330,8 @@ var addonsReportsMap = function(doc) {
     var application_branch = doc.application_version.match(/(\d+\.\d+)\.*/)[1];
 
     var r = {
-      time : doc.time_start,
+      time_start : doc.time_start,
+      time_end : doc.time_end,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
       system_name : doc.system_info.system,
