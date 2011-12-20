@@ -1040,7 +1040,7 @@ function processTestResults(aReport) {
           value.report_link = "#/endurance/report/" + report.id;
           value.time_start = new Date(value.time_start).toISOString();
           value.delay = value.delay * 1/1000;
-          value.memory = value.stats ? get_memory_stats(value.stats) : {};
+          value.memory = get_memory_stats(value.stats);
           context.reports.push(value);
         })
 
@@ -1136,7 +1136,7 @@ function processTestResults(aReport) {
         resp.rows.forEach(function (report) {
           var value = report.value;
           value.duration = new Date(value.time_end) - new Date(value.time_start);
-          value.memory = value.stats ? get_memory_stats(value.stats) : {};
+          value.memory = get_memory_stats(value.stats);
           context.reports.push(value);
 
           current_platform = value.system_name + " " + value.system_version + " " + value.processor;
@@ -1356,22 +1356,25 @@ function processTestResults(aReport) {
     function get_memory_stats(stats) {
       var memory = {};
 
-      if (stats.explicit) {
-        memory.explicit = {
-          min : Math.round(stats.explicit.min * BYTE_TO_MEGABYTE),
-          max : Math.round(stats.explicit.max * BYTE_TO_MEGABYTE),
-          average : Math.round(stats.explicit.average * BYTE_TO_MEGABYTE)
-        }
-      }
+      if (stats) {
 
-      if (stats.resident) {
-        memory.resident = {
-          min : Math.round(stats.resident.min * BYTE_TO_MEGABYTE),
-          max : Math.round(stats.resident.max * BYTE_TO_MEGABYTE),
-          average : Math.round(stats.resident.average * BYTE_TO_MEGABYTE)
+        if (stats.explicit) {
+          memory.explicit = {
+            min : Math.round(stats.explicit.min * BYTE_TO_MEGABYTE),
+            max : Math.round(stats.explicit.max * BYTE_TO_MEGABYTE),
+            average : Math.round(stats.explicit.average * BYTE_TO_MEGABYTE)
+          }
         }
-      }
+  
+        if (stats.resident) {
+          memory.resident = {
+            min : Math.round(stats.resident.min * BYTE_TO_MEGABYTE),
+            max : Math.round(stats.resident.max * BYTE_TO_MEGABYTE),
+            average : Math.round(stats.resident.average * BYTE_TO_MEGABYTE)
+          }
+        }
 
+      }
       return memory;
     }
 
@@ -1664,9 +1667,9 @@ function processTestResults(aReport) {
     this.get('#/l10n', l10n_reports);
     this.get('#/l10n/reports', l10n_reports);
     this.get('#/l10n/report/:id', l10n_report);
-    this.get('#/endurance', endurance_reports);
-    this.get('#/endurance/reports', endurance_reports);
+    this.get('#/endurance', endurance_charts);
     this.get('#/endurance/charts', endurance_charts);
+    this.get('#/endurance/reports', endurance_reports);
     this.get('#/endurance/report/:id', endurance_report);
     this.get('#/remote', remote_reports);
     this.get('#/remote/reports', remote_reports);
