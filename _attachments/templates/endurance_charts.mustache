@@ -47,19 +47,19 @@
         series: [{
           name: "Passed",
           data: [{{#reports}}
-            [UTCDate(new Date("{{time_start}}")), {{tests_passed}}],
+            [Date.parse("{{time_start}}"), {{tests_passed}}],
           {{/reports}}],
           color: "green"
         },{
           name: "Skipped",
           data: [{{#reports}}
-            [UTCDate(new Date("{{time_start}}")), {{tests_skipped}}],
+            [Date.parse("{{time_start}}"), {{tests_skipped}}],
           {{/reports}}],
           color: "orange"
         },{
           name: "Failed",
           data: [{{#reports}}
-            [UTCDate(new Date("{{time_start}}")), {{tests_failed}}],
+            [Date.parse("{{time_start}}"), {{tests_failed}}],
           {{/reports}}],
           color: "red"
         }],
@@ -98,7 +98,7 @@
           name: "{{name}}",
           data: [
             {{#reports}}
-              [UTCDate(new Date("{{time_start}}")), {{#memory}}{{#explicit}}{{max}}{{/explicit}}{{^explicit}}""{{/explicit}}{{/memory}}],
+              [Date.parse("{{time_start}}"), {{#memory}}{{#explicit}}{{max}}{{/explicit}}{{^explicit}}""{{/explicit}}{{/memory}}],
             {{/reports}}],
         },{{/platform_reports}}],
         title: {
@@ -136,7 +136,7 @@
           name: "{{name}}",
           data: [
             {{#reports}}
-              [UTCDate(new Date("{{time_start}}")), {{#memory}}{{#resident}}{{max}}{{/resident}}{{^resident}}""{{/resident}}{{/memory}}],
+              [Date.parse("{{time_start}}"), {{#memory}}{{#resident}}{{max}}{{/resident}}{{^resident}}""{{/resident}}{{/memory}}],
             {{/reports}}],
         },{{/platform_reports}}],
         title: {
@@ -174,7 +174,7 @@
           name: "{{name}}",
           data: [
             {{#reports}}
-              [UTCDate(new Date("{{time_start}}")), {{duration}} / 1000],
+              [Date.parse("{{time_start}}"), {{duration}} / 1000],
             {{/reports}}],
         },{{/platform_reports}}],
         title: {
