@@ -1,6 +1,3 @@
-var BYTE_TO_MEGABYTE = 1/1048576;
-var MAX_CHART_CHECKPOINTS = 450;
-
 var report_type_mappings = {
   'firefox-functional' : 'functional',
   'firefox-update' : 'update',
@@ -156,6 +153,7 @@ function processTestResults(aReport) {
       };
 
       var context = this;
+      this.firefox_versions = FIREFOX_VERSIONS;
       request({url: '/_view/functional_reports?' + $.param(query)}, function (err, resp) {
         if (err) window.alert(err);
 
@@ -222,6 +220,7 @@ function processTestResults(aReport) {
 
     var functional_failure = function() {
       var context = this;
+      this.firefox_versions = FIREFOX_VERSIONS;
 
       var branch = this.params.branch ? this.params.branch : 'All';
       var platform = this.params.platform ? this.params.platform : 'All';
@@ -324,6 +323,7 @@ function processTestResults(aReport) {
 
     var functional_topFailures = function () {
       var context = this;
+      this.firefox_versions = FIREFOX_VERSIONS;
 
       var branch = this.params.branch ? this.params.branch : 'All';
       var platform = this.params.platform ? this.params.platform : 'All';
@@ -481,6 +481,7 @@ function processTestResults(aReport) {
 
     var update_overview = function () {
       var context = this;
+      this.firefox_versions = FIREFOX_VERSIONS;
 
       var branch = this.params.branch || 'All';
       var channel = this.params.channel || 'All';
@@ -599,6 +600,7 @@ function processTestResults(aReport) {
 
     var update_detail = function () {
       var context = this;
+      this.firefox_versions = FIREFOX_VERSIONS;
 
       var branch = this.params.branch || 'All';
       var channel = this.params.channel || 'All';
@@ -754,6 +756,7 @@ function processTestResults(aReport) {
       };
 
       var context = this;
+      this.firefox_versions = FIREFOX_VERSIONS;
       request({url: '/_view/update_reports?' + $.param(query)}, function (err, resp) {
         if (err) window.alert(err);
 
@@ -891,6 +894,7 @@ function processTestResults(aReport) {
       };
 
       var context = this;
+      this.firefox_versions = FIREFOX_VERSIONS;
       request({url: '/_view/l10n_reports?' + $.param(query)}, function (err, resp) {
         if (err) window.alert(err);
 
@@ -1026,6 +1030,7 @@ function processTestResults(aReport) {
       };
 
       var context = this;
+      this.firefox_versions = FIREFOX_VERSIONS;
       request({url: '/_view/endurance_reports?' + $.param(query)}, function (err, resp) {
         if (err) window.alert(err);
 
@@ -1292,6 +1297,7 @@ function processTestResults(aReport) {
       };
 
       var context = this;
+      this.firefox_versions = FIREFOX_VERSIONS;
       request({url: '/_view/remote_reports?' + $.param(query)}, function (err, resp) {
         if (err) window.alert(err);
 
@@ -1426,6 +1432,7 @@ function processTestResults(aReport) {
       };
 
       var context = this;
+      this.firefox_versions = FIREFOX_VERSIONS;
       request({url: '/_view/addons_reports?' + $.param(query)}, function (err, resp) {
         if (err) window.alert(err);
 
