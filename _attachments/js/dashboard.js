@@ -1289,7 +1289,7 @@ function processTestResults(aReport) {
               }
             }
 
-            var testMemory = stats_available ? get_memory_stats(tests[i].stats) : {};
+            var testMemory = get_memory_stats(tests[i].stats);
 
             context.tests.push({
               testFile : tests[i].testFile.split(type)[1].replace(/\\/g, '/'),
@@ -1326,7 +1326,7 @@ function processTestResults(aReport) {
         context.testCount = testCount;
         context.checkpointCount = allCheckpoints.length;
         context.checkpointsPerTest = Math.round(allCheckpoints.length / testCount);
-        context.memory = stats_available ? get_memory_stats(resp.endurance.stats) : {};
+        context.memory = get_memory_stats(resp.endurance.stats);
         context.mozmill_version = resp.mozmill_version || "n/a";
         context.results = processTestResults(resp);
 
@@ -1358,7 +1358,7 @@ function processTestResults(aReport) {
 
       if (stats) {
 
-        if (stats.explicit) {
+        if ("explicit" in stats) {
           memory.explicit = {
             min : Math.round(stats.explicit.min * BYTE_TO_MEGABYTE),
             max : Math.round(stats.explicit.max * BYTE_TO_MEGABYTE),
@@ -1366,7 +1366,7 @@ function processTestResults(aReport) {
           }
         }
   
-        if (stats.resident) {
+        if ("resident" in stats) {
           memory.resident = {
             min : Math.round(stats.resident.min * BYTE_TO_MEGABYTE),
             max : Math.round(stats.resident.max * BYTE_TO_MEGABYTE),
