@@ -1,0 +1,100 @@
+table {
+  margin-bottom: 20px;
+  border: 1px solid #aaa;
+  -moz-border-radius: 10px;
+  border-spacing: 0;
+  padding: 5px;
+  background-color: #fff;
+}
+
+table th {
+  padding: 5px 10px 5px 20px;
+  background-color: #eee;
+  vertical-align: top;
+}
+
+table td {
+  border-bottom: 1px dotted #aaa;
+  border-right: 1px dotted #aaa;
+  padding: 5px 10px;
+  vertical-align: top;
+  text-align: left;
+}
+
+table#results td, table#results th {
+  margin: 0;
+}
+
+table#results td.results {
+  text-align: right;
+}
+
+table.clean td {
+  border: none;
+  vertical-align: top;
+}
+
+table.clean th {
+  text-align: right;
+}
+
+table#result td, table#result th {
+  margin: 0;
+  min-width: 7em;
+}
+
+table#result tr.passed td {
+  color: #181;
+}
+
+table#result tr.failed td {
+  color: #811;
+}
+
+table#result tr.skipped td {
+  color: #f90;
+}
+
+.tooltip {
+  display: none;
+}
+
+table .information {
+  vertical-align: top;
+  margin: 0;
+  padding: 0 10px;
+}
+
+table#result tr.failed .information:hover .tooltip {
+  position: absolute;
+  display: block;
+  overflow: scroll;
+  width: 400px;
+  border: 1px solid #333;
+  -moz-border-radius: 10px;
+  padding: 5px 10px;
+  background-color: #fff;
+}
+/*
+th.headerSortUp {
+  background-image: url(../img/asc.gif) !important;
+  background-color: #eee;
+  background-position: right center;
+}
+
+th.headerSortDown {
+  background-image: url(../img/desc.gif) !important;
+  background-color: #eee;
+  background-position: right center;
+}
+
+th.header {
+  background-image: url(../img/bg.gif);
+  cursor: pointer;
+  font-weight: bold;
+  background-repeat: no-repeat;
+  background-position: center left;
+  padding-left: 20px;
+  border-right: 1px solid #dad9c7;
+  margin-left: -1px;
+}*/

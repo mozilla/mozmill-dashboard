@@ -1,0 +1,12 @@
+#!/bin/sh
+curl -X DELETE 'http://localhost:9200/filter1'
+echo 'sent delete command'
+curl -X PUT 'http://localhost:9200/filter1'
+echo 'created index'
+./mappin
+echo 'created map'
+rm _all_docs
+wget http://mozmill-release.brasstacks.mozilla.com/db/_all_docs
+echo 'got new docs list'
+./readdb
+echo "done"

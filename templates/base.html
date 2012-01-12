@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html LANG="{{ LANG }}" dir="{{ DIR }}">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>{% block page_title %}Mozmill Dashboard{% endblock %}</title>
+
+    {% block site_css %}
+      {{ css('report') }}
+    {% endblock %}
+    {% block site_js %}
+      {{ js('report_js') }}
+    {% endblock %}
+ </head>
+  <body>
+    <div id='header'>Mozmill Dashboard</div>
+    <ul id='links'>
+      <li><a href='/'>All</a></li>
+      <li><a href='/functional/'>Functional</a></li>
+      <li><a href='/endurance/'>Endurance</a></li>
+      <li><a href='/update/'>Update</a></li>
+
+    </ul>
+    <div id='content'>
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>
+

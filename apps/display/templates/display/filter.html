@@ -1,0 +1,23 @@
+<fieldset id="filter">
+      <legend>Filter</legend>
+      <div id="os">
+        <label>OS: </label>
+        {% for os in operating_systems %}
+        <span {% if os==current_os %}class="selected"{% endif %}>{{os}}</span>
+        {% endfor %}
+      </div>
+      <div id="locale">
+        <label>Locale: </label>
+        {% for locale in locales %}
+        <span  {% if locale==current_locale%}class="selected"{% endif %}>{{locale}}</span>
+        {% endfor %}
+      </div>
+      <div id="date">
+        <label>From: </label>
+        <input id="start-date" class="datepicker hasDatepicker" type="text" value="{{from_date}}" size="11">
+        <label>To: </label>
+        <input id="end-date" class="datepicker hasDatepicker" type="text" value="{{to_date}}" size="11">
+		<a href='' class="submitter">Submit</a>
+      </div>
+    </fieldset>
+

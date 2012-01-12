@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>BrowserID Login</title>
+<script src="{{ browserid_include_script }}"></script>
+<script>
+function login() {
+  navigator.id.getVerifiedEmail(function(assertion) {
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    if (assertion) {
+      $("assertion").value = assertion.toString();
+      $("verify_login").submit();
+    } else {
+      alert("O snap, something failed.");
+    }
+  });
+}
+</script>
+<p onclick="login()">click me to login</p>
+<form action="/en-US/accounts/verify_login/" method="post" id="verify_login">
+  <input type="hidden" name="assertion" id="assertion">
+  {% csrf_token %}
+</form>

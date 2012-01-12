@@ -1,0 +1,20 @@
+#!/bin/sh
+curl -X PUT 'http://localhost:9200/filter1/doc/_mapping' -d '{
+    "doc": {
+        "properties": {
+            "application_locale": {
+                "type": "string",
+                "index":"not_analyzed",
+                "store":"yes"
+            },
+            "report_type": {
+                "type": "string",
+                "index":"not_analyzed",
+                "store":"yes"
+            }
+        }
+    }
+}'
+
+
+echo " "

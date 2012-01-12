@@ -1,0 +1,53 @@
+/* An example CSS file that will be minified. */
+body,div,p,ul,a {
+    padding:0px;
+    margin:0px;
+    list-style:none;
+    text-decoration:none;
+}
+
+body {
+    font-family: sans-serif;
+    background-color: rgb(56,142,222);
+    background: url("/media/img/page_bg.png") repeat scroll 0 0 transparent;
+    min-height: 800px;
+}
+h1 { 
+    font-family: Helvetica, sans-serif; 
+    margin-left: 30px;
+}
+
+#header{
+    font-size:30px;
+    background-color:#0A2533;
+    color:#ebebeb;
+    padding: 6px 18px;
+}
+
+#links{
+    background:#3399CC;
+    color:white;
+    overflow:auto;
+    padding:0px 8px;
+}
+
+#links li{
+    float:left;
+    padding: 6px 12px;
+}
+
+#links li:hover{
+    background-color:#ccc;
+}
+#links a{
+    color:#333532;
+ 
+
+#playdoh { 
+    float: left;
+    margin-left: 645px;
+}
+
+a.highlighted{
+    background:#FDEEF4;
+}

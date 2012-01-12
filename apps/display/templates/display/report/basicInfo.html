@@ -1,0 +1,74 @@
+    <h2>Information</h2>
+    <table id="information" class="clean">
+      <tr>
+       <th>Result ID:</th>
+       <td><a href="http://jsonviewer.stack.hu/#http://mozmill-release.brasstacks.mozilla.com/db/{{id}}">{{id}}</a></td>
+      </tr><tr>
+       <th>Application:</th>
+       <td>{{app_name}} {{app_version}} ({{platform_version}}, {{app_locale}}, {{platform_buildId}})</td>
+      </tr>
+      {% if app_sourcestamp %}
+      <tr>
+       <th>Sourcestamp:</th>
+       <td><a href="{{app_sourcestamp}}">{{app_sourcestamp}}</a></td>
+      </tr>
+      {% endif %}
+      {% if extentions %}
+      <tr>
+        <th>Add-ons:</th>
+        <td>
+          <ul class="addons">
+            <li>Extensions:
+            <ul>
+              {% for extension in extensions %}
+              <li>{{extension.name}} {{extension.version}}
+                ({% if extension.isActive %}<span class="passed">enabled</span>{% else %}<span class="failed">disabled</span>{% endif %},
+                {% if extension.isCompatible %}<span class="passed">compatible</span>{% else %}<span class="failed">incompatible</span>{% endif %})</li>
+              {% else %}
+              <li>None</li>
+              {% endfor %}
+            </ul></li>
+            <li>Themes:
+            <ul>
+              {% for extension in themes%}
+              <li>{{extension.name}} {{extension.version}}
+                ({% if extension.isActive %}<span class="passed">enabled</span>{% else %}<span class="failed">disabled</span>{% endif %},
+                {% if extension.isCompatible %}<span class="passed">compatible</span>{% else %}<span class="failed">incompatible</span>{% endif %})</li>
+              {% else %}
+              <li>None</li>
+              {% endfor %}
+            </ul></li>
+            <li>Plugins:
+            <ul>
+              {% for extension in plugins%}
+              <li>{{extension.name}} {{extension.version}}
+                ({% if extension.isActive %}<span class="passed">enabled</span>{% else %}<span class="failed">disabled</span>{% endif %},
+                {% if extension.isCompatible %}<span class="passed">compatible</span>{% else %}<span class="failed">incompatible</span>{% endif %})</li>
+              {% else %}
+              <li>None</li>
+              {% endfor %}
+
+            </ul></li>
+          </ul>
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+       <th>Platform:</th>
+        <td>{{system}} {{system_version}} {{service_pack}} ({{cpu}})</td>
+      </tr><tr>
+        <th>Duration:</th>
+        <td>{{time_start}} - {{time_end}}</td>
+      </tr>
+      {% if mozmill_version %}
+      <tr>
+        <th>Mozmill:</th>
+        <td>{{mozmill_version}}</td>
+      </tr>
+      {% endif %}
+      <tr>
+        <th>Results:</th>
+        <td>Pass: <strong>{{passed}}</strong> / Fail: <strong>{{failed}}</strong> / Skip: <strong>{{skipped}}</strong></td>
+      </tr>
+    </table>
+

@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block site_js %}
+  {{ js('report_js') }}
+  {{ js('highcharts_js') }}
+{% endblock %}
+
+{% block content %}
+
+{% include "display/report/basicInfo.html" %} 
+
+    <h2>Endurance</h2>
+    <table class="clean">
+      <tbody>
+        <tr>
+          <th>Arguments:</th>
+          <td>Delay (s): <strong>{{delay}}</strong> / Iterations: <strong>{{iterations}}</strong> / Micro-iterations: <strong>{{microIterations}}</strong> / Restart: <strong>{% if restart %}Yes{%else%}No{% endif %}</strong></td>
+        </tr><tr>
+          <th>Number of tests:</th>
+          <td>{{testCount}}</td>
+        </tr><tr>
+          <th>Number of checkpoints:</th>
+          <td>{{checkpointCount}} ({{checkpointsPerTest}} per test)
+          </td>
+        </tr>
+        {% if allocated %}
+        <tr>
+          <th>Allocated memory (MB):</th>
+          <td>Minimum: <strong>{{allocated.min}}</strong> / Maximum: <strong>{{allocated.max}}</strong> / Average: <strong>{{allocated.average}}</strong></td>
+        </tr>
+        {% endif %}
+        {% if mapped %}
+        <tr>
+          <th>Mapped memory (MB):</th>
+          <td>Minimum: <strong>{{mapped.min}}</strong> / Maximum: <strong>{{mapped.max}}</strong> / Average: <strong>{{mapped.average}}</strong></td>
+        </tr>
+        {%endif%}
+        {%if explicit %}<tr>
+          <th>Explicit memory (MB):</th>
+          <td>Minimum: <strong>{{explicit.min}}</strong> / Maximum: <strong>{{explicit.max}}</strong> / Average: <strong>{{explicit.average}}</strong></td>
+        </tr>{%endif%}
+        {% if resident %}<tr>
+          <th>Resident memory (MB):</th>
+          <td>Minimum: <strong>{{resident.min}}</strong> / Maximum: <strong>{{resident.max}}</strong> / Average: <strong>{{resident.average}}</strong></td>
+        </tr>{% endif %}
+      </tbody>
+    </table>
+
+    <script>
+    {% macro series(series_name, points) -%}
+    {% if points %}
+        {
+            name: '{{series_name}}',
+            data: [
+               {%for point in points%}
+                   {
+                       name: "<strong>File:</strong> {{point.testFile}}<br/><strong>Method:</strong> {{point.testMethod}}",
+                       y: {{point.memory}}
+                   },
+               {% endfor %}
+           ]
+        },
+    {% endif %}
+    {%- endmacro %}
+
+     $(document).ready(function() {
+        chart1 = new Highcharts.Chart({
+            chart: {
+                borderColor: '#AAAAAA',
+                borderRadius: 10,
+                borderWidth: 1,
+                renderTo: 'checkpoints-memory-usage-chart',
+                defaultSeriesType: 'line'
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {
+                line: {
+                    marker: {
+                        enabled: false
+                    }
+                },
+                series: {
+                    pointStart: 1
+                    }
+            },
+            series: [
+                {{ series("allocated", memresult.allocated) }}
+                {{ series("mapped", memresult.mapped) }}
+                {{ series("explicit", memresult.explicit) }}
+                {{ series("resident", memresult.resident) }}
+            ],
+            title: {
+                text: 'Memory Usage (' + {{checkpointCount}} + ' checkpoints)'
+            },
+            tooltip: {
+                formatter: function() {
+                    return this.point.name + '<br/>' +
+                        '<strong>' + this.series.name + ' memory: </strong>' + this.y + ' MB';
+                }
+            },
+            xAxis: {
+                allowDecimals: false,
+                gridLineWidth: 1,
+                title: {
+                    text: 'Checkpoints'
+                },
+                labels: {
+                    enabled: false
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Memory Usage (MB)'
+                },
+                min: 0
+            },
+        });
+
+        //TODO: If stats available
+        chart1 = new Highcharts.Chart({
+            chart: {
+                borderColor: '#AAAAAA',
+                borderRadius: 10,
+                borderWidth: 1,
+                renderTo: 'tests-memory-usage-chart',
+                defaultSeriesType: 'line'
+            },
+            credits: {
+                enabled: false
+            },
+            plotOptions: {
+                line: {
+                    marker: {
+                        enabled: false
+                    }
+                },
+                series: {
+                    pointStart: 1
+                    }
+            },
+            series: [
+                {% for series_type in testresult %}
+                     {{series(series_type.name,series_type.points)}}
+                {% endfor %}
+            ],
+            title: {
+                text: 'Memory Usage (TBD: testCount}} tests)'
+            },
+            tooltip: {
+                formatter: function() {
+                    return this.point.name + '<br/>' +
+                        '<strong>' + this.series.name + ' memory: </strong>' + this.y + ' MB';
+                }
+            },
+            xAxis: {
+                allowDecimals: false,
+                gridLineWidth: 1,
+                title: {
+                    text: 'Tests'
+                },
+            },
+            yAxis: {
+                title: {
+                    text: 'Memory Usage (MB)'
+                },
+                min: 0
+            }
+        });
+     });
+    </script>
+
+    <div id="checkpoints-memory-usage-chart" class="chart" style="float:left"></div>
+    <div id="tests-memory-usage-chart" class="chart"></div>
+
+
+    {% if testresult_table %}
+    <table id="endurance_result">
+      <thead>
+        <tr>
+          <th rowspan="2">Filename</th>
+          <th rowspan="2">Test</th>
+              {% if testresult_table.allocated %}<th colspan="3">Allocated Memory (MB)</th>{% endif %}
+              {% if testresult_table.mapped %}<th colspan="3">Mapped Memory (MB)</th>{% endif %}
+              {% if testresult_table.explicit%}<th colspan="3">Explicit Memory (MB)</th>{%endif%}
+              {% if testresult_table.resident %}<th colspan="3">Resident Memory (MB)</th>{% endif %}
+        </tr>
+          <tr>
+            <th>min</th>
+            <th>max</th>
+            <th>average</th>
+            <th>min</th>
+            <th>max</th>
+            <th>average</th>
+          </tr>
+        </tr>
+      </thead>
+      <tbody>
+        {%for test in testresult_table.tests %}
+        <tr>
+          <td>{{test.testFile}}</td>
+          <td>{{test.testMethod}}</td>
+            {% if test.allocated %}
+              <td class="results">{{test.min}}</td>
+              <td class="results">{{test.max}}</td>
+              <td class="results">{{test.average}}</td>
+            {% endif %}
+            {%if test.mapped %}
+              <td class="results">{{test.min}}</td>
+              <td class="results">{{test.max}}</td>
+              <td class="results">{{test.average}}</td>
+            {% endif %}
+            {% if explicit %}
+              <td class="results">{{test.min}}</td>
+              <td class="results">{{test.max}}</td>
+              <td class="results">{{test.average}}</td>
+            {% endif %}
+            {% if resident %}
+              <td class="results">{{test.min}}</td>
+              <td class="results">{{test.max}}</td>
+              <td class="results">{{test.average}}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+{% include "display/report/passFail.html" %} 
+
+{% endblock %}

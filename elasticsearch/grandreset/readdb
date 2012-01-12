@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+import simplejson as json
+import os
+from httplib2 import Http
+from multiprocessing import Pool
+
+def turnaround(serial_number):
+    h = Http()
+    try:
+        resp, content = h.request("http://mozmill-release.brasstacks.mozilla.com/db/%s"%(serial_number), "GET")
+        doc = json.loads(content)
+
+        for (counter,function) in enumerate(doc['results']):
+            if function['failed']==0:
+                doc['results'][counter]['passed_function'] = function['name']
+            else:
+                doc['results'][counter]['failed_function'] = function['name']
+            #doc['results'][counter]['name']
+        post = json.dumps(doc)
+
+        if resp['status']=='200':
+            resp = h.request('http://localhost:9200/filter1/doc/%s'%(serial_number), "POST", post)
+            print serial_number
+    except:
+        print "exception: %s"%(serial_number)
+        pass 
+
+
+def parse():
+    f = open('_all_docs', 'r')
+    doc_list = json.loads(f.read())
+    pool = Pool(processes=20)
+
+    for row in doc_list['rows']:
+        turnaround(row['id'])
+
+
+if __name__=="__main__":
+    parse()
+

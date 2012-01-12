@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block site_css %}
+  {{ css('reports') }}
+{% endblock %}
+
+{% block site_js %}
+  {{ js('reports_js') }}
+{% endblock %}
+
+
+{% block content %}
+{% include "display/filter.html" %}
+
+<h2 class='title'> Reports for {{report_type}} tests. Check out the <a href ="/{{report_type}}/topfailures/"> top failures</a>.</h2>
+<div id="results">
+<table id="dt_example" class="display" cellpadding="0" cellspacing="0" border="0">
+  <thead>
+  <tr>
+    <th class='header'>Date</th>
+    <th class='header'>Version</th>
+    <th class='header'>Build</th>
+    <th class='header'>Locale</th>
+    <th class='header'>Platform</th>
+    <th class='header'>Version</th>
+    <th class='header'>CPU</th>
+    <th class='header'>Pass</th>
+    <th class='header'>Skip</th>
+    <th class='header'>Fail</th>
+  </tr>
+  </thead>
+{% for report in reports %}
+  <tr>
+    <td><a href ="/report/{{report.id}}">{{report.date}}</a></td>
+    <td>{{report.version}}</td>
+    <td>{{report.build}}</td>
+    <td>{{report.locale}}</td>
+    <td>{{report.platform}}</td>
+    <td>{{report.platform_version}}</td>
+    <td>{{report.cpu}}</td>
+    <td>{{report.pass}}</td>
+    <td>{{report.skip}}</td>
+    <td>{{report.fail}}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+
+{% endblock %}
