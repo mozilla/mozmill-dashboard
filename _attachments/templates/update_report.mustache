@@ -9,6 +9,36 @@
          {{post_app_name}} {{post_app_version}} ({{post_platform_version}}, {{post_app_locale}}, <a href="{{post_app_sourcestamp}}">{{post_platform_buildId}}</a>)
         </td>
       </tr><tr>
+        <th>Add-ons:</th>
+        <td>
+          <ul class="addons">
+            <li>Extensions:
+            <ul>
+              {{#extensions}}<li>{{name}} {{version}}
+                ({{#isActive}}<span class="passed">enabled</span>{{/isActive}}{{^isActive}}<span class="failed">disabled</span>{{/isActive}},
+                {{#isCompatible}}<span class="passed">compatible</span>{{/isCompatible}}{{^isCompatible}}<span class="failed">incompatible</span>{{/isCompatible}})</li>
+              {{/extensions}}
+              {{^extensions}}<li>None</li>{{/extensions}}
+            </ul></li>
+            <li>Themes:
+            <ul>
+              {{#themes}}<li>{{name}} {{version}}
+                ({{#isActive}}<span class="passed">enabled</span>{{/isActive}}{{^isActive}}<span class="failed">disabled</span>{{/isActive}},
+                {{#isCompatible}}<span class="passed">compatible</span>{{/isCompatible}}{{^isCompatible}}<span class="failed">incompatible</span>{{/isCompatible}})</li>
+              {{/themes}}
+              {{^themes}}<li>None</li>{{/themes}}
+            </ul></li>
+            <li>Plugins:
+            <ul>
+              {{#plugins}}<li>{{name}} {{version}}
+                ({{#isActive}}<span class="passed">enabled</span>{{/isActive}}{{^isActive}}<span class="failed">disabled</span>{{/isActive}},
+                {{#isCompatible}}<span class="passed">compatible</span>{{/isCompatible}}{{^isCompatible}}<span class="failed">incompatible</span>{{/isCompatible}})</li>
+              {{/plugins}}
+              {{^plugins}}<li>None</li>{{/plugins}}
+            </ul></li>
+          </ul>
+        </td>
+      </tr><tr>
         <th>Platform:</th>
         <td>{{system}} {{system_version}} {{service_pack}} ({{cpu}})</td>
       </tr><tr>

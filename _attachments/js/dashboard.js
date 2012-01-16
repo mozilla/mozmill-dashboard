@@ -453,6 +453,11 @@ function processTestResults(aReport) {
         context.platform_buildId = resp.platform_buildid;
         context.app_locale = resp.application_locale;
         context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
+        if (resp.addons !== undefined) {
+          context.extensions = resp.addons.filter(function (item) { return (item.type === "extension") });
+          context.themes = resp.addons.filter(function (item) { return (item.type === "theme") });
+          context.plugins = resp.addons.filter(function (item) { return (item.type === "plugin") });
+        }
         context.system = resp.system_info.system;
         context.system_version = resp.system_info.version;
         context.service_pack = resp.system_info.service_pack;
@@ -831,6 +836,11 @@ function processTestResults(aReport) {
         if (err) window.alert(err);
 
         context.id = resp._id;
+        if (resp.addons !== undefined) {
+          context.extensions = resp.addons.filter(function (item) { return (item.type === "extension") });
+          context.themes = resp.addons.filter(function (item) { return (item.type === "theme") });
+          context.plugins = resp.addons.filter(function (item) { return (item.type === "plugin") });
+        }
         context.system = resp.system_info.system;
         context.system_version = resp.system_info.version;
         context.service_pack = resp.system_info.service_pack;
@@ -975,6 +985,11 @@ function processTestResults(aReport) {
         context.platform_buildId = resp.platform_buildid;
         context.app_locale = resp.application_locale;
         context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
+        if (resp.addons !== undefined) {
+          context.extensions = resp.addons.filter(function (item) { return (item.type === "extension") });
+          context.themes = resp.addons.filter(function (item) { return (item.type === "theme") });
+          context.plugins = resp.addons.filter(function (item) { return (item.type === "plugin") });
+        }
         context.system = resp.system_info.system;
         context.system_version = resp.system_info.version;
         context.service_pack = resp.system_info.service_pack;
@@ -1487,6 +1502,11 @@ function processTestResults(aReport) {
         context.platform_buildId = resp.platform_buildid;
         context.app_locale = resp.application_locale;
         context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
+        if (resp.addons !== undefined) {
+          context.extensions = resp.addons.filter(function (item) { return (item.type === "extension") });
+          context.themes = resp.addons.filter(function (item) { return (item.type === "theme") });
+          context.plugins = resp.addons.filter(function (item) { return (item.type === "plugin") });
+        }
         context.system = resp.system_info.system;
         context.system_version = resp.system_info.version;
         context.service_pack = resp.system_info.service_pack;
@@ -1624,6 +1644,11 @@ function processTestResults(aReport) {
         context.platform_buildId = resp.platform_buildid;
         context.app_locale = resp.application_locale;
         context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
+        if (resp.addons !== undefined) {
+          context.extensions = resp.addons.filter(function (item) { return (item.type === "extension") });
+          context.themes = resp.addons.filter(function (item) { return (item.type === "theme") });
+          context.plugins = resp.addons.filter(function (item) { return (item.type === "plugin") });
+        }
         context.system = resp.system_info.system;
         context.system_version = resp.system_info.version;
         context.service_pack = resp.system_info.service_pack;
