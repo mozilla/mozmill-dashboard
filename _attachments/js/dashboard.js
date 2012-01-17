@@ -453,7 +453,8 @@ function processTestResults(aReport) {
         context.platform_buildId = resp.platform_buildid;
         context.app_locale = resp.application_locale;
         context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
-        if (resp.addons !== undefined) {
+        context.addonsIncluded = 'addons' in resp;
+        if (context.addonsIncluded) {
           context.extensions = resp.addons.filter(function (item) { return (item.type === "extension") });
           context.themes = resp.addons.filter(function (item) { return (item.type === "theme") });
           context.plugins = resp.addons.filter(function (item) { return (item.type === "plugin") });
@@ -773,7 +774,7 @@ function processTestResults(aReport) {
           context.reports.push(value);
         })
 
-        var template = '/templates/functional_reports.mustache';
+        var template = '/templates/update_reports.mustache';
         context.render(template).replace('#content').then(function () {
 
           $('#branch-selection span').each(function (i, elem) {
@@ -836,7 +837,8 @@ function processTestResults(aReport) {
         if (err) window.alert(err);
 
         context.id = resp._id;
-        if (resp.addons !== undefined) {
+        context.addonsIncluded = 'addons' in resp;
+        if (context.addonsIncluded) {
           context.extensions = resp.addons.filter(function (item) { return (item.type === "extension") });
           context.themes = resp.addons.filter(function (item) { return (item.type === "theme") });
           context.plugins = resp.addons.filter(function (item) { return (item.type === "plugin") });
@@ -985,7 +987,8 @@ function processTestResults(aReport) {
         context.platform_buildId = resp.platform_buildid;
         context.app_locale = resp.application_locale;
         context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
-        if (resp.addons !== undefined) {
+        context.addonsIncluded = 'addons' in resp;
+        if (context.addonsIncluded) {
           context.extensions = resp.addons.filter(function (item) { return (item.type === "extension") });
           context.themes = resp.addons.filter(function (item) { return (item.type === "theme") });
           context.plugins = resp.addons.filter(function (item) { return (item.type === "plugin") });
@@ -1235,7 +1238,8 @@ function processTestResults(aReport) {
         context.platform_buildId = resp.platform_buildid;
         context.app_locale = resp.application_locale;
         context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
-        if (resp.addons !== undefined) {
+        context.addonsIncluded = 'addons' in resp;
+        if (context.addonsIncluded) {
           context.extensions = resp.addons.filter(function (item) { return (item.type === "extension") });
           context.themes = resp.addons.filter(function (item) { return (item.type === "theme") });
           context.plugins = resp.addons.filter(function (item) { return (item.type === "plugin") });
@@ -1502,7 +1506,8 @@ function processTestResults(aReport) {
         context.platform_buildId = resp.platform_buildid;
         context.app_locale = resp.application_locale;
         context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
-        if (resp.addons !== undefined) {
+        context.addonsIncluded = 'addons' in resp;
+        if (context.addonsIncluded) {
           context.extensions = resp.addons.filter(function (item) { return (item.type === "extension") });
           context.themes = resp.addons.filter(function (item) { return (item.type === "theme") });
           context.plugins = resp.addons.filter(function (item) { return (item.type === "plugin") });
@@ -1644,7 +1649,8 @@ function processTestResults(aReport) {
         context.platform_buildId = resp.platform_buildid;
         context.app_locale = resp.application_locale;
         context.app_sourcestamp = resp.application_repository + "/rev/" + resp.application_changeset;
-        if (resp.addons !== undefined) {
+        context.addonsIncluded = 'addons' in resp;
+        if (context.addonsIncluded) {
           context.extensions = resp.addons.filter(function (item) { return (item.type === "extension") });
           context.themes = resp.addons.filter(function (item) { return (item.type === "theme") });
           context.plugins = resp.addons.filter(function (item) { return (item.type === "plugin") });
