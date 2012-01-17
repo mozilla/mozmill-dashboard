@@ -9,7 +9,7 @@
       </tr><tr>
         <th>Sourcestamp:</th>
         <td><a href="{{app_sourcestamp}}">{{app_sourcestamp}}</a></td>
-      </tr><tr>
+      </tr>{{#addonsIncluded}}<tr>
         <th>Add-ons:</th>
         <td>
           <ul class="addons">
@@ -39,7 +39,7 @@
             </ul></li>
           </ul>
         </td>
-      </tr><tr>
+      </tr>{{/addonsIncluded}}<tr>
         <th>Platform:</th>
         <td>{{system}} {{system_version}} {{service_pack}} ({{cpu}})</td>
       </tr>
