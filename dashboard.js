@@ -5,6 +5,7 @@ ddoc = {
   _id: '_design/dashboard',
   rewrites : [
     { from: "/",      to: 'index.html'},
+    { from: "/db/",   to: '../../'},
     { from: "/db/*",  to: '../../*'},
     { from: "/*",     to: '*'}
   ]
