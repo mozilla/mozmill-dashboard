@@ -94,6 +94,8 @@ function processTestResults(aReport) {
   }
 
   var app = $.sammy(function () {
+    var domain = window.location.protocol + "//" + window.location.hostname;
+
     this.use('Mustache');
 
     function setFilters() {
@@ -447,6 +449,7 @@ function processTestResults(aReport) {
         if (err) window.alert(err);
 
         context.id = resp._id;
+        context.domain = domain;
         context.app_name = resp.application_name;
         context.app_version = resp.application_version;
         context.platform_version = resp.platform_version;
@@ -837,6 +840,7 @@ function processTestResults(aReport) {
         if (err) window.alert(err);
 
         context.id = resp._id;
+        context.domain = domain;
         context.addonsIncluded = 'addons' in resp;
         if (context.addonsIncluded) {
           context.extensions = resp.addons.filter(function (item) { return (item.type === "extension") });
@@ -981,6 +985,7 @@ function processTestResults(aReport) {
         if (err) window.alert(err);
 
         context.id = resp._id;
+        context.domain = domain;
         context.app_name = resp.application_name;
         context.app_version = resp.application_version;
         context.platform_version = resp.platform_version;
@@ -1232,6 +1237,7 @@ function processTestResults(aReport) {
         if (err) window.alert(err);
 
         context.id = resp._id;
+        context.domain = domain;
         context.app_name = resp.application_name;
         context.app_version = resp.application_version;
         context.platform_version = resp.platform_version;
@@ -1500,6 +1506,7 @@ function processTestResults(aReport) {
         if (err) window.alert(err);
 
         context.id = resp._id;
+        context.domain = domain;
         context.app_name = resp.application_name;
         context.app_version = resp.application_version;
         context.platform_version = resp.platform_version;
@@ -1643,6 +1650,7 @@ function processTestResults(aReport) {
         if (err) window.alert(err);
 
         context.id = resp._id;
+        context.domain = domain;
         context.app_name = resp.application_name;
         context.app_version = resp.application_version;
         context.platform_version = resp.platform_version;
