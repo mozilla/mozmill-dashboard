@@ -28,6 +28,13 @@ function processTestResults(aReport) {
     // Split absolute path and only keep the relative path below the test-run folder
     var filename = result.filename.split(report_type)[1].replace(/\\/g, '/');
 
+    var repository_url = null;
+    if ('tests_repository' in aReport) {
+      repository_url = aReport.tests_repository + '/file/' +
+                       aReport.tests_changeset + '/tests/' +
+                       report_type + filename
+    }
+
     var status = "passed";
     if (result.skipped)
       status = "skipped";
@@ -66,6 +73,7 @@ function processTestResults(aReport) {
     }
 
     results.push({
+      repository_url : repository_url,
       filename : filename,
       test : result.name,
       status : status,

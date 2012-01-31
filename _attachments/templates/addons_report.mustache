@@ -90,7 +90,10 @@
         {{#results}}
         <tr class="{{status}}">
           <td>{{status}}</td>
-          <td>{{filename}}</td>
+          <td>
+            {{#repository_url}}<a href="{{repository_url}}">{{filename}}</a>{{/repository_url}}
+            {{^repository_url}}{{filename}}{{/repository_url}}
+          </td>
           <td>{{test}}</td>
           <td>
             <ul class="information">
