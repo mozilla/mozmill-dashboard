@@ -58,7 +58,7 @@ function processTestResults(aReport) {
       for (var j = 0; j < result.fails.length; j++) {
         var failure = result.fails[j];
         var message = "Unkown Failure";
-        var stack;
+        var stack = null;
   
         if ("exception" in failure) {
           message = failure.exception.message;
@@ -66,6 +66,9 @@ function processTestResults(aReport) {
         }
         else if ("fail" in failure) {
           message = failure.fail.message;
+          if ("stack" in failure.fail) {
+            stack = JSON.stringify(failure.fail.stack);
+          }
         }
 
         info.push({message: message, stack: stack});
