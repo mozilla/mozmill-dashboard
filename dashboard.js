@@ -11,6 +11,49 @@ ddoc = {
   ]
 };
 
+ddoc.validate_doc_update = function(newDoc, oldDoc, userCtx) {
+  const MAX_SIZE = 1024 * 1024 * 10;
+  const FIREFOX_APP_ID = "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}";
+
+  if (newDoc._attachments) {
+    throw ({ forbidden : "Attachments are not allowed" });
+  }
+  
+  if (JSON.stringify(newDoc).length > MAX_SIZE){
+    throw({ forbidden : "Document is too large to be stored" });
+  }
+
+  // If we have a document on disk check if user is logged in 
+  if (oldDoc && userCtx.roles.indexOf('_admin') === -1) {
+    // We only allow deleting if there is an admin
+    if (newDoc._deleted) {
+      throw ({ forbidden : "Only an admin is allowed to delete data" });
+    } else {
+      throw ({ forbidden : "Modifying of data is not allowed" });
+    }
+  }
+
+  var requiredFields = [ "application_id",
+                         "mozmill_version",
+                         "system_info",
+                         "tests_passed",
+                         "tests_failed",
+                         "tests_skipped",
+                         "time_start",
+                         "time_end",
+                         "report_type",
+                         "report_version"];
+
+  requiredFields.forEach(function (field) {
+    if (!newDoc[field]) {
+      throw ({ forbidden : "This document requires the field " + field });
+    }
+  });
+
+  if (newDoc.application_id !== FIREFOX_APP_ID) {
+    throw ({ forbidden : "This document requires the Firefox Application ID"});
+  }
+}
 
 var functionalReportsMap = function(doc) {
   const REPORT_TYPES = [
