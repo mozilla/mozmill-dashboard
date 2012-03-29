@@ -45,7 +45,7 @@ ddoc.validate_doc_update = function(newDoc, oldDoc, userCtx) {
                          "report_version"];
 
   requiredFields.forEach(function (field) {
-    if (!newDoc[field]) {
+    if (!newDoc.hasOwnProperty(field)) {
       throw ({ forbidden : "This document requires the field " + field });
     }
   });
