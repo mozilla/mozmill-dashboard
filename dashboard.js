@@ -36,6 +36,7 @@ ddoc.validate_doc_update = function(newDoc, oldDoc, userCtx) {
   var requiredFields = [ "application_id",
                          "mozmill_version",
                          "system_info",
+                         "tests_changeset",
                          "tests_passed",
                          "tests_failed",
                          "tests_skipped",
