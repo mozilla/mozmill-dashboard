@@ -54,7 +54,7 @@ function processTestResults(aReport) {
     else if (result.fails) {
       for (var j = 0; j < result.fails.length; j++) {
         var failure = result.fails[j];
-        var message = "Unkown Failure";
+        var message = "Unknown Failure";
         var stack = null;
   
         if ("exception" in failure) {
