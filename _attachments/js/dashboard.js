@@ -58,14 +58,20 @@ function processTestResults(aReport) {
         var stack = null;
   
         if ("exception" in failure) {
+          // An exception has been thrown
           message = failure.exception.message;
           stack = failure.exception.stack;
         }
         else if ("fail" in failure) {
+          // An assertion failed
           message = failure.fail.message;
           if ("stack" in failure.fail) {
             stack = JSON.stringify(failure.fail.stack);
           }
+        }
+        else if ("message" in failure) {
+          // A plain JS error has been reported
+          message = failure.message;
         }
 
         info.push({message: message, stack: stack});
