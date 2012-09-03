@@ -1291,13 +1291,14 @@ function processTestResults(aReport) {
 
         for (var i=0; i < testCount; i++) {
             var testIterationCount = tests[i].iterations.length;
-            var testCheckpointCount = tests[i].iterations[0].checkpoints.length;
 
             var types = {
               'firefox-endurance' : 'endurance'
             };
 
             for (var j=0; j < testIterationCount; j++) {
+              var testCheckpointCount = tests[i].iterations[j].checkpoints.length;
+
               for (var k=0; k < testCheckpointCount; k++) {
 
                 var filename = tests[i].testFile;
@@ -1333,7 +1334,6 @@ function processTestResults(aReport) {
             context.tests.push({
               testFile : tests[i].testFile.split(type)[1].replace(/\\/g, '/'),
               testMethod : tests[i].testMethod,
-              checkpointCount : testCheckpointCount,
               memory : testMemory
             });
         }
