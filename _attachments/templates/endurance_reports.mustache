@@ -29,22 +29,19 @@
     <table id="results">
       <thead>
         <tr>
-          <th rowspan="2">Date</th>
-          <th rowspan="2">Version</th>
-          <th rowspan="2">Build</th>
-          <th rowspan="2">Locale</th>
-          <th rowspan="2">Platform</th>
-          <th rowspan="2">Version</th>
-          <th rowspan="2">CPU</th>
-          <th rowspan="2">Delay (s)</th>
-          <th rowspan="2"># Iterations</th>
-          <th colspan="2" title="Explicit">Memory (MB)</th>
-          <th rowspan="2"># Pass</th>
-          <th rowspan="2"># Skip</th>
-          <th rowspan="2"># Fail</th>
-        </tr><tr>
-          <th>min</th>
-          <th>max</th>
+          <th>Date</th>
+          <th>Version</th>
+          <th>Build</th>
+          <th>Locale</th>
+          <th>Platform</th>
+          <th>Version</th>
+          <th>CPU</th>
+          <th>Delay (s)</th>
+          <th># Iterations</th>
+          <th title="Explicit (Average)">Memory (MB)</th>
+          <th># Pass</th>
+          <th># Skip</th>
+          <th># Fail</th>
         </tr>
       </thead>
       <tbody>
@@ -59,8 +56,7 @@
           <td>{{processor}}</td>
           <td class="results">{{delay}}</td>
           <td class="results">{{iterations}}</td>
-          <td class="results">{{#memory}}{{#explicit}}{{min}}{{/explicit}}{{/memory}}</td>
-          <td class="results">{{#memory}}{{#explicit}}{{max}}{{/explicit}}{{/memory}}</td>
+          <td class="results">{{#memory}}{{#explicit}}{{average}}{{/explicit}}{{/memory}}</td>
           <td class="results">{{tests_passed}}</td>
           <td class="results">{{tests_skipped}}</td>
           <td class="results">{{tests_failed}}</td>
