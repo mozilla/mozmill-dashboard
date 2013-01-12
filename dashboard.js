@@ -13,7 +13,8 @@ ddoc = {
 
 ddoc.validate_doc_update = function(newDoc, oldDoc, userCtx) {
   const MAX_SIZE = 1024 * 1024 * 10;
-  const FIREFOX_APP_ID = "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}";
+  const FIREFOX_APP_ID = {"{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+                          "{99bceaaa-e3c6-48c1-b981-ef9b46b67d60}"};
 
   if (newDoc._attachments) {
     throw ({ forbidden : "Attachments are not allowed" });
@@ -51,7 +52,7 @@ ddoc.validate_doc_update = function(newDoc, oldDoc, userCtx) {
     }
   });
 
-  if (newDoc.application_id !== FIREFOX_APP_ID) {
+  if (FIREFOX_APP_ID.indexOf(newDoc.application_id) == -1) {
     throw ({ forbidden : "This document requires the Firefox Application ID"});
   }
 }
