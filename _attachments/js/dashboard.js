@@ -68,17 +68,19 @@ function processTestResults(aReport) {
           message = failure.fail.message;
           if ("stack" in failure.fail) {
             stack = JSON.stringify(failure.fail.stack);
+            if (failure.fail.stack.screenshot && failure.fail.stack.screenshot.dataURL) {
+              image = "<a target='_blank' href='" + failure.fail.stack.screenshot.dataURL + "'>" +
+                        "<img class='error-image' src=" +
+                          failure.fail.stack.screenshot.dataURL +
+                        ">" +
+                      "</a>";
+            }
           }
         }
         else if ("message" in failure) {
           // A plain JS error has been reported
           message = failure.message;
         }
-
-        // Screenshot
-        try {
-          image = "<img class='error-image' src=" + failure.fail.stack.screenshot.dataURL + ">";
-        } catch (me) {}
 
         info.push({message: message, stack: stack, image: image});
       }
@@ -1743,13 +1745,3 @@ function processTestResults(aReport) {
   });
 
 })(jQuery);
-
-// Error Image
-jQuery(function ($) {
-  document.addEventListener('click', function (e) {
-    var target = $(e.target);
-    if (target.hasClass('error-image')) {
-      target.toggleClass('original-size');
-    }
-  }, false);
-});
