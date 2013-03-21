@@ -56,7 +56,8 @@ function processTestResults(aReport) {
         var failure = result.fails[j];
         var message = "Unknown Failure";
         var stack = null;
-  
+        var images = null;
+
         if ("exception" in failure) {
           // An exception has been thrown
           message = failure.exception.message;
@@ -67,6 +68,9 @@ function processTestResults(aReport) {
           message = failure.fail.message;
           if ("stack" in failure.fail) {
             stack = JSON.stringify(failure.fail.stack);
+            if ("screenshots" in failure.fail.stack) {
+              images = failure.fail.stack.screenshots;
+            }
           }
         }
         else if ("message" in failure) {
@@ -74,7 +78,7 @@ function processTestResults(aReport) {
           message = failure.message;
         }
 
-        info.push({message: message, stack: stack});
+        info.push({message: message, stack: stack, images: images});
       }
     }
 
@@ -1194,7 +1198,7 @@ function processTestResults(aReport) {
 
         var template = '/templates/endurance_charts.mustache';
         context.render(template).replace('#content').then(function () {
-          
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
@@ -1231,7 +1235,7 @@ function processTestResults(aReport) {
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
-          
+
           $("#subtitle").text("Endurance Charts");
         });
       });
@@ -1314,7 +1318,7 @@ function processTestResults(aReport) {
                 if (tests[i].iterations[j].checkpoints[k].explicit) {
                   checkpointMemory.explicit = Math.round(tests[i].iterations[j].checkpoints[k].explicit * BYTE_TO_MEGABYTE);
                 }
-    
+
                 if (tests[i].iterations[j].checkpoints[k].resident) {
                   checkpointMemory.resident = Math.round(tests[i].iterations[j].checkpoints[k].resident * BYTE_TO_MEGABYTE);
                 }
@@ -1404,7 +1408,7 @@ function processTestResults(aReport) {
             average : Math.round(stats.explicit.average * BYTE_TO_MEGABYTE)
           }
         }
-  
+
         if ("resident" in stats) {
           memory.resident = {
             min : Math.round(stats.resident.min * BYTE_TO_MEGABYTE),

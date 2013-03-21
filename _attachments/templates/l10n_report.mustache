@@ -84,6 +84,11 @@
             {{#info}}
               <li>
                 {{{message}}}
+                {{{#images}}}
+                  <a href="{{{dataURL}}}">
+                    <img src="{{{dataURL}}}">
+                  </a>
+                {{{/images}}}
                 {{#stack}}<div class="tooltip">{{{stack}}}<div>{{/stack}}
               </li>
             {{/info}}

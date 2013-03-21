@@ -257,25 +257,39 @@ table#result tr.skipped td {
   color: #f90;
 }
 
-.tooltip {
-  display: none;
-}
-
-table .information {
-  vertical-align: top;
+.information {
   margin: 0;
   padding: 0 10px;
 }
 
-table#result tr.failed .information:hover .tooltip {
+.information li {
+  padding: 5px 0;
+}
+
+.information .tooltip {
   position: absolute;
-  display: block;
+  display: none;
   overflow: scroll;
   width: 400px;
   border: 1px solid #333;
-  -moz-border-radius: 10px;
   padding: 5px 10px;
   background-color: #fff;
+}
+
+.information li:hover .tooltip {
+  display: block;
+}
+
+/* Error Image */
+.error-images a {
+  display: inline-block;
+  padding: 5px 5px 5px 0;
+}
+
+.error-images img {
+  height: 100px;
+  width: auto;
+  border: 1px solid #aaa;
 }
 
 th.headerSortUp {
