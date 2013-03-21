@@ -68,7 +68,7 @@ function processTestResults(aReport) {
           message = failure.fail.message;
           if ("stack" in failure.fail) {
             stack = JSON.stringify(failure.fail.stack);
-            if (failure.fail.stack.screenshot && failure.fail.stack.screenshot.dataURL) {
+            if ("screenshot" in failure.fail.stack && "dataURL" in failure.fail.stack.screenshot) {
               image = "<a target='_blank' href='" + failure.fail.stack.screenshot.dataURL + "'>" +
                         "<img class='error-image' src=" +
                           failure.fail.stack.screenshot.dataURL +
