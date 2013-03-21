@@ -56,7 +56,7 @@ function processTestResults(aReport) {
         var failure = result.fails[j];
         var message = "Unknown Failure";
         var stack = null;
-        var image = null;
+        var images = null;
 
         if ("exception" in failure) {
           // An exception has been thrown
@@ -68,12 +68,8 @@ function processTestResults(aReport) {
           message = failure.fail.message;
           if ("stack" in failure.fail) {
             stack = JSON.stringify(failure.fail.stack);
-            if ("screenshot" in failure.fail.stack && "dataURL" in failure.fail.stack.screenshot) {
-              image = "<a target='_blank' href='" + failure.fail.stack.screenshot.dataURL + "'>" +
-                        "<img class='error-image' src=" +
-                          failure.fail.stack.screenshot.dataURL +
-                        ">" +
-                      "</a>";
+            if ("screenshots" in failure.fail.stack) {
+              images = failure.fail.stack.screenshots;
             }
           }
         }
@@ -82,7 +78,7 @@ function processTestResults(aReport) {
           message = failure.message;
         }
 
-        info.push({message: message, stack: stack, image: image});
+        info.push({message: message, stack: stack, images: images});
       }
     }
 

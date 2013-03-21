@@ -84,7 +84,13 @@
             {{#info}}
               <li>
                 {{{message}}}
-                {{{image}}}
+                <div class="error-images">
+                  {{#images}}
+                    <a href="{{dataURL}}">
+                      <img src="{{dataURL}}">
+                    </a>
+                  {{/images}}
+                </div>
                 {{#stack}}<div class="tooltip">{{{stack}}}<div>{{/stack}}
               </li>
             {{/info}}

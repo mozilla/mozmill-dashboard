@@ -281,17 +281,15 @@ table#result tr.skipped td {
 }
 
 /* Error Image */
-.error-image {
-  width: 200px;
-  height: auto;
-  display: block;
-  margin: 10px 0 0 0;
-  border: 1px solid #aaa;
-  cursor: pointer;
+.error-images a {
+  display: inline-block;
+  padding: 5px 5px 5px 0;
 }
 
-.error-image.original-size {
+.error-images img {
+  height: 100px;
   width: auto;
+  border: 1px solid #aaa;
 }
 
 th.headerSortUp {
