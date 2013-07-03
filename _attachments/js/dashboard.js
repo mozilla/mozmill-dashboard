@@ -12,6 +12,33 @@ var report_type_mappings = {
 
 
 /**
+ * Distinguish title for usability and bookmarking
+ */
+function setTitle() {
+  // Always return nothing if we don't find a match
+  var domainTitle = "";
+
+  // Assign domain ids from the config file
+  var domainIds = DASHBOARD_SERVERS;
+
+  // Get the real domain for comparison
+  var domainActual = document.domain;
+
+  // Loop through the domain ids above to see if we have a match
+  for (var i = 0; i < domainIds.length; i++) {
+    var domainUrl = domainIds[i].urlVal;
+
+    // If we have a match return the title, if we don't we fallback to value in index.html
+    if (domainUrl === domainActual) {
+      var domainTitle = "Mozmill" + " " + domainIds[i].titleId + " " + "Results Dashboard";
+      break;
+    }
+  }
+  return domainTitle;
+}
+
+
+/**
  * Process all results of a test method and build list with failure information
  *
  * @param {Object} aTestResults Results of a test method

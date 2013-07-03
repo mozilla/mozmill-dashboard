@@ -6,6 +6,14 @@
     <link rel="stylesheet" href="css/main.css" type="text/css">
     <link rel="stylesheet" href="css/smoothness/jquery-ui-1.8.5.custom.css" type="text/css">
     <script language="javascript" type="text/javascript" src="js/config.js"></script>
+    <script language="javascript" type="text/javascript" src="js/dashboard.js"></script>
+    <script type="text/javascript">
+      // Distinguish unique document title for bookmarking via dashboard.js
+      var titleName = setTitle();
+      if (titleName !== "") {
+        document.title = titleName;
+      }
+    </script>
     <script language="javascript" type="text/javascript" src="js/date.format.js"></script>
     <script language="javascript" type="text/javascript" src="js/jquery/jquery-1.4.2.min.js"></script>
     <script language="javascript" type="text/javascript" src="js/jquery/jquery-ui-1.8.5.custom.min.js"></script>
@@ -13,9 +21,12 @@
     <script language="javascript" type="text/javascript" src="js/sammy/sammy.js"></script>
     <script language="javascript" type="text/javascript" src="js/sammy/plugins/sammy.mustache.js"></script>
     <script language="javascript" type="text/javascript" src="js/highcharts/highcharts.js"></script>
-    <script language="javascript" type="text/javascript" src="js/dashboard.js"></script>
     <script type="text/javascript">
       $(document).ready(function (){
+        // Distinguish header title for usability
+        if (titleName !== "") {
+          $("#title").html(titleName);
+        }
         $("ul.topnav li a").hover(function () {
           //Following events are applied to the subnav itself (moving subnav up and down)
           $(this).parent().find("ul.subnav").slideDown('fast').show();
@@ -33,7 +44,7 @@
           $(this).removeClass("subhover");
         });
       });
-      </script>
+    </script>
   </head>
 
   <body>
