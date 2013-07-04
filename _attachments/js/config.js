@@ -7,7 +7,7 @@ var DASHBOARD_SERVERS = [
   {urlVal: "mozmill-crowd.blargon7.com", titleId: "Crowd"},
   {urlVal: "mozmill-ondemand.blargon7.com", titleId: "On Demand"},
   {urlVal: "mozmill-sandbox.blargon7.com", titleId: "Sandbox"},
-  {urlVal: "mozmill-staging.blargon7.com", titleId: "Staging"},
+  {urlVal: "mozmill-staging.blargon7.com", titleId: "Staging"}
 ];
 
 var BYTE_TO_MEGABYTE = 1/1048576;
