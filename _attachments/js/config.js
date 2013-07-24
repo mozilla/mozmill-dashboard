@@ -5,7 +5,9 @@ var DASHBOARD_SERVERS = [
   {urlVal: "mozmill-addons.blargon7.com", titleId: "Add-ons"},
   {urlVal: "mozmill-ci.blargon7.com", titleId: "CI"},
   {urlVal: "mozmill-crowd.blargon7.com", titleId: "Crowd"},
+  {urlVal: "mozmill-daily.blargon7.com", titleId: "Daily"},
   {urlVal: "mozmill-ondemand.blargon7.com", titleId: "On Demand"},
+  {urlVal: "mozmill-release.blargon7.com", titleId: "Release"},
   {urlVal: "mozmill-sandbox.blargon7.com", titleId: "Sandbox"},
   {urlVal: "mozmill-staging.blargon7.com", titleId: "Staging"}
 ];

@@ -14,23 +14,20 @@ var report_type_mappings = {
 /**
  * Distinguish title for usability and bookmarking
  */
-function setTitle() {
+function buildTitle() {
   // Always return nothing if we don't find a match
   var domainTitle = "";
-
-  // Assign domain ids from the config file
-  var domainIds = DASHBOARD_SERVERS;
 
   // Get the real domain for comparison
   var domainActual = document.domain;
 
   // Loop through the domain ids above to see if we have a match
-  for (var i = 0; i < domainIds.length; i++) {
-    var domainUrl = domainIds[i].urlVal;
+  for (var i = 0; i < DASHBOARD_SERVERS.length; i++) {
+    var domainUrl = DASHBOARD_SERVERS[i].urlVal;
 
     // If we have a match return the title, if we don't we fallback to value in index.html
     if (domainUrl === domainActual) {
-      var domainTitle = "Mozmill" + " " + domainIds[i].titleId + " " + "Results Dashboard";
+      var domainTitle = "Mozmill" + " " + DASHBOARD_SERVERS[i].titleId + " " + "Results Dashboard";
       break;
     }
   }
