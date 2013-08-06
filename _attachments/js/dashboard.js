@@ -505,6 +505,7 @@ function processTestResults(aReport) {
     var update_overview = function () {
       var context = this;
       this.firefox_versions = FIREFOX_VERSIONS;
+      this.update_channels = UPDATE_CHANNELS;
 
       var branch = this.params.branch || 'All';
       var channel = this.params.channel || 'All';
