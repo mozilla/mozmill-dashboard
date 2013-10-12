@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 var FIREFOX_VERSIONS = ["27.0", "26.0", "25.0", "24.0", "17.0"];
 var TESTS_REPOSITORY = "http://hg.mozilla.org/qa/mozmill-tests";
 
