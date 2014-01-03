@@ -27,22 +27,6 @@
         if (titleName !== "") {
           $("#title").html(titleName);
         }
-        $("ul.topnav li a").hover(function () {
-          //Following events are applied to the subnav itself (moving subnav up and down)
-          $(this).parent().find("ul.subnav").slideDown('fast').show();
-          $(this).parent().hover(function () {
-          }, function (){
-            //When the mouse hovers out of the subnav, move it back up
-            $(this).parent().find("ul.subnav").slideUp('slow');
-          });
-
-        // Following events are applied to the trigger (Hover events for the trigger)
-        }).hover(function () {
-          $(this).addClass("subhover");
-        }, function () {
-          //On Hover Out
-          $(this).removeClass("subhover");
-        });
       });
     </script>
   </head>
