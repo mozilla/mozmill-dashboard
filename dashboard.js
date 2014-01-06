@@ -22,12 +22,12 @@ ddoc.validate_doc_update = function(newDoc, oldDoc, userCtx) {
   if (newDoc._attachments) {
     throw ({ forbidden : "Attachments are not allowed" });
   }
-  
+
   if (JSON.stringify(newDoc).length > MAX_SIZE){
     throw({ forbidden : "Document is too large to be stored" });
   }
 
-  // If we have a document on disk check if user is logged in 
+  // If we have a document on disk check if user is logged in
   if (oldDoc && userCtx.roles.indexOf('_admin') === -1) {
     // We only allow deleting if there is an admin
     if (newDoc._deleted) {
@@ -152,13 +152,13 @@ var functionalFailuresMap = function(doc) {
 
           emit([application_branch, doc.system_info.system, path, doc.time_start, i], r);
           emit([application_branch, doc.system_info.system, 'All', doc.time_start, i], r);
-  
+
           emit([application_branch, 'All', path, doc.time_start, i], r);
           emit([application_branch, 'All', 'All', doc.time_start, i], r);
-  
+
           emit(['All', doc.system_info.system, path, doc.time_start, i ], r);
           emit(['All', doc.system_info.system, 'All', doc.time_start, i], r);
-  
+
           emit(['All', 'All', path, doc.time_start, i], r);
           emit(['All', 'All', 'All', doc.time_start, i], r);
         }
@@ -365,6 +365,78 @@ var remoteReportsMap = function(doc) {
   }
 }
 
+var remoteFailuresMap = function(doc) {
+  const REPORT_TYPES = [
+    'firefox-remote',
+    'mozmill',
+    'mozmill-restart',
+  ];
+
+  if (doc.time_start &&
+      doc.application_version &&
+      doc.system_info.system &&
+      doc.results &&
+      doc.report_type &&
+      REPORT_TYPES.indexOf(doc.report_type) != -1) {
+
+    var application_branch = doc.application_version.match(/(\d+\.\d+)\.*/)[1];
+
+    doc.results.forEach(function(result) {
+      var path = null;
+
+      try {
+        path = result.filename.match('.*remote(.*)')[1];
+      }
+      catch (ex) {
+        path = result.filename.match('.*firefox(.*)')[1];
+      }
+      path = path.replace(/\\/g, "/");
+
+      // Only map result if failures are present
+      if (result.failed > 0) {
+        for (var i = 0; i < result.fails.length; i++) {
+          var failure = result.fails[i];
+          var message = "Unknown Failure";
+
+          if ("exception" in failure)
+            message = failure.exception.message;
+          else if ("fail" in failure)
+            message = failure.fail.message;
+
+          // The result object has to be created inside the loop, otherwise the
+          // message is always the one from the last iteration. No idea why.
+          var r = {
+            application_locale : doc.application_locale,
+            application_version : doc.application_version,
+            application_branch : application_branch,
+            platform_buildId : doc.platform_buildid,
+            platform_repository : doc.platform_repository,
+            platform_changeset : doc.platform_changeset,
+            system_name : doc.system_info.system,
+            system_version : doc.system_info.version,
+            test_module : path,
+            test_function : result.name,
+            message : message
+          };
+
+          emit([application_branch, doc.system_info.system, path, doc.time_start, i], r);
+          emit([application_branch, doc.system_info.system, 'All', doc.time_start, i], r);
+
+          emit([application_branch, 'All', path, doc.time_start, i], r);
+          emit([application_branch, 'All', 'All', doc.time_start, i], r);
+
+          emit(['All', doc.system_info.system, path, doc.time_start, i ], r);
+          emit(['All', doc.system_info.system, 'All', doc.time_start, i], r);
+
+          emit(['All', 'All', path, doc.time_start, i], r);
+          emit(['All', 'All', 'All', doc.time_start, i], r);
+        }
+      }
+    });
+  }
+}
+
+
 var addonsReportsMap = function(doc) {
   const REPORT_TYPES = [
     'firefox-addons'
@@ -411,6 +483,7 @@ ddoc.views = {
   endurance_reports : { map: enduranceReportsMap },
   endurance_charts : { map: enduranceReportsMap },
   remote_reports : { map: remoteReportsMap },
+  remote_failures : { map: remoteFailuresMap },
   addons_reports : { map: addonsReportsMap }
 }
 

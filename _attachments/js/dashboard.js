@@ -1446,6 +1446,225 @@ function processTestResults(aReport) {
       return memory;
     }
 
+    var remote_failure = function() {
+      var context = this;
+      this.firefox_versions = FIREFOX_VERSIONS;
+
+      var branch = this.params.branch ? this.params.branch : 'All';
+      var platform = this.params.platform ? this.params.platform : 'All';
+      var test = this.params.test ? this.params.test : {};
+      var test_func = this.params.func ? this.params.func : {};
+
+      var fromDate;
+      if (this.params.from) {
+        fromDate = new Date(this.params.from);
+      }
+      else {
+        fromDate = new Date();
+        fromDate.setDate(fromDate.getDate() - 7);
+      }
+
+      var toDate;
+      if (this.params.to) {
+        toDate = new Date(this.params.to);
+      }
+      else {
+        toDate = new Date();
+      }
+
+      var query = {
+        startkey : JSON.stringify([branch, platform, test, toDate.format() + "T23:59:59"]),
+        endkey : JSON.stringify([branch, platform, test, fromDate.format() + "T00:00:00"]),
+        descending : true
+      };
+
+      request({url:'/_view/remote_failures?'+$.param(query)}, function (err, resp) {
+        if (err) console.og(err);
+
+        context.reports = [ ];
+        context.test_module = test;
+        context.test_function = test_func;
+        resp.rows.forEach(function (row) {
+          var value = row.value;
+
+          if (test_func == {} || value.test_function == test_func) {
+            value.time_start = new Date(row.key[3]).toISOString();
+            value.report_link = "#/remote/report/" + row.id;
+
+            context.reports.push(value);
+          }
+        });
+
+        var template = '/templates/remote_failure.mustache';
+        context.render(template).replace('#content').then(function () {
+
+          $('#branch-selection span').each(function (i, elem) {
+            if (elem.textContent == branch) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#branch-selection span').click(function () {
+            window.location = '/#/remote/failure?branch=' + this.textContent +
+                              '&platform=' + platform + '&from=' + fromDate.format() +
+                              '&to=' + toDate.format() + "&test=" +
+                              encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
+          })
+
+          $('#os-selection span').each(function (i, elem) {
+            if (elem.textContent == platform) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#os-selection span').click(function () {
+            window.location = '/#/remote/failure?branch=' + branch +
+                              '&platform=' + this.textContent + '&from=' + fromDate.format() +
+                              '&to=' + toDate.format() + "&test=" +
+                              encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
+          })
+
+          $(".datepicker").datepicker();
+          $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+
+          $('#start-date').datepicker().val(fromDate.format()).trigger('change');
+          $('#end-date').datepicker().val(toDate.format()).trigger('change');
+
+          $(".datepicker").change(function() {
+            window.location = '/#/remote/failure?branch=' + branch + "&platform=" + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val() + "&test=" +
+                              encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
+          })
+
+          $("#subtitle").text("Top Failures");
+
+          $("#results").tablesorter({
+            // sort on the first column and third column, order asc
+            sortList: [[3,1]]
+          });
+        });
+      });
+
+      $(".selection").change(function() {
+        window.location = this.value;
+      });
+    }
+
+    var remote_topFailures = function () {
+      var context = this;
+      this.firefox_versions = FIREFOX_VERSIONS;
+
+      var branch = this.params.branch ? this.params.branch : 'All';
+      var platform = this.params.platform ? this.params.platform : 'All';
+
+      var fromDate;
+      if (this.params.from) {
+        fromDate = new Date(this.params.from);
+      }
+      else {
+        fromDate = new Date();
+        fromDate.setDate(fromDate.getDate() - 7);
+      }
+
+      var toDate;
+      if (this.params.to) {
+        toDate = new Date(this.params.to);
+      }
+      else {
+        toDate = new Date();
+      }
+
+      var query = {
+        startkey : JSON.stringify([branch, platform, 'All', toDate.format() + "T23:59:59"]),
+        endkey : JSON.stringify([branch, platform, 'All', fromDate.format()]),
+        descending : true
+      };
+
+      request({url:'/_view/remote_failures?'+$.param(query)}, function (err, resp) {
+        if (err) window.alert(err);
+
+        // Build up the failures array
+        var failures = [ ];
+        resp.rows.forEach(function (row) {
+          var v = row.value;
+          var k = row.key;
+
+          var index = v.test_module + "|" + v.test_function + "|" + v.application_branch + "|" + v.system_name;
+          if (index in failures) {
+            failures[index]++;
+          } else {
+            failures[index] = 1;
+          }
+        });
+
+        context.reports = [ ];
+        for (var key in failures) {
+          var entries = key.split("|");
+          context.reports.push({
+            test_module : entries[0],
+            test_function : entries[1],
+            application_branch : entries[2],
+            system_name : entries[3],
+            failure_link : '/#/remote/failure?branch=' + entries[2] + "&platform=" +
+                           entries[3] + '&from=' + fromDate.format() +
+                          '&to=' + toDate.format() + "&test=" +
+                          encodeURIComponent(entries[0]) + "&func=" +
+                          encodeURIComponent(entries[1]),
+            failure_count : failures[key]
+          });
+        };
+
+        var template = '/templates/remote_failures.mustache';
+        context.render(template).replace('#content').then(function () {
+
+          $('#branch-selection span').each(function (i, elem) {
+            if (elem.textContent == branch) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#branch-selection span').click(function () {
+            window.location = '/#/remote/top?branch=' + this.textContent + "&platform=" + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $('#os-selection span').each(function (i, elem) {
+            if (elem.textContent == platform) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#os-selection span').click(function () {
+            window.location = '/#/remote/top?branch=' + branch + "&platform=" + this.textContent +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $(".datepicker").datepicker();
+          $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+
+          $('#start-date').datepicker().val(fromDate.format()).trigger('change');
+          $('#end-date').datepicker().val(toDate.format()).trigger('change');
+
+          $(".datepicker").change(function() {
+            window.location = '/#/remote/top?branch=' + branch + "&platform=" + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
+          $("#subtitle").text("Top Failures");
+
+          $("#results").tablesorter({
+            // sort on the first column and third column, order asc
+            sortList: [[4,1], [0,1], [1,1]]
+          });
+
+        });
+      });
+
+      $(".selection").change(function() {
+        window.location = this.value;
+      });
+    }
+
     var remote_reports = function() {
       var branch = this.params.branch ? this.params.branch : 'All';
       var platform = this.params.platform ? this.params.platform : 'All';
@@ -1754,6 +1973,8 @@ function processTestResults(aReport) {
     this.get('#/endurance/reports', endurance_reports);
     this.get('#/endurance/report/:id', endurance_report);
     this.get('#/remote', remote_reports);
+    this.get('#/remote/top', remote_topFailures);
+    this.get('#/remote/failure', remote_failure);
     this.get('#/remote/reports', remote_reports);
     this.get('#/remote/report/:id', remote_report);
     this.get('#/addons', addons_reports);
