@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 var report_type_mappings = {
   'firefox-functional' : 'functional',
   'firefox-update' : 'update',
@@ -9,6 +13,30 @@ var report_type_mappings = {
   'mozmill-test' : 'functional',
   'mozmill-restart-test' : 'functional'
 };
+
+
+/**
+ * Distinguish title for usability and bookmarking
+ */
+function buildTitle() {
+  // Always return nothing if we don't find a match
+  var domainTitle = "";
+
+  // Get the real domain for comparison
+  var domainActual = document.domain;
+
+  // Loop through the domain ids above to see if we have a match
+  for (var i = 0; i < DASHBOARD_SERVERS.length; i++) {
+    var domainUrl = DASHBOARD_SERVERS[i].urlVal;
+
+    // If we have a match return the title, if we don't we fallback to value in index.html
+    if (domainUrl === domainActual) {
+      var domainTitle = "Mozmill" + " " + DASHBOARD_SERVERS[i].titleId + " " + "Results Dashboard";
+      break;
+    }
+  }
+  return domainTitle;
+}
 
 
 /**
@@ -26,10 +54,11 @@ function processTestResults(aReport) {
     var info = [ ];
 
     // Split absolute path and only keep the relative path below the test-run folder
-    var filename = result.filename.split(report_type)[1].replace(/\\/g, '/');
+    var parts = result.filename.split(report_type)
+    var filename = parts[parts.length - 1].replace(/\\/g, '/');
 
     var repository_url = TESTS_REPOSITORY + '/file/' +
-                         aReport.tests_changeset + '/tests/' +
+                         aReport.tests_changeset + '/firefox/tests/' +
                          report_type + filename;
 
     var status = "passed";
@@ -56,7 +85,7 @@ function processTestResults(aReport) {
         var failure = result.fails[j];
         var message = "Unknown Failure";
         var stack = null;
-  
+
         if ("exception" in failure) {
           // An exception has been thrown
           message = failure.exception.message;
@@ -1195,7 +1224,7 @@ function processTestResults(aReport) {
 
         var template = '/templates/endurance_charts.mustache';
         context.render(template).replace('#content').then(function () {
-          
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
@@ -1232,7 +1261,7 @@ function processTestResults(aReport) {
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
-          
+
           $("#subtitle").text("Endurance Charts");
         });
       });
@@ -1315,7 +1344,7 @@ function processTestResults(aReport) {
                 if (tests[i].iterations[j].checkpoints[k].explicit) {
                   checkpointMemory.explicit = Math.round(tests[i].iterations[j].checkpoints[k].explicit * BYTE_TO_MEGABYTE);
                 }
-    
+
                 if (tests[i].iterations[j].checkpoints[k].resident) {
                   checkpointMemory.resident = Math.round(tests[i].iterations[j].checkpoints[k].resident * BYTE_TO_MEGABYTE);
                 }
@@ -1405,7 +1434,7 @@ function processTestResults(aReport) {
             average : Math.round(stats.explicit.average * BYTE_TO_MEGABYTE)
           }
         }
-  
+
         if ("resident" in stats) {
           memory.resident = {
             min : Math.round(stats.resident.min * BYTE_TO_MEGABYTE),

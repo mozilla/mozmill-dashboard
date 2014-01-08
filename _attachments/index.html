@@ -12,28 +12,23 @@
     <script language="javascript" type="text/javascript" src="js/jquery/jquery.tablesorter.min.js"></script>
     <script language="javascript" type="text/javascript" src="js/sammy/sammy.js"></script>
     <script language="javascript" type="text/javascript" src="js/sammy/plugins/sammy.mustache.js"></script>
-    <script language="javascript" type="text/javascript" src="js/highcharts/highcharts.js"></script>
     <script language="javascript" type="text/javascript" src="js/dashboard.js"></script>
     <script type="text/javascript">
+      // Construct unique dashboard title in the browser titlebar and active tab for bookmarking
+      var titleName = buildTitle();
+      if (titleName !== "") {
+        document.title = titleName;
+      }
+    </script>
+    <script language="javascript" type="text/javascript" src="js/highcharts/highcharts.js"></script>
+    <script type="text/javascript">
       $(document).ready(function (){
-        $("ul.topnav li a").hover(function () {
-          //Following events are applied to the subnav itself (moving subnav up and down)
-          $(this).parent().find("ul.subnav").slideDown('fast').show();
-          $(this).parent().hover(function () {
-          }, function (){
-            //When the mouse hovers out of the subnav, move it back up
-            $(this).parent().find("ul.subnav").slideUp('slow');
-          });
-
-        // Following events are applied to the trigger (Hover events for the trigger)
-        }).hover(function () {
-          $(this).addClass("subhover");
-        }, function () {
-          //On Hover Out
-          $(this).removeClass("subhover");
-        });
+        // Construct unique dashboard title in the main document content for usability
+        if (titleName !== "") {
+          $("#title").html(titleName);
+        }
       });
-      </script>
+    </script>
   </head>
 
   <body>

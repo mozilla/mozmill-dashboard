@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 /* add styles here */
 
 body {
@@ -63,18 +67,21 @@ ul.topnav li a:hover {
 ul.topnav li ul.subnav {
   list-style: none;
   position: absolute;
-  left: 0;
+  left: -9999px;
   top: 31px;
   background: url(/img/testrun_bg.png) repeat-x;
   margin: 0;
   padding: 0;
-  display: none;
   float: left;
   width: 170px;
   -moz-border-radius-bottomleft: 5px;
   -moz-border-radius-bottomright: 5px;
   -webkit-border-bottom-left-radius: 5px;
   -webkit-border-bottom-right-radius: 5px;
+}
+
+ul.topnav li:hover ul.subnav {
+  left: 0;
 }
 
 ul.topnav li ul.subnav li{
