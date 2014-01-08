@@ -25,7 +25,7 @@ var UPDATE_CHANNELS = [
   "auroratest",
   "nightly",
   "nightlytest",
-  "nightly-esr17"
+  "nightly-esr24"
 ];
 
 var BYTE_TO_MEGABYTE = 1/1048576;
