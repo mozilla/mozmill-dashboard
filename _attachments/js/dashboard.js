@@ -94,19 +94,24 @@ function processTestResults(aReport) {
           // An exception has been thrown
           message = failure.exception.message;
           stack = failure.exception.stack;
+          if (stack instanceof Array) {
+            stack = stack.map(function (item, i) {
+              return ((i === 0) ? "" : "\n") + item;
+            });
+            stack = { stack: stack };
+          }
         }
         else if ("fail" in failure) {
           // An assertion failed
           message = failure.fail.message;
           if ("stack" in failure.fail) {
-            stack = JSON.stringify(failure.fail.stack);
+            stack = JSON.stringify(failure.fail.stack, null, " ");
           }
         }
         else if ("message" in failure) {
           // A plain JS error has been reported
           message = failure.message;
         }
-
         info.push({message: message, stack: stack});
       }
     }
@@ -2273,4 +2278,20 @@ function processTestResults(aReport) {
     app.run('#/functional');
   });
 
+})(jQuery);
+
+/**
+ * Toggle error tooltips
+ */
+(function($) {
+  $(document).bind('click', function (e) {
+    var target = $(e.target);
+    if (target.is('.show-tooltip')) {
+      var tooltip = target.next('.tooltip');
+      tooltip.toggleClass('active');
+      target.text(tooltip.is('.active') ? 'show less' : 'show more');
+      e.preventDefault();
+      return false;
+    }
+  });
 })(jQuery);

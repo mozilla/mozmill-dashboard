@@ -100,7 +100,10 @@
             {{#info}}
               <li>
                 {{{message}}}
-                {{#stack}}<div class="tooltip">{{{stack}}}<div>{{/stack}}
+                {{#stack}}
+                  <a href="#" class="show-tooltip">show more</a>
+                  <div class="tooltip"><div>{{{stack}}}</div></div>
+                {{/stack}}
               </li>
             {{/info}}
             </ul>
@@ -110,4 +113,3 @@
       </tbody>
     </table>
   </body>
-
