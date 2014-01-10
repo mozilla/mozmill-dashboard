@@ -106,7 +106,6 @@ html ul.topnav li ul.subnav li a:hover {
 }
 
 #content {
-  width: 90%;
   margin: 0 auto;
   padding-top: 10px;
   clear: both;
@@ -230,6 +229,10 @@ table#graphics {
   margin: 10px 0 0 0;
 }
 
+#result td:last-child {
+  min-width: 38em;
+}
+
 table#results td, table#results th {
   margin: 0;
 }
@@ -264,25 +267,36 @@ table#result tr.skipped td {
   color: #f90;
 }
 
-.tooltip {
-  display: none;
-}
-
 table .information {
   vertical-align: top;
   margin: 0;
   padding: 0 10px;
 }
 
-table#result tr.failed .information:hover .tooltip {
-  position: absolute;
+.tooltip {
+  background: rgb(243, 243, 243);
+  border: 1px solid rgb(216, 213, 213);
+  border-radius: 4px;
+  box-shadow: 0 0 5px 0 rgb(191, 189, 189);
+  display: none;
+  font-size: 1.2em;
+  font-family: monospace;
+  margin: 1em 0;
+  padding: .5em 1em;
+  white-space: pre;
+}
+
+.tooltip div {
+  overflow: auto;
+  max-width: 35em;
+  max-height: 30em;
+}
+
+.tooltip.active {
   display: block;
-  overflow: scroll;
-  width: 400px;
-  border: 1px solid #333;
-  -moz-border-radius: 10px;
-  padding: 5px 10px;
-  background-color: #fff;
+}
+.show-tooltip {
+  font-size: 0.8em;
 }
 
 th.headerSortUp {
