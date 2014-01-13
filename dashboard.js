@@ -367,9 +367,7 @@ var remoteReportsMap = function(doc) {
 
 var remoteFailuresMap = function(doc) {
   const REPORT_TYPES = [
-    'firefox-remote',
-    'mozmill',
-    'mozmill-restart',
+    'firefox-remote'
   ];
 
   if (doc.time_start &&
