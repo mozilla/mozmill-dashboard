@@ -24,7 +24,6 @@ var UPDATE_CHANNELS = [
   "aurora",
   "auroratest",
   "nightly",
-  "nightlytest",
   "nightly-esr24"
 ];
 
