@@ -3,11 +3,10 @@
 
       <div id="channel-selection">
         <span>Channel: </span>
-        <span>release</span>
-        <span>releasetest</span>
-        <span>beta</span>
-        <span>betatest</span>
-        <span>nightly</span>
+        <span>All</span>
+        {{#update_channels}}
+          <span>{{{.}}}</span>
+        {{/update_channels}}
       </div>
 
       <div id="date">
