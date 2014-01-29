@@ -1,6 +1,5 @@
     <fieldset id="filter">
       <legend>Filter</legend>
-
       <div id="branch-selection">
         <span>Branch:</span>
         <span>All</span>
@@ -9,12 +8,12 @@
         {{/firefox_versions}}
       </div>
 
-      <div id="channel-selection">
-        <span>Channel: </span>
+      <div id="os-selection">
+        <span>OS: </span>
         <span>All</span>
-        {{#update_channels}}
-          <span>{{{.}}}</span>
-        {{/update_channels}}
+        <span>Linux</span>
+        <span>Mac</span>
+        <span>Windows NT</span>
       </div>
 
       <div id="date">
@@ -25,27 +24,29 @@
       </div>
     </fieldset>
 
-    <h2>Overview of Update Tests</h2>
+    <h2>Top Failures for Remote Tests</h2>
 
     <table id="results">
       <thead>
         <tr>
-          <th>Target Build</th>
-          <th>Source Build</th>
-          <th>Channel</th>
-          <th># Testruns</th>
-          <th># Failed</th>
+          <th>Module</th>
+          <th>Function</th>
+          <th>Branch</th>
+          <th>Platform</th>
+          <th># Fail</th>
+          <!--<th>Bugs</th>-->
         </tr>
       </thead>
       <tbody>
-      {{#updates}}
+      {{#reports}}
         <tr>
-          <td><a href="{{detail_url}}">{{post_build}}</a></td>
-          <td>{{pre_build}}</a></td>
-          <td>{{channel}}</td>
-          <td>{{testrun_count}}</td>
+          <td>{{test_module}}</td>
+          <td><a href="{{failure_link}}">{{test_function}}</a></td>
+          <td>{{application_branch}}</td>
+          <td>{{system_name}}</td>
           <td>{{failure_count}}</td>
+          <!--<td>{{bugs}}</td>-->
         </tr>
-      {{/updates}}
+      {{/reports}}
       </tbody>
     </table>

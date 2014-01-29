@@ -16,5 +16,16 @@ var DASHBOARD_SERVERS = [
   {urlVal: "mozmill-staging.blargon7.com", titleId: "Staging"}
 ];
 
+var UPDATE_CHANNELS = [
+  "release",
+  "releasetest",
+  "beta",
+  "betatest",
+  "aurora",
+  "auroratest",
+  "nightly",
+  "nightly-esr24"
+];
+
 var BYTE_TO_MEGABYTE = 1/1048576;
 var MAX_CHART_CHECKPOINTS = 450;
