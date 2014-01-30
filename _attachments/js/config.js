@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var FIREFOX_VERSIONS = ["29.0", "28.0", "27.0", "26.0", "24.0"];
+// Always filter for all esr builds in the last element
+var FIREFOX_VERSIONS = ["29.0", "28.0", "27.0", "26.0", "24"];
 var TESTS_REPOSITORY = "http://hg.mozilla.org/qa/mozmill-tests";
 
 var DASHBOARD_SERVERS = [
