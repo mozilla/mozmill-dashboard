@@ -1,5 +1,13 @@
     <fieldset id="filter">
       <legend>Filter</legend>
+
+      <div id="app-selection">
+        <span>Application: </span>
+        <span>All</span>
+        <span>Firefox</span>
+        <span>MetroFirefox</span>
+      </div>
+
       <div id="branch-selection">
         <span>Branch:</span>
         <span>All</span>
@@ -31,6 +39,7 @@
         <tr>
           <th>Module</th>
           <th>Function</th>
+          <th>Application</th>
           <th>Branch</th>
           <th>Platform</th>
           <th># Fail</th>
@@ -42,6 +51,7 @@
         <tr>
           <td>{{test_module}}</td>
           <td><a href="{{failure_link}}">{{test_function}}</a></td>
+          <td>{{application_name}}</td>
           <td>{{application_branch}}</td>
           <td>{{system_name}}</td>
           <td>{{failure_count}}</td>
