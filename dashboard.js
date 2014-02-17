@@ -17,7 +17,8 @@ ddoc = {
 
 ddoc.validate_doc_update = function(newDoc, oldDoc, userCtx) {
   const MAX_SIZE = 1024 * 1024 * 10;
-  const FIREFOX_APP_ID = "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}";
+  const APPLICATION_IDS = ["{ec8030f7-c20a-464f-9b0e-13a3a9e97384}", // Firefox
+                           "{99bceaaa-e3c6-48c1-b981-ef9b46b67d60}"] // Metro
 
   if (newDoc._attachments) {
     throw ({ forbidden : "Attachments are not allowed" });
@@ -55,19 +56,20 @@ ddoc.validate_doc_update = function(newDoc, oldDoc, userCtx) {
     }
   });
 
-  if (newDoc.application_id !== FIREFOX_APP_ID) {
-    throw ({ forbidden : "This document requires the Firefox Application ID"});
+  if (APPLICATION_IDS.indexOf(newDoc.application_id) < 0) {
+    throw ({ forbidden : "This document requires the Firefox or MetroFirefox " +
+                         "Application ID"});
   }
 }
 
 var functionalReportsMap = function(doc) {
   const REPORT_TYPES = [
     'firefox-functional',
-    'mozmill',
-    'mozmill-restart',
+    'metrofirefox-functional'
   ];
 
   if (doc.time_start &&
+      doc.application_name &&
       doc.application_version &&
       doc.system_info.system &&
       doc.report_type &&
@@ -78,6 +80,7 @@ var functionalReportsMap = function(doc) {
     var r = {
       time_start : doc.time_start,
       time_end : doc.time_end,
+      application_name : doc.application_name,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
       system_name : doc.system_info.system,
@@ -89,21 +92,28 @@ var functionalReportsMap = function(doc) {
       tests_skipped : doc.tests_skipped
     };
 
-    emit([application_branch, r.system_name, doc.time_start], r);
-    emit(['All', r.system_name, doc.time_start], r);
-    emit([application_branch, 'All', doc.time_start], r);
-    emit(['All', 'All', doc.time_start], r);
+    emit([r.application_name, application_branch, r.system_name, doc.time_start], r);
+
+    emit(['All', application_branch, r.system_name, doc.time_start], r);
+    emit([r.application_name, 'All', r.system_name, doc.time_start], r);
+    emit([r.application_name, application_branch, 'All', doc.time_start], r);
+
+    emit(['All', 'All', r.system_name, doc.time_start], r);
+    emit(['All', application_branch, 'All', doc.time_start], r);
+    emit([r.application_name, 'All', 'All', doc.time_start], r);
+
+    emit(['All', 'All', 'All', doc.time_start], r);
   }
 }
 
 var functionalFailuresMap = function(doc) {
   const REPORT_TYPES = [
     'firefox-functional',
-    'mozmill',
-    'mozmill-restart',
+    'metrofirefox-functional'
   ];
 
   if (doc.time_start &&
+      doc.application_name &&
       doc.application_version &&
       doc.system_info.system &&
       doc.results &&
@@ -138,6 +148,7 @@ var functionalFailuresMap = function(doc) {
           // message is always the one from the last iteration. No idea why.
           var r = {
             application_locale : doc.application_locale,
+            application_name : doc.application_name,
             application_version : doc.application_version,
             application_branch : application_branch,
             platform_buildId : doc.platform_buildid,
@@ -150,17 +161,26 @@ var functionalFailuresMap = function(doc) {
             message : message
           };
 
-          emit([application_branch, doc.system_info.system, path, doc.time_start, i], r);
-          emit([application_branch, doc.system_info.system, 'All', doc.time_start, i], r);
+          emit([r.application_name, application_branch, doc.system_info.system, path, doc.time_start, i], r);
 
-          emit([application_branch, 'All', path, doc.time_start, i], r);
-          emit([application_branch, 'All', 'All', doc.time_start, i], r);
+          emit(['All', application_branch, doc.system_info.system, path, doc.time_start, i], r);
+          emit([r.application_name, 'All', doc.system_info.system, path, doc.time_start, i], r);
+          emit([r.application_name, application_branch, 'All', path, doc.time_start, i], r);
+          emit([r.application_name, application_branch, doc.system_info.system, 'All', doc.time_start, i], r);
 
-          emit(['All', doc.system_info.system, path, doc.time_start, i ], r);
-          emit(['All', doc.system_info.system, 'All', doc.time_start, i], r);
+          emit(['All', 'All', doc.system_info.system, path, doc.time_start, i], r);
+          emit(['All', application_branch, 'All', path, doc.time_start, i], r);
+          emit(['All', application_branch, doc.system_info.system, 'All', doc.time_start, i], r);
+          emit([r.application_name, 'All', 'All', path, doc.time_start, i], r);
+          emit([r.application_name, 'All', doc.system_info.system, 'All', doc.time_start, i], r);
+          emit([r.application_name, application_branch, 'All', 'All', doc.time_start, i], r);
 
-          emit(['All', 'All', path, doc.time_start, i], r);
-          emit(['All', 'All', 'All', doc.time_start, i], r);
+          emit(['All', 'All', 'All', path, doc.time_start, i], r);
+          emit(['All', 'All', doc.system_info.system, 'All', doc.time_start, i], r);
+          emit(['All', application_branch, 'All', 'All', doc.time_start, i], r);
+          emit([r.application_name, 'All', 'All', 'All', doc.time_start, i], r);
+
+          emit(['All', 'All', 'All', 'All', doc.time_start, i], r);
         }
       }
     });
@@ -169,10 +189,12 @@ var functionalFailuresMap = function(doc) {
 
 var updateReportsMap = function(doc) {
   const REPORT_TYPES = [
-    'firefox-update'
+    'firefox-update',
+    'metrofirefox-update'
   ];
 
   if (doc.time_start &&
+      doc.application_name &&
       doc.application_version &&
       doc.system_info.system &&
       doc.report_type &&
@@ -183,6 +205,7 @@ var updateReportsMap = function(doc) {
     var r = {
       time_start : doc.time_start,
       time_end : doc.time_end,
+      application_name : doc.application_name,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
       system_name : doc.system_info.system,
@@ -194,19 +217,28 @@ var updateReportsMap = function(doc) {
       tests_skipped : doc.tests_skipped
     };
 
-    emit([application_branch, r.system_name, doc.time_start], r);
-    emit(['All', r.system_name, doc.time_start], r);
-    emit([application_branch, 'All', doc.time_start], r);
-    emit(['All', 'All', doc.time_start], r);
+    emit([r.application_name, application_branch, r.system_name, doc.time_start], r);
+
+    emit(['All', application_branch,  r.system_name, doc.time_start], r);
+    emit([r.application_name, 'All', r.system_name, doc.time_start], r);
+    emit([r.application_name, application_branch, 'All', doc.time_start], r);
+
+    emit(['All', 'All', r.system_name, doc.time_start], r);
+    emit(['All', application_branch, 'All', doc.time_start], r);
+    emit([r.application_name, 'All', 'All', doc.time_start], r);
+
+    emit(['All', 'All', 'All', doc.time_start], r);
   }
 }
 
 var updateDefaultMap = function(doc) {
   const REPORT_TYPES = [
-    'firefox-update'
+    'firefox-update',
+    'metrofirefox-update'
   ];
 
   if (doc.time_start &&
+      doc.application_name &&
       doc.application_version &&
       doc.system_info.system &&
       doc.updates &&
@@ -216,6 +248,7 @@ var updateDefaultMap = function(doc) {
     var application_branch = doc.application_version.match(/(\d+\.\d+)\.*/)[1];
 
     var r = {
+      application_name : doc.application_name,
       application_locale : doc.application_locale,
       application_branch : application_branch,
       system_name : doc.system_info.system,
@@ -237,35 +270,54 @@ var updateDefaultMap = function(doc) {
       r.channel = "n/a";
     }
 
-    emit([application_branch, r.channel, r.pre_build, r.post_build, doc.time_start], r);
+    emit([r.application_name, application_branch, r.channel, r.pre_build, r.post_build, doc.time_start], r);
 
-    emit([application_branch, r.channel, r.pre_build, 'All', doc.time_start], r);
+    emit(['All', application_branch, r.channel, r.pre_build, r.post_build, doc.time_start], r);
+    emit([r.application_name, 'All', r.channel, r.pre_build, r.post_build, doc.time_start], r);
+    emit([r.application_name, application_branch, 'All', r.pre_build, r.post_build, doc.time_start], r);
+    emit([r.application_name, application_branch, r.channel, 'All', r.post_build, doc.time_start], r);
+    emit([r.application_name, application_branch, r.channel, r.pre_build, 'All', doc.time_start], r);
 
-    emit([application_branch, r.channel, 'All', r.post_build, doc.time_start], r);
-    emit([application_branch, r.channel, 'All', 'All', doc.time_start], r);
+    emit(['All', 'All', r.channel, r.pre_build, r.post_build, doc.time_start], r);
+    emit(['All', application_branch, 'All', r.pre_build, r.post_build, doc.time_start], r);
+    emit(['All', application_branch, r.channel, 'All', r.post_build, doc.time_start], r);
+    emit(['All', application_branch, r.channel, r.pre_build, 'All', doc.time_start], r);
+    emit([r.application_name, 'All', 'All', r.pre_build, r.post_build, doc.time_start], r);
+    emit([r.application_name, 'All', r.channel, 'All', r.post_build, doc.time_start], r);
+    emit([r.application_name, 'All', r.channel, r.pre_build, 'All', doc.time_start], r);
+    emit([r.application_name, application_branch, 'All', 'All', r.post_build, doc.time_start], r);
+    emit([r.application_name, application_branch, 'All', r.pre_build, 'All', doc.time_start], r);
+    emit([r.application_name, application_branch, r.channel, 'All', 'All', doc.time_start], r);
 
-    emit([application_branch, 'All', r.pre_build, r.post_build, doc.time_start], r);
-    emit([application_branch, 'All', r.pre_build, 'All', doc.time_start], r);
-    emit([application_branch, 'All', 'All', r.post_build, doc.time_start], r);
-    emit([application_branch, 'All', 'All', 'All', doc.time_start], r);
+    emit(['All', 'All', 'All', r.pre_build, r.post_build, doc.time_start], r);
+    emit(['All', 'All', r.channel, 'All', r.post_build, doc.time_start], r);
+    emit(['All', 'All', r.channel, r.pre_build, 'All', doc.time_start], r);
+    emit(['All', application_branch, 'All', 'All', r.post_build, doc.time_start], r);
+    emit(['All', application_branch, 'All', r.pre_build, 'All', doc.time_start], r);
+    emit(['All', application_branch, r.channel, 'All', 'All', doc.time_start], r);
+    emit([r.application_name, 'All', 'All', 'All', r.post_build, doc.time_start], r);
+    emit([r.application_name, 'All', 'All', r.pre_build, 'All', doc.time_start], r);
+    emit([r.application_name, 'All', r.channel, 'All', 'All', doc.time_start], r);
+    emit([r.application_name, application_branch, 'All', 'All', 'All', doc.time_start], r);
 
-    emit(['All', r.channel, r.pre_build, r.post_build, doc.time_start], r);
-    emit(['All', r.channel, r.pre_build, 'All', doc.time_start], r);
-    emit(['All', r.channel, 'All', r.post_build, doc.time_start], r);
-    emit(['All', r.channel, 'All', 'All', doc.time_start], r);
-    emit(['All', 'All', r.pre_build, r.post_build, doc.time_start], r);
-    emit(['All', 'All', r.pre_build, 'All', doc.time_start], r);
-    emit(['All', 'All', 'All', r.post_build, doc.time_start], r);
-    emit(['All', 'All', 'All', 'All', doc.time_start], r);
+    emit(['All', 'All', 'All', 'All', r.post_build, doc.time_start], r);
+    emit(['All', 'All', 'All', r.pre_build, 'All', doc.time_start], r);
+    emit(['All', 'All', r.channel, 'All', 'All', doc.time_start], r);
+    emit(['All', application_branch, 'All', 'All', 'All', doc.time_start], r);
+    emit([r.application_name, 'All', 'All', 'All', 'All', doc.time_start], r);
+
+    emit(['All', 'All', 'All', 'All', 'All', doc.time_start], r);
   }
 }
 
 var l10nReportsMap = function (doc) {
   const REPORT_TYPES = [
-    'firefox-l10n'
+    'firefox-l10n',
+    'metrofirefox-l10n'
   ];
 
   if (doc.time_start &&
+      doc.application_name &&
       doc.application_version &&
       doc.system_info.system &&
       doc.report_type &&
@@ -276,6 +328,7 @@ var l10nReportsMap = function (doc) {
     var r = {
       time_start : doc.time_start,
       time_end : doc.time_end,
+      application_name : doc.application_name,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
       system_name : doc.system_info.system,
@@ -287,19 +340,28 @@ var l10nReportsMap = function (doc) {
       tests_skipped : doc.tests_skipped
     };
 
-    emit([application_branch, r.system_name, doc.time_start], r);
-    emit(['All', r.system_name, doc.time_start], r);
-    emit([application_branch, 'All', doc.time_start], r);
-    emit(['All', 'All', doc.time_start], r);
+    emit([r.application_name, application_branch, r.system_name, doc.time_start], r);
+
+    emit(['All', application_branch, r.system_name, doc.time_start], r);
+    emit([r.application_name, 'All', r.system_name, doc.time_start], r);
+    emit([r.application_name, application_branch, 'All', doc.time_start], r);
+
+    emit(['All', 'All', r.system_name, doc.time_start], r);
+    emit(['All', application_branch, 'All', doc.time_start], r);
+    emit([r.application_name, 'All', 'All', doc.time_start], r);
+
+    emit(['All', 'All', 'All', doc.time_start], r);
   }
 }
 
 var enduranceReportsMap = function(doc) {
   const REPORT_TYPES = [
-    'firefox-endurance'
+    'firefox-endurance',
+    'metrofirefox-endurance'
   ];
 
   if (doc.time_start &&
+      doc.application_name &&
       doc.application_version &&
       doc.system_info.system &&
       doc.report_type &&
@@ -310,6 +372,7 @@ var enduranceReportsMap = function(doc) {
     var r = {
       time_start : doc.time_start,
       time_end : doc.time_end,
+      application_name : doc.application_name,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
       system_name : doc.system_info.system,
@@ -324,19 +387,28 @@ var enduranceReportsMap = function(doc) {
       stats : doc.endurance.stats
     };
 
-    emit([application_branch, r.system_name, doc.time_start], r);
-    emit(['All', r.system_name, doc.time_start], r);
-    emit([application_branch, 'All', doc.time_start], r);
-    emit(['All', 'All', doc.time_start], r);
+    emit([r.application_name, application_branch, r.system_name, doc.time_start], r);
+
+    emit(['All', application_branch, r.system_name, doc.time_start], r);
+    emit([r.application_name, 'All', r.system_name, doc.time_start], r);
+    emit([r.application_name, application_branch, 'All', doc.time_start], r);
+
+    emit(['All', 'All', r.system_name, doc.time_start], r);
+    emit(['All', application_branch, 'All', doc.time_start], r);
+    emit([r.application_name, 'All', 'All', doc.time_start], r);
+
+    emit(['All', 'All', 'All', doc.time_start], r);
   }
 }
 
 var remoteReportsMap = function(doc) {
   const REPORT_TYPES = [
-    'firefox-remote'
+    'firefox-remote',
+    'metrofirefox-remote'
   ];
 
   if (doc.time_start &&
+      doc.application_name &&
       doc.application_version &&
       doc.system_info.system &&
       doc.report_type &&
@@ -347,6 +419,7 @@ var remoteReportsMap = function(doc) {
     var r = {
       time_start : doc.time_start,
       time_end : doc.time_end,
+      application_name : doc.application_name,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
       system_name : doc.system_info.system,
@@ -358,19 +431,28 @@ var remoteReportsMap = function(doc) {
       tests_skipped : doc.tests_skipped
     };
 
-    emit([application_branch, r.system_name, doc.time_start], r);
-    emit(['All', r.system_name, doc.time_start], r);
-    emit([application_branch, 'All', doc.time_start], r);
-    emit(['All', 'All', doc.time_start], r);
+    emit([r.application_name, application_branch, r.system_name, doc.time_start], r);
+
+    emit(['All', application_branch, r.system_name, doc.time_start], r);
+    emit([r.application_name, 'All', r.system_name, doc.time_start], r);
+    emit([r.application_name, application_branch, 'All', doc.time_start], r);
+
+    emit(['All', 'All', r.system_name, doc.time_start], r);
+    emit(['All', application_branch, 'All', doc.time_start], r);
+    emit([r.application_name, 'All', 'All', doc.time_start], r);
+
+    emit(['All', 'All', 'All', doc.time_start], r);
   }
 }
 
 var remoteFailuresMap = function(doc) {
   const REPORT_TYPES = [
-    'firefox-remote'
+    'firefox-remote',
+    'metrofirefox-remote'
   ];
 
   if (doc.time_start &&
+      doc.application_name &&
       doc.application_version &&
       doc.system_info.system &&
       doc.results &&
@@ -405,6 +487,7 @@ var remoteFailuresMap = function(doc) {
           // message is always the one from the last iteration. No idea why.
           var r = {
             application_locale : doc.application_locale,
+            application_name : doc.application_name,
             application_version : doc.application_version,
             application_branch : application_branch,
             platform_buildId : doc.platform_buildid,
@@ -417,17 +500,26 @@ var remoteFailuresMap = function(doc) {
             message : message
           };
 
-          emit([application_branch, doc.system_info.system, path, doc.time_start, i], r);
-          emit([application_branch, doc.system_info.system, 'All', doc.time_start, i], r);
+          emit([r.application_name, application_branch, doc.system_info.system, path, doc.time_start, i], r);
 
-          emit([application_branch, 'All', path, doc.time_start, i], r);
-          emit([application_branch, 'All', 'All', doc.time_start, i], r);
+          emit(['All', application_branch, doc.system_info.system, path, doc.time_start, i], r);
+          emit([r.application_name, 'All', doc.system_info.system, path, doc.time_start, i], r);
+          emit([r.application_name, application_branch, 'All', path, doc.time_start, i], r);
+          emit([r.application_name, application_branch, doc.system_info.system, 'All', doc.time_start, i], r);
 
-          emit(['All', doc.system_info.system, path, doc.time_start, i ], r);
-          emit(['All', doc.system_info.system, 'All', doc.time_start, i], r);
+          emit(['All', 'All', doc.system_info.system, path, doc.time_start, i], r);
+          emit(['All', application_branch, 'All', path, doc.time_start, i], r);
+          emit(['All', application_branch, doc.system_info.system, 'All', doc.time_start, i], r);
+          emit([r.application_name, 'All', 'All', path, doc.time_start, i], r);
+          emit([r.application_name, 'All', doc.system_info.system, 'All', doc.time_start, i], r);
+          emit([r.application_name, application_branch, 'All', 'All', doc.time_start, i], r);
 
-          emit(['All', 'All', path, doc.time_start, i], r);
-          emit(['All', 'All', 'All', doc.time_start, i], r);
+          emit(['All', 'All', 'All', path, doc.time_start, i], r);
+          emit(['All', 'All', doc.system_info.system, 'All', doc.time_start, i], r);
+          emit(['All', application_branch, 'All', 'All', doc.time_start, i], r);
+          emit([r.application_name, 'All', 'All', 'All', doc.time_start, i], r);
+
+          emit(['All', 'All', 'All', 'All', doc.time_start, i], r);
         }
       }
     });
@@ -437,10 +529,12 @@ var remoteFailuresMap = function(doc) {
 
 var addonsReportsMap = function(doc) {
   const REPORT_TYPES = [
-    'firefox-addons'
+    'firefox-addons',
+    'metrofirefox-addons'
   ];
 
   if (doc.time_start &&
+      doc.application_name &&
       doc.application_version &&
       doc.system_info.system &&
       doc.report_type &&
@@ -451,6 +545,7 @@ var addonsReportsMap = function(doc) {
     var r = {
       time_start : doc.time_start,
       time_end : doc.time_end,
+      application_name : doc.application_name,
       application_version : doc.application_version,
       build_id : doc.platform_buildid,
       system_name : doc.system_info.system,
@@ -464,10 +559,17 @@ var addonsReportsMap = function(doc) {
       addon_version : doc.target_addon.version
     };
 
-    emit([application_branch, r.system_name, doc.time_start], r);
-    emit(['All', r.system_name, doc.time_start], r);
-    emit([application_branch, 'All', doc.time_start], r);
-    emit(['All', 'All', doc.time_start], r);
+    emit([r.application_name, application_branch, r.system_name, doc.time_start], r);
+
+    emit(['All', application_branch, r.system_name, doc.time_start], r);
+    emit([r.application_name, 'All', r.system_name, doc.time_start], r);
+    emit([r.application_name, application_branch, 'All', doc.time_start], r);
+
+    emit(['All', 'All', r.system_name, doc.time_start], r);
+    emit(['All', application_branch, 'All', doc.time_start], r);
+    emit([r.application_name, 'All', 'All', doc.time_start], r);
+
+    emit(['All', 'All', 'All', doc.time_start], r);
   }
 }
 

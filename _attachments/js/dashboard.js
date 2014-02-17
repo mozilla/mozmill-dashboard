@@ -3,17 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var report_type_mappings = {
-  'firefox-functional' : 'functional',
-  'firefox-update' : 'update',
-  'firefox-l10n' : 'l10n',
-  'firefox-endurance' : 'endurance',
-  'firefox-remote' : 'remote',
-  'firefox-addons' : 'addons',
-
-  'mozmill-test' : 'functional',
-  'mozmill-restart-test' : 'functional'
+  'functional' : ['firefox-functional', 'metrofirefox-functional'],
+  'update' : ['firefox-update'],
+  'l10n' : ['firefox-l10n', 'metrofirefox-l10n'],
+  'endurance' : ['firefox-endurance'],
+  'remote' : ['firefox-remote', 'metrofirefox-remote'],
+  'addons' : ['firefox-addons']
 };
 
+function filter_report_types(aReportType) {
+  for (var report in report_type_mappings) {
+    if (report_type_mappings[report].indexOf(aReportType) >= 0) {
+      return report;
+    }
+  }
+}
 
 /**
  * Distinguish title for usability and bookmarking
@@ -46,7 +50,7 @@ function buildTitle() {
  * @returns {[Object]} Array of failure information
  */
 function processTestResults(aReport) {
-  var report_type = report_type_mappings[aReport.report_type];
+  var report_type = filter_report_types(aReport.report_type);
   var results = [ ];
 
   for (var i = 0; i < aReport.results.length; i++) {
@@ -171,8 +175,9 @@ function processTestResults(aReport) {
     }
 
     var functional_reports = function() {
-      var branch = this.params.branch ? this.params.branch : 'All';
-      var platform = this.params.platform ? this.params.platform : 'All';
+      var app = this.params.app || 'All';
+      var branch = this.params.branch || 'All';
+      var platform = this.params.platform || 'All';
 
       var fromDate;
       if (this.params.from) {
@@ -192,8 +197,8 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
-        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        startkey: JSON.stringify([app, branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([app, branch, platform, fromDate.format() + "T00:00:00"]),
         descending: "true"
       };
 
@@ -213,6 +218,20 @@ function processTestResults(aReport) {
         var template = '/templates/functional_reports.mustache';
         context.render(template).replace('#content').then(function () {
 
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#app-selection span').click(function () {
+            window.location = '/#/functional/reports?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val()
+          })
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
@@ -220,8 +239,10 @@ function processTestResults(aReport) {
           })
 
           $('#branch-selection span').click(function () {
-            window.location = '/#/functional/reports?branch=' + this.textContent +
-                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+            window.location = '/#/functional/reports?app=' + app +
+                              '&branch=' + this.textContent +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
 
@@ -232,7 +253,8 @@ function processTestResults(aReport) {
           })
 
           $('#os-selection span').click(function () {
-            window.location = '/#/functional/reports?branch=' + branch +
+            window.location = '/#/functional/reports?app=' + app +
+                              '&branch=' + branch +
                               '&platform=' + this.textContent +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val()
@@ -245,7 +267,9 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/functional/reports?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/functional/reports?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -267,10 +291,11 @@ function processTestResults(aReport) {
       var context = this;
       this.firefox_versions = FIREFOX_VERSIONS;
 
-      var branch = this.params.branch ? this.params.branch : 'All';
-      var platform = this.params.platform ? this.params.platform : 'All';
-      var test = this.params.test ? this.params.test : {};
-      var test_func = this.params.func ? this.params.func : {};
+      var app = this.params.app || 'All';
+      var branch = this.params.branch || 'All';
+      var platform = this.params.platform || 'All';
+      var test = this.params.test || {};
+      var test_func = this.params.func || {};
 
       var fromDate;
       if (this.params.from) {
@@ -290,13 +315,13 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey : JSON.stringify([branch, platform, test, toDate.format() + "T23:59:59"]),
-        endkey : JSON.stringify([branch, platform, test, fromDate.format() + "T00:00:00"]),
+        startkey : JSON.stringify([app, branch, platform, test, toDate.format() + "T23:59:59"]),
+        endkey : JSON.stringify([app, branch, platform, test, fromDate.format() + "T00:00:00"]),
         descending : true
       };
 
       request({url:'/_view/functional_failures?'+$.param(query)}, function (err, resp) {
-        if (err) console.og(err);
+        if (err) console.log(err);
 
         context.reports = [ ];
         context.test_module = test;
@@ -305,7 +330,7 @@ function processTestResults(aReport) {
           var value = row.value;
 
           if (test_func == {} || value.test_function == test_func) {
-            value.time_start = new Date(row.key[3]).toISOString();
+            value.time_start = new Date(row.key[4]).toISOString();
             value.report_link = "#/functional/report/" + row.id;
 
             context.reports.push(value);
@@ -315,16 +340,34 @@ function processTestResults(aReport) {
         var template = '/templates/functional_failure.mustache';
         context.render(template).replace('#content').then(function () {
 
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#app-selection span').click(function () {
+            window.location = '/#/functional/failure?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
+                              '&from=' + fromDate.format() +
+                              '&to=' + toDate.format() +
+                              "&test=" + encodeURIComponent(test) +
+                              '&func=' + encodeURIComponent(test_func);
+          })
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
             }
           })
           $('#branch-selection span').click(function () {
-            window.location = '/#/functional/failure?branch=' + this.textContent +
-                              '&platform=' + platform + '&from=' + fromDate.format() +
-                              '&to=' + toDate.format() + "&test=" +
-                              encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
+            window.location = '/#/functional/failure?app=' + app +
+                              '&branch=' + this.textContent +
+                              '&platform=' + platform +
+                              '&from=' + fromDate.format() +
+                              '&to=' + toDate.format() +
+                              "&test=" + encodeURIComponent(test) +
+                              '&func=' + encodeURIComponent(test_func);
           })
 
           $('#os-selection span').each(function (i, elem) {
@@ -333,10 +376,13 @@ function processTestResults(aReport) {
             }
           })
           $('#os-selection span').click(function () {
-            window.location = '/#/functional/failure?branch=' + branch +
-                              '&platform=' + this.textContent + '&from=' + fromDate.format() +
-                              '&to=' + toDate.format() + "&test=" +
-                              encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
+            window.location = '/#/functional/failure?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + this.textContent +
+                              '&from=' + fromDate.format() +
+                              '&to=' + toDate.format() +
+                              "&test=" + encodeURIComponent(test) +
+                              '&func=' + encodeURIComponent(test_func);
           })
 
           $(".datepicker").datepicker();
@@ -346,10 +392,13 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/functional/failure?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/functional/failure?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
-                              '&to=' + $("#end-date").val() + "&test=" +
-                              encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
+                              '&to=' + $("#end-date").val() +
+                              "&test=" + encodeURIComponent(test) +
+                              '&func=' + encodeURIComponent(test_func);
           })
 
           $("#subtitle").text("Top Failures");
@@ -370,8 +419,9 @@ function processTestResults(aReport) {
       var context = this;
       this.firefox_versions = FIREFOX_VERSIONS;
 
-      var branch = this.params.branch ? this.params.branch : 'All';
-      var platform = this.params.platform ? this.params.platform : 'All';
+      var app = this.params.app || 'All';
+      var branch = this.params.branch || 'All';
+      var platform = this.params.platform || 'All';
 
       var fromDate;
       if (this.params.from) {
@@ -391,8 +441,8 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey : JSON.stringify([branch, platform, 'All', toDate.format() + "T23:59:59"]),
-        endkey : JSON.stringify([branch, platform, 'All', fromDate.format()]),
+        startkey : JSON.stringify([app, branch, platform, 'All', toDate.format() + "T23:59:59"]),
+        endkey : JSON.stringify([app, branch, platform, 'All', fromDate.format()]),
         descending : true
       };
 
@@ -405,7 +455,7 @@ function processTestResults(aReport) {
           var v = row.value;
           var k = row.key;
 
-          var index = v.test_module + "|" + v.test_function + "|" + v.application_branch + "|" + v.system_name;
+          var index = v.test_module + "|" + v.test_function + "|" + v.application_branch + "|" + v.system_name + "|" + v.application_name;
           if (index in failures) {
             failures[index]++;
           } else {
@@ -421,11 +471,14 @@ function processTestResults(aReport) {
             test_function : entries[1],
             application_branch : entries[2],
             system_name : entries[3],
-            failure_link : '/#/functional/failure?branch=' + entries[2] + "&platform=" +
-                           entries[3] + '&from=' + fromDate.format() +
-                          '&to=' + toDate.format() + "&test=" +
-                          encodeURIComponent(entries[0]) + "&func=" +
-                          encodeURIComponent(entries[1]),
+            application_name : entries[4],
+            failure_link : '/#/functional/failure?app=' + entries[4] +
+                           '&branch=' + entries[2] +
+                           '&platform=' + entries[3] +
+                           '&from=' + fromDate.format() +
+                           '&to=' + toDate.format() +
+                           '&test=' + encodeURIComponent(entries[0]) +
+                           '&func=' + encodeURIComponent(entries[1]),
             failure_count : failures[key]
           });
         };
@@ -433,13 +486,28 @@ function processTestResults(aReport) {
         var template = '/templates/functional_failures.mustache';
         context.render(template).replace('#content').then(function () {
 
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#app-selection span').click(function () {
+            window.location = '/#/functional/top?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
             }
           })
           $('#branch-selection span').click(function () {
-            window.location = '/#/functional/top?branch=' + this.textContent + "&platform=" + platform +
+            window.location = '/#/functional/top?app=' + app +
+                              '&branch=' + this.textContent +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -450,7 +518,9 @@ function processTestResults(aReport) {
             }
           })
           $('#os-selection span').click(function () {
-            window.location = '/#/functional/top?branch=' + branch + "&platform=" + this.textContent +
+            window.location = '/#/functional/top?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + this.textContent +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -462,7 +532,9 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/functional/top?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/functional/top?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -536,6 +608,7 @@ function processTestResults(aReport) {
       this.firefox_versions = FIREFOX_VERSIONS;
       this.update_channels = UPDATE_CHANNELS;
 
+      var app = this.params.app || 'All';
       var branch = this.params.branch || 'All';
       var channel = this.params.channel || 'All';
 
@@ -557,8 +630,8 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey : JSON.stringify([branch, channel, 'All', 'All', toDate.format() + "T23:59:59"]),
-        endkey : JSON.stringify([branch, channel, 'All', 'All', fromDate.format() + "T00:00:00"]),
+        startkey : JSON.stringify([app, branch, channel, 'All', 'All', toDate.format() + "T23:59:59"]),
+        endkey : JSON.stringify([app, branch, channel, 'All', 'All', fromDate.format() + "T00:00:00"]),
         descending : true
       };
 
@@ -594,15 +667,29 @@ function processTestResults(aReport) {
             channel: entries[2],
             testrun_count : updates[key].testruns,
             failure_count : updates[key].failures,
-            detail_url : '/#/update/detail?branch=' + branch + "&channel=" +
-                         entries[2] + '&from=' + fromDate.format() +
-                         '&to=' + toDate.format() + "&target=" +
-                         encodeURIComponent(entries[0])
+            detail_url : '/#/update/detail?branch=' + branch +
+                         '&channel=' + entries[2] +
+                         '&from=' + fromDate.format() +
+                         '&to=' + toDate.format() +
+                         '&target=' + encodeURIComponent(entries[0])
           });
         };
 
         var template = '/templates/update_overview.mustache';
         context.render(template).replace('#content').then(function () {
+
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#app-selection span').click(function () {
+            window.location = '/#/update/overview?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&channel=' + channel +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
 
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
@@ -610,7 +697,9 @@ function processTestResults(aReport) {
             }
           })
           $('#branch-selection span').click(function () {
-            window.location = '/#/update/overview?branch=' + this.textContent + "&channel=" + channel +
+            window.location = '/#/update/overview?app=' + app +
+                              '&branch=' + this.textContent +
+                              '&channel=' + channel +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -621,7 +710,9 @@ function processTestResults(aReport) {
             }
           })
           $('#channel-selection span').click(function () {
-            window.location = '/#/update/overview?branch=' + branch + "&channel=" + this.textContent +
+            window.location = '/#/update/overview?app=' + app +
+                              '&branch=' + branch +
+                              '&channel=' + this.textContent +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -633,7 +724,9 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/update/overview?branch=' + branch + "&channel=" + channel +
+            window.location = '/#/update/overview?app=' + app +
+                              '&branch=' + branch +
+                              '&channel=' + channel +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -656,6 +749,7 @@ function processTestResults(aReport) {
       this.firefox_versions = FIREFOX_VERSIONS;
       this.update_channels = UPDATE_CHANNELS;
 
+      var app = this.params.app || 'All';
       var branch = this.params.branch || 'All';
       var channel = this.params.channel || 'All';
       var target = this.params.target || 'n/a';
@@ -678,8 +772,8 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey : JSON.stringify([branch, channel, 'All', target, toDate.format() + "T23:59:59"]),
-        endkey : JSON.stringify([branch, channel, 'All', target, fromDate.format() + "T00:00:00"]),
+        startkey : JSON.stringify([app, branch, channel, 'All', target, toDate.format() + "T23:59:59"]),
+        endkey : JSON.stringify([app, branch, channel, 'All', target, fromDate.format() + "T00:00:00"]),
         descending : true,
         include_docs: true
       };
@@ -746,15 +840,32 @@ function processTestResults(aReport) {
         var template = '/templates/update_detail.mustache';
         context.render(template).replace('#content').then(function () {
 
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#app-selection span').click(function () {
+            window.location = '/#/update/detail?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&channel=' + channel +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val() +
+                              '&target=' + target;
+          })
+
           $('#channel-selection span').each(function (i, elem) {
             if (elem.textContent == channel) {
               $(elem).addClass("selected")
             }
           })
           $('#channel-selection span').click(function () {
-            window.location = '/#/update/detail?branch=' + branch + "&channel=" + this.textContent +
+            window.location = '/#/update/detail?app=' + app +
+                              '&branch=' + branch +
+                              '&channel=' + this.textContent +
                               '&from=' + $("#start-date").val() +
-                              '&to=' + $("#end-date").val() + "&target=" + target;
+                              '&to=' + $("#end-date").val() +
+                              '&target=' + target;
           })
 
           $(".datepicker").datepicker();
@@ -764,9 +875,12 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/update/detail?branch=' + branch + "&channel=" + channel +
+            window.location = '/#/update/detail?app=' + app +
+                              '&branch=' + branch +
+                              '&channel=' + channel +
                               '&from=' + $("#start-date").val() +
-                              '&to=' + $("#end-date").val() + "&target=" + target;
+                              '&to=' + $("#end-date").val() +
+                              '&target=' + target;
           })
 
           $("#results").tablesorter({
@@ -783,8 +897,9 @@ function processTestResults(aReport) {
     }
 
     var update_reports = function() {
-      var branch = this.params.branch ? this.params.branch : 'All';
-      var platform = this.params.platform ? this.params.platform : 'All';
+      var app = this.params.app || 'All';
+      var branch = this.params.branch || 'All';
+      var platform = this.params.platform || 'All';
 
       var fromDate;
       if (this.params.from) {
@@ -804,8 +919,8 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
-        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        startkey: JSON.stringify([app, branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([app, branch, platform, fromDate.format() + "T00:00:00"]),
         descending: "true"
       };
 
@@ -825,6 +940,20 @@ function processTestResults(aReport) {
         var template = '/templates/update_reports.mustache';
         context.render(template).replace('#content').then(function () {
 
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#app-selection span').click(function () {
+            window.location = '/#/update/reports?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
@@ -832,8 +961,10 @@ function processTestResults(aReport) {
           })
 
           $('#branch-selection span').click(function () {
-            window.location = '/#/update/reports?branch=' + this.textContent +
-                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+            window.location = '/#/update/reports?app=' + app +
+                              '&branch=' + this.textContent +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
 
@@ -844,8 +975,10 @@ function processTestResults(aReport) {
           })
 
           $('#os-selection span').click(function () {
-            window.location = '/#/update/reports?branch=' + branch + '&platform=' +
-                              this.textContent + '&from=' + $("#start-date").val() +
+            window.location = '/#/update/reports?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + this.textContent +
+                              '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
 
@@ -856,7 +989,9 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/update/reports?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/update/reports?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -928,8 +1063,9 @@ function processTestResults(aReport) {
     }
 
     var l10n_reports = function () {
-      var branch = this.params.branch ? this.params.branch : 'All';
-      var platform = this.params.platform ? this.params.platform : 'All';
+      var app = this.params.app || 'All';
+      var branch = this.params.branch || 'All';
+      var platform = this.params.platform || 'All';
 
       var fromDate;
       if (this.params.from) {
@@ -949,8 +1085,8 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
-        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        startkey: JSON.stringify([app, branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([app, branch, platform, fromDate.format() + "T00:00:00"]),
         descending: "true"
       };
 
@@ -970,6 +1106,20 @@ function processTestResults(aReport) {
         var template = '/templates/l10n_reports.mustache';
         context.render(template).replace('#content').then(function () {
 
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#app-selection span').click(function () {
+            window.location = '/#/l10n/reports?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
@@ -977,8 +1127,10 @@ function processTestResults(aReport) {
           })
 
           $('#branch-selection span').click(function () {
-            window.location = '/#/l10n/reports?branch=' + this.textContent +
-                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+            window.location = '/#/l10n/reports?app=' + app +
+                              '&branch=' + this.textContent +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
 
@@ -989,8 +1141,10 @@ function processTestResults(aReport) {
           })
 
           $('#os-selection span').click(function () {
-            window.location = '/#/l10n/reports?branch=' + branch + '&platform=' +
-                              this.textContent + '&from=' + $("#start-date").val() +
+            window.location = '/#/l10n/reports?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + this.textContent +
+                              '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
 
@@ -1001,7 +1155,9 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/l10n/reports?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/l10n/reports?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -1071,8 +1227,9 @@ function processTestResults(aReport) {
     }
 
     var endurance_reports = function() {
-      var branch = this.params.branch ? this.params.branch : 'All';
-      var platform = this.params.platform ? this.params.platform : 'All';
+      var app = this.params.app || 'All';
+      var branch = this.params.branch || 'All';
+      var platform = this.params.platform || 'All';
 
       var fromDate;
       if (this.params.from) {
@@ -1092,8 +1249,8 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
-        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        startkey: JSON.stringify([app, branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([app, branch, platform, fromDate.format() + "T00:00:00"]),
         descending: "true"
       };
 
@@ -1115,6 +1272,20 @@ function processTestResults(aReport) {
         var template = '/templates/endurance_reports.mustache';
         context.render(template).replace('#content').then(function () {
 
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#app-selection span').click(function () {
+            window.location = '/#/endurance/reports?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val()
+          })
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
@@ -1122,8 +1293,10 @@ function processTestResults(aReport) {
           })
 
           $('#branch-selection span').click(function () {
-            window.location = '/#/endurance/reports?branch=' + this.textContent +
-                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+            window.location = '/#/endurance/reports?app=' + app +
+                              '&branch=' + this.textContent +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
 
@@ -1134,7 +1307,8 @@ function processTestResults(aReport) {
           })
 
           $('#os-selection span').click(function () {
-            window.location = '/#/endurance/reports?branch=' + branch +
+            window.location = '/#/endurance/reports?app=' + app +
+                              '&branch=' + branch +
                               '&platform=' + this.textContent +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val()
@@ -1147,7 +1321,9 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/endurance/reports?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/endurance/reports?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -1168,8 +1344,9 @@ function processTestResults(aReport) {
     }
 
     var endurance_charts = function() {
-      var branch = this.params.branch ? this.params.branch : FIREFOX_VERSIONS[0];
-      var platform = this.params.platform ? this.params.platform : 'All';
+      var app = this.params.app || 'All';
+      var branch = this.params.branch || FIREFOX_VERSIONS[0];
+      var platform = this.params.platform || 'All';
 
       var fromDate;
       if (this.params.from) {
@@ -1189,8 +1366,8 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
-        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        startkey: JSON.stringify([all, branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([all, branch, platform, fromDate.format() + "T00:00:00"]),
         descending: "true"
       };
 
@@ -1226,6 +1403,20 @@ function processTestResults(aReport) {
         var template = '/templates/endurance_charts.mustache';
         context.render(template).replace('#content').then(function () {
 
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#app-selection span').click(function () {
+            window.location = '/#/endurance/charts?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val()
+          })
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
@@ -1233,8 +1424,10 @@ function processTestResults(aReport) {
           })
 
           $('#branch-selection span').click(function () {
-            window.location = '/#/endurance/charts?branch=' + this.textContent +
-                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+            window.location = '/#/endurance/charts?app=' + app +
+                              '&branch=' + this.textContent +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
 
@@ -1245,7 +1438,8 @@ function processTestResults(aReport) {
           })
 
           $('#os-selection span').click(function () {
-            window.location = '/#/endurance/charts?branch=' + branch +
+            window.location = '/#/endurance/charts?app=' + app +
+                              '&branch=' + branch +
                               '&platform=' + this.textContent +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val()
@@ -1258,7 +1452,9 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/endurance/charts?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/endurance/charts?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -1324,7 +1520,8 @@ function processTestResults(aReport) {
             var testIterationCount = tests[i].iterations.length;
 
             var types = {
-              'firefox-endurance' : 'endurance'
+              'firefox-endurance' : 'endurance',
+              'metrofirefox-endurance' : 'endurance'
             };
 
             for (var j=0; j < testIterationCount; j++) {
@@ -1452,10 +1649,11 @@ function processTestResults(aReport) {
       var context = this;
       this.firefox_versions = FIREFOX_VERSIONS;
 
-      var branch = this.params.branch ? this.params.branch : 'All';
-      var platform = this.params.platform ? this.params.platform : 'All';
-      var test = this.params.test ? this.params.test : {};
-      var test_func = this.params.func ? this.params.func : {};
+      var app = this.params.app || 'All';
+      var branch = this.params.branch || 'All';
+      var platform = this.params.platform || 'All';
+      var test = this.params.test || {};
+      var test_func = this.params.func || {};
 
       var fromDate;
       if (this.params.from) {
@@ -1475,13 +1673,13 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey : JSON.stringify([branch, platform, test, toDate.format() + "T23:59:59"]),
-        endkey : JSON.stringify([branch, platform, test, fromDate.format() + "T00:00:00"]),
+        startkey : JSON.stringify([app, branch, platform, test, toDate.format() + "T23:59:59"]),
+        endkey : JSON.stringify([app, branch, platform, test, fromDate.format() + "T00:00:00"]),
         descending : true
       };
 
       request({url:'/_view/remote_failures?'+$.param(query)}, function (err, resp) {
-        if (err) console.og(err);
+        if (err) console.log(err);
 
         context.reports = [ ];
         context.test_module = test;
@@ -1490,7 +1688,7 @@ function processTestResults(aReport) {
           var value = row.value;
 
           if (test_func == {} || value.test_function == test_func) {
-            value.time_start = new Date(row.key[3]).toISOString();
+            value.time_start = new Date(row.key[4]).toISOString();
             value.report_link = "#/remote/report/" + row.id;
 
             context.reports.push(value);
@@ -1500,16 +1698,34 @@ function processTestResults(aReport) {
         var template = '/templates/remote_failure.mustache';
         context.render(template).replace('#content').then(function () {
 
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#app-selection span').click(function () {
+            window.location = '/#/remote/failure?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
+                              '&from=' + fromDate.format() +
+                              '&to=' + toDate.format() +
+                              '&test=' + encodeURIComponent(test) +
+                              '&func=' + encodeURIComponent(test_func);
+          })
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
             }
           })
           $('#branch-selection span').click(function () {
-            window.location = '/#/remote/failure?branch=' + this.textContent +
-                              '&platform=' + platform + '&from=' + fromDate.format() +
-                              '&to=' + toDate.format() + "&test=" +
-                              encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
+            window.location = '/#/remote/failure?app=' + app +
+                              '&branch=' + this.textContent +
+                              '&platform=' + platform +
+                              '&from=' + fromDate.format() +
+                              '&to=' + toDate.format() +
+                              '&test=' + encodeURIComponent(test) +
+                              '&func=' + encodeURIComponent(test_func);
           })
 
           $('#os-selection span').each(function (i, elem) {
@@ -1518,10 +1734,13 @@ function processTestResults(aReport) {
             }
           })
           $('#os-selection span').click(function () {
-            window.location = '/#/remote/failure?branch=' + branch +
-                              '&platform=' + this.textContent + '&from=' + fromDate.format() +
-                              '&to=' + toDate.format() + "&test=" +
-                              encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
+            window.location = '/#/remote/failure?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + this.textContent +
+                              '&from=' + fromDate.format() +
+                              '&to=' + toDate.format() +
+                              '&test=' + encodeURIComponent(test) +
+                              '&func=' + encodeURIComponent(test_func);
           })
 
           $(".datepicker").datepicker();
@@ -1531,10 +1750,13 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/remote/failure?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/remote/failure?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
-                              '&to=' + $("#end-date").val() + "&test=" +
-                              encodeURIComponent(test) + '&func=' + encodeURIComponent(test_func);
+                              '&to=' + $("#end-date").val() +
+                              '&test=' + encodeURIComponent(test) +
+                              '&func=' + encodeURIComponent(test_func);
           })
 
           $("#subtitle").text("Top Failures");
@@ -1555,8 +1777,9 @@ function processTestResults(aReport) {
       var context = this;
       this.firefox_versions = FIREFOX_VERSIONS;
 
-      var branch = this.params.branch ? this.params.branch : 'All';
-      var platform = this.params.platform ? this.params.platform : 'All';
+      var app = this.params.app || 'All';
+      var branch = this.params.branch || 'All';
+      var platform = this.params.platform || 'All';
 
       var fromDate;
       if (this.params.from) {
@@ -1576,8 +1799,8 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey : JSON.stringify([branch, platform, 'All', toDate.format() + "T23:59:59"]),
-        endkey : JSON.stringify([branch, platform, 'All', fromDate.format()]),
+        startkey : JSON.stringify([app, branch, platform, 'All', toDate.format() + "T23:59:59"]),
+        endkey : JSON.stringify([app, branch, platform, 'All', fromDate.format()]),
         descending : true
       };
 
@@ -1590,7 +1813,7 @@ function processTestResults(aReport) {
           var v = row.value;
           var k = row.key;
 
-          var index = v.test_module + "|" + v.test_function + "|" + v.application_branch + "|" + v.system_name;
+          var index = v.test_module + "|" + v.test_function + "|" + v.application_branch + "|" + v.system_name + "|" + v.application_name;
           if (index in failures) {
             failures[index]++;
           } else {
@@ -1606,11 +1829,14 @@ function processTestResults(aReport) {
             test_function : entries[1],
             application_branch : entries[2],
             system_name : entries[3],
-            failure_link : '/#/remote/failure?branch=' + entries[2] + "&platform=" +
-                           entries[3] + '&from=' + fromDate.format() +
-                          '&to=' + toDate.format() + "&test=" +
-                          encodeURIComponent(entries[0]) + "&func=" +
-                          encodeURIComponent(entries[1]),
+            application_name : entries[4],
+            failure_link : '/#/remote/failure?app=' + entries[4] +
+                           '&branch=' + entries[2] +
+                           '&platform=' + entries[3] +
+                           '&from=' + fromDate.format() +
+                           '&to=' + toDate.format() +
+                           '&test=' + encodeURIComponent(entries[0]) +
+                           '&func=' + encodeURIComponent(entries[1]),
             failure_count : failures[key]
           });
         };
@@ -1618,13 +1844,28 @@ function processTestResults(aReport) {
         var template = '/templates/remote_failures.mustache';
         context.render(template).replace('#content').then(function () {
 
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+          $('#app-selection span').click(function () {
+            window.location = '/#/remote/top?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val();
+          })
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
             }
           })
           $('#branch-selection span').click(function () {
-            window.location = '/#/remote/top?branch=' + this.textContent + "&platform=" + platform +
+            window.location = '/#/remote/top?app=' + app +
+                              '&branch=' + this.textContent +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -1635,7 +1876,9 @@ function processTestResults(aReport) {
             }
           })
           $('#os-selection span').click(function () {
-            window.location = '/#/remote/top?branch=' + branch + "&platform=" + this.textContent +
+            window.location = '/#/remote/top?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + this.textContent +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -1647,7 +1890,9 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/remote/top?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/remote/top?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -1668,8 +1913,9 @@ function processTestResults(aReport) {
     }
 
     var remote_reports = function() {
-      var branch = this.params.branch ? this.params.branch : 'All';
-      var platform = this.params.platform ? this.params.platform : 'All';
+      var app = this.params.app || 'All';
+      var branch = this.params.branch || 'All';
+      var platform = this.params.platform || 'All';
 
       var fromDate;
       if (this.params.from) {
@@ -1689,8 +1935,8 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
-        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        startkey: JSON.stringify([app, branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([app, branch, platform, fromDate.format() + "T00:00:00"]),
         descending: "true"
       };
 
@@ -1710,6 +1956,20 @@ function processTestResults(aReport) {
         var template = '/templates/remote_reports.mustache';
         context.render(template).replace('#content').then(function () {
 
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#app-selection span').click(function () {
+            window.location = '/#/remote/reports?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val()
+          })
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
@@ -1717,8 +1977,10 @@ function processTestResults(aReport) {
           })
 
           $('#branch-selection span').click(function () {
-            window.location = '/#/remote/reports?branch=' + this.textContent +
-                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+            window.location = '/#/remote/reports?app=' + app +
+                              '&branch=' + this.textContent +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
 
@@ -1729,7 +1991,8 @@ function processTestResults(aReport) {
           })
 
           $('#os-selection span').click(function () {
-            window.location = '/#/remote/reports?branch=' + branch +
+            window.location = '/#/remote/reports?app=' + app +
+                              '&branch=' + branch +
                               '&platform=' + this.textContent +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val()
@@ -1742,7 +2005,9 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/remote/reports?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/remote/reports?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -1810,8 +2075,9 @@ function processTestResults(aReport) {
     }
 
     var addons_reports = function() {
-      var branch = this.params.branch ? this.params.branch : 'All';
-      var platform = this.params.platform ? this.params.platform : 'All';
+      var app = this.params.app || 'All';
+      var branch = this.params.branch || 'All';
+      var platform = this.params.platform || 'All';
 
       var fromDate;
       if (this.params.from) {
@@ -1831,8 +2097,8 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey: JSON.stringify([branch, platform, toDate.format() + "T23:59:59"]),
-        endkey: JSON.stringify([branch, platform, fromDate.format() + "T00:00:00"]),
+        startkey: JSON.stringify([app, branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([app, branch, platform, fromDate.format() + "T00:00:00"]),
         descending: "true"
       };
 
@@ -1852,6 +2118,20 @@ function processTestResults(aReport) {
         var template = '/templates/addons_reports.mustache';
         context.render(template).replace('#content').then(function () {
 
+          $('#app-selection span').each(function (i, elem) {
+            if (elem.textContent == app) {
+              $(elem).addClass("selected")
+            }
+          })
+
+          $('#app-selection span').click(function () {
+            window.location = '/#/addons/reports?app=' + this.textContent +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
+                              '&to=' + $("#end-date").val()
+          })
+
           $('#branch-selection span').each(function (i, elem) {
             if (elem.textContent == branch) {
               $(elem).addClass("selected")
@@ -1859,8 +2139,10 @@ function processTestResults(aReport) {
           })
 
           $('#branch-selection span').click(function () {
-            window.location = '/#/addons/reports?branch=' + this.textContent +
-                              '&platform=' + platform + '&from=' + $("#start-date").val() +
+            window.location = '/#/addons/reports?app=' + app +
+                              '&branch=' + this.textContent +
+                              '&platform=' + platform +
+                              '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
 
@@ -1871,7 +2153,8 @@ function processTestResults(aReport) {
           })
 
           $('#os-selection span').click(function () {
-            window.location = '/#/addons/reports?branch=' + branch +
+            window.location = '/#/addons/reports?app=' + app +
+                              '&branch=' + branch +
                               '&platform=' + this.textContent +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val()
@@ -1884,7 +2167,9 @@ function processTestResults(aReport) {
           $('#end-date').datepicker().val(toDate.format()).trigger('change');
 
           $(".datepicker").change(function() {
-            window.location = '/#/addons/reports?branch=' + branch + "&platform=" + platform +
+            window.location = '/#/addons/reports?app=' + app +
+                              '&branch=' + branch +
+                              '&platform=' + platform +
                               '&from=' + $("#start-date").val() +
                               '&to=' + $("#end-date").val();
           })
@@ -1974,7 +2259,7 @@ function processTestResults(aReport) {
     this.get('#/endurance/charts', endurance_charts);
     this.get('#/endurance/reports', endurance_reports);
     this.get('#/endurance/report/:id', endurance_report);
-    this.get('#/remote', remote_reports);
+    this.get('#/remote', remote_topFailures);
     this.get('#/remote/top', remote_topFailures);
     this.get('#/remote/failure', remote_failure);
     this.get('#/remote/reports', remote_reports);

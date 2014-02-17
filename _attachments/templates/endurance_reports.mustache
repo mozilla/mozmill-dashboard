@@ -1,5 +1,13 @@
     <fieldset id="filter">
       <legend>Filter</legend>
+
+      <div id="app-selection">
+        <span>Application: </span>
+        <span>All</span>
+        <span>Firefox</span>
+        <span>MetroFirefox</span>
+      </div>
+
       <div id="branch-selection">
         <span>Branch:</span>
         <span>All</span>
@@ -30,6 +38,7 @@
       <thead>
         <tr>
           <th>Date</th>
+          <th>Application</th>
           <th>Version</th>
           <th>Build</th>
           <th>Locale</th>
@@ -48,6 +57,7 @@
       {{#reports}}
         <tr>
           <td><a href="{{report_link}}">{{time_start}}</a></td>
+          <td>{{application_name}}</td>
           <td>{{application_version}}</td>
           <td>{{build_id}}</td>
           <td>{{locale}}</td>
