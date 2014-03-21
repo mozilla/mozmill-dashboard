@@ -16,6 +16,28 @@ var DASHBOARD_SERVERS = [
   {urlVal: "mozmill-staging.blargon7.com", titleId: "Staging"}
 ];
 
+var ROUTES = {
+  "#/functional/top": "Functional Tests - Top Failures",
+  "#/functional/reports": "Functional Tests - Reports",
+  "#/functional/report": "Functional Tests - Report",
+  "#/functional/failure": "Functional Tests - Failure",
+  "#/update/overview": "Update Tests - Overview",
+  "#/update/reports": "Update Tests - Reports",
+  "#/update/report": "Update Tests - Report",
+  "#/update/details": "Update Tests - Details",
+  "#/l10n/reports": "L10n Tests - Reports",
+  "#/l10n/report": "L10n Tests - Report",
+  "#/endurance/charts": "Endurance Tests - Charts",
+  "#/endurance/reports": "Endurance Tests - Reports",
+  "#/endurance/report": "Endurance Tests - Report",
+  "#/remote/top": "Remote Tests - Top Failures",
+  "#/remote/reports": "Remote Tests - Reports",
+  "#/remote/report": "Remote Tests - Report",
+  "#/remote/failure": "Remote Tests - Failure",
+  "#/addons/reports": "Add-ons Tests - Reports",
+  "#/addons/report": "Add-ons Tests - Report"
+};
+
 var UPDATE_CHANNELS = [
   "release",
   "releasetest",

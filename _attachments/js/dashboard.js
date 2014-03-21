@@ -22,9 +22,9 @@ function filter_report_types(aReportType) {
 /**
  * Distinguish title for usability and bookmarking
  */
-function buildTitle() {
-  // Always return nothing if we don't find a match
-  var domainTitle = "";
+function buildTitle(aRoute) {
+  // Always return generic if we don't find a match
+  var domainTitle = "Mozmill Results Dashboard";
 
   // Get the real domain for comparison
   var domainActual = document.domain;
@@ -33,15 +33,17 @@ function buildTitle() {
   for (var i = 0; i < DASHBOARD_SERVERS.length; i++) {
     var domainUrl = DASHBOARD_SERVERS[i].urlVal;
 
-    // If we have a match return the title, if we don't we fallback to value in index.html
+    // If we have a match use it, if we don't we fallback to generic value above
     if (domainUrl === domainActual) {
       var domainTitle = "Mozmill" + " " + DASHBOARD_SERVERS[i].titleId + " " + "Results Dashboard";
       break;
     }
   }
-  return domainTitle;
+  // Replace document and header with the full title
+  var titleAll = domainTitle + " - " + ROUTES[aRoute];
+  document.title = titleAll;
+  $("#title").text(titleAll);
 }
-
 
 /**
  * Process all results of a test method and build list with failure information
@@ -180,6 +182,8 @@ function processTestResults(aReport) {
     }
 
     var functional_reports = function() {
+      buildTitle("#/functional/reports");
+
       var app = this.params.app || 'All';
       var branch = this.params.branch || 'All';
       var platform = this.params.platform || 'All';
@@ -293,6 +297,8 @@ function processTestResults(aReport) {
     }
 
     var functional_failure = function() {
+      buildTitle("#/functional/failure");
+
       var context = this;
       this.firefox_versions = FIREFOX_VERSIONS;
 
@@ -421,6 +427,8 @@ function processTestResults(aReport) {
     }
 
     var functional_topFailures = function () {
+      buildTitle("#/functional/top");
+
       var context = this;
       this.firefox_versions = FIREFOX_VERSIONS;
 
@@ -560,6 +568,8 @@ function processTestResults(aReport) {
     }
 
     function functional_report() {
+      buildTitle("#/functional/report");
+
       var context = this;
 
       var id = this.params.id ? this.params.id : 'null';
@@ -609,6 +619,8 @@ function processTestResults(aReport) {
     }
 
     var update_overview = function () {
+      buildTitle("#/update/overview");
+
       var context = this;
       this.firefox_versions = FIREFOX_VERSIONS;
       this.update_channels = UPDATE_CHANNELS;
@@ -750,6 +762,8 @@ function processTestResults(aReport) {
     }
 
     var update_detail = function () {
+      buildTitle("#/update/details");
+
       var context = this;
       this.firefox_versions = FIREFOX_VERSIONS;
       this.update_channels = UPDATE_CHANNELS;
@@ -902,6 +916,8 @@ function processTestResults(aReport) {
     }
 
     var update_reports = function() {
+      buildTitle("#/update/reports");
+
       var app = this.params.app || 'All';
       var branch = this.params.branch || 'All';
       var platform = this.params.platform || 'All';
@@ -1016,6 +1032,8 @@ function processTestResults(aReport) {
     }
 
     function update_report() {
+      buildTitle("#/update/report");
+
       var context = this;
 
       var id = this.params.id ? this.params.id : 'null';
@@ -1068,6 +1086,8 @@ function processTestResults(aReport) {
     }
 
     var l10n_reports = function () {
+      buildTitle("#/l10n/reports");
+
       var app = this.params.app || 'All';
       var branch = this.params.branch || 'All';
       var platform = this.params.platform || 'All';
@@ -1182,6 +1202,8 @@ function processTestResults(aReport) {
     }
 
     function l10n_report() {
+      buildTitle("#/l10n/report");
+
       var context = this;
 
       var id = this.params.id ? this.params.id : 'null';
@@ -1232,6 +1254,8 @@ function processTestResults(aReport) {
     }
 
     var endurance_reports = function() {
+      buildTitle("#/endurance/reports");
+
       var app = this.params.app || 'All';
       var branch = this.params.branch || 'All';
       var platform = this.params.platform || 'All';
@@ -1349,6 +1373,8 @@ function processTestResults(aReport) {
     }
 
     var endurance_charts = function() {
+      buildTitle("#/endurance/charts");
+
       var app = this.params.app || 'All';
       var branch = this.params.branch || FIREFOX_VERSIONS[0];
       var platform = this.params.platform || 'All';
@@ -1474,6 +1500,8 @@ function processTestResults(aReport) {
     }
 
     var endurance_report = function() {
+      buildTitle("#/endurance/report");
+
       var context = this;
 
       var id = this.params.id ? this.params.id : 'null';
@@ -1651,6 +1679,8 @@ function processTestResults(aReport) {
     }
 
     var remote_failure = function() {
+      buildTitle("#/remote/failure");
+
       var context = this;
       this.firefox_versions = FIREFOX_VERSIONS;
 
@@ -1779,6 +1809,8 @@ function processTestResults(aReport) {
     }
 
     var remote_topFailures = function () {
+      buildTitle("#/remote/top");
+
       var context = this;
       this.firefox_versions = FIREFOX_VERSIONS;
 
@@ -1918,6 +1950,8 @@ function processTestResults(aReport) {
     }
 
     var remote_reports = function() {
+      buildTitle("#/remote/reports");
+
       var app = this.params.app || 'All';
       var branch = this.params.branch || 'All';
       var platform = this.params.platform || 'All';
@@ -2031,6 +2065,8 @@ function processTestResults(aReport) {
     }
 
     function remote_report() {
+      buildTitle("#/remote/report");
+
       var context = this;
 
       var id = this.params.id ? this.params.id : 'null';
@@ -2080,6 +2116,8 @@ function processTestResults(aReport) {
     }
 
     var addons_reports = function() {
+      buildTitle("#/addons/reports");
+
       var app = this.params.app || 'All';
       var branch = this.params.branch || 'All';
       var platform = this.params.platform || 'All';
@@ -2195,6 +2233,8 @@ function processTestResults(aReport) {
     }
 
     function addons_report() {
+      buildTitle("#/addons/report");
+
       var context = this;
 
       var id = this.params.id ? this.params.id : 'null';

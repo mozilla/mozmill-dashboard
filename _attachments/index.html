@@ -13,22 +13,6 @@
     <script language="javascript" type="text/javascript" src="js/sammy/sammy.js"></script>
     <script language="javascript" type="text/javascript" src="js/sammy/plugins/sammy.mustache.js"></script>
     <script language="javascript" type="text/javascript" src="js/dashboard.js"></script>
-    <script type="text/javascript">
-      // Construct unique dashboard title in the browser titlebar and active tab for bookmarking
-      var titleName = buildTitle();
-      if (titleName !== "") {
-        document.title = titleName;
-      }
-    </script>
-    <script language="javascript" type="text/javascript" src="js/highcharts/highcharts.js"></script>
-    <script type="text/javascript">
-      $(document).ready(function (){
-        // Construct unique dashboard title in the main document content for usability
-        if (titleName !== "") {
-          $("#title").html(titleName);
-        }
-      });
-    </script>
   </head>
 
   <body>
