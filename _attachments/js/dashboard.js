@@ -1371,8 +1371,8 @@ function processTestResults(aReport) {
       }
 
       var query = {
-        startkey: JSON.stringify([all, branch, platform, toDate.format() + "T23:59:59"]),
-        endkey: JSON.stringify([all, branch, platform, fromDate.format() + "T00:00:00"]),
+        startkey: JSON.stringify([app, branch, platform, toDate.format() + "T23:59:59"]),
+        endkey: JSON.stringify([app, branch, platform, fromDate.format() + "T00:00:00"]),
         descending: "true"
       };
 
