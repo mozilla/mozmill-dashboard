@@ -113,16 +113,32 @@ html ul.topnav li ul.subnav li a:hover {
 
 #filter {
   width: 620px;
+  line-height: 20px;
   text-align: left;
 }
 
 #filter div {
-  padding: 5px 10px;
+  margin-bottom: 5px;
 }
 
-#filter div span {
-  padding: 2px 5px;
+#filter div:after {
+  display: block;
+  clear: both;
+  height: 0;
+  visibility: hidden;
+  content: ' ';
+}
+
+#filter span {
   cursor: pointer;
+  display: inline-block;
+  padding: 0 5px;
+}
+
+#filter span:first-child {
+  cursor: text;
+  float: left;
+  width: 100px;
 }
 
 #filter a.selected {
