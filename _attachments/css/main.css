@@ -113,7 +113,7 @@ html ul.topnav li ul.subnav li a:hover {
 
 #filter {
   width: 620px;
-  line-height: 20px;
+  line-height: 1.6em;
   text-align: left;
 }
 
@@ -138,7 +138,7 @@ html ul.topnav li ul.subnav li a:hover {
 #filter span:first-child {
   cursor: text;
   float: left;
-  width: 100px;
+  width: 6.1em;
 }
 
 #filter a.selected {
