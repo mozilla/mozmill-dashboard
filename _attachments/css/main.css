@@ -135,10 +135,10 @@ html ul.topnav li ul.subnav li a:hover {
   padding: 0 5px;
 }
 
-#filter span:first-child {
-  cursor: text;
+#filter label {
   float: left;
   width: 6.1em;
+  padding: 0 5px;
 }
 
 #filter a.selected {

@@ -2,7 +2,7 @@
       <legend>Filter</legend>
 
       <div id="channel-selection">
-        <span>Channel: </span>
+        <label>Channel:</label>
         <span>All</span>
         {{#update_channels}}
           <span>{{{.}}}</span>
@@ -10,9 +10,8 @@
       </div>
 
       <div id="date">
-        <span>From: </span>
-        <input id="start-date" class="datepicker" type="text" value="" size="11" />
-        <span>To: </span>
+        <label>Range:</label>
+        <input id="start-date" class="datepicker" type="text" value="" size="11" /> -
         <input id="end-date" class="datepicker" type="text" value="" size="11" />
       </div>
     </fieldset>
