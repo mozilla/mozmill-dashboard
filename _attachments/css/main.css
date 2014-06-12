@@ -20,56 +20,51 @@ h2 {
   position: relative;
   margin: 0 -20px;
   padding: 0;
-  background: url(/img/header_bg.png) repeat-x;
-  color: #fff;
+  background: #25292b;
+  color: #e5e5e5;
 }
 
 #header h2 {
   margin: 0;
   padding: 5px 10px;
+  border-bottom: 1px solid #101010;
 }
 
-#header a {
-  color: #ff9;
-  text-decoration: none;
-}
-
-ul.topnav {
+.topnav {
   list-style: none;
   float: left;
   width: 100%;
+  height: 33px;
   margin: 0;
   padding: 0;
-  background: url(/img/testrun_bg.png) repeat-x;
+  border-bottom: 1px solid #101010;
+  background: #3b454d;
   font-size: 1em;
 }
 
-ul.topnav li {
+.topnav li {
   float: left;
-  margin: 0;
-  padding: 0 5px;
   position: relative;
 }
 
-ul.topnav li a {
-  padding: 10px 5px;
-  color: #fff !important;
+.topnav a {
+  padding: 10px 10px;
+  color: #d6d6d6;
   display: block;
   text-decoration: none;
   float: left;
 }
 
-ul.topnav li a:hover {
-  background: url(topnav_hover.gif) no-repeat center top;
-  color: #ff9 !important;
+.topnav a:hover {
+  color: #fff;
 }
 
-ul.topnav li ul.subnav {
+.topnav ul {
   list-style: none;
   position: absolute;
   left: -9999px;
   top: 31px;
-  background: url(/img/testrun_bg.png) repeat-x;
+  background: #3b454d;
   margin: 0;
   padding: 0;
   float: left;
@@ -90,15 +85,15 @@ ul.topnav li ul.subnav li{
   width: 170px;
 }
 
-html ul.topnav li ul.subnav li a {
+.topnav ul a {
   float: left;
-  width: 145px;
-  background: #222 url(/img/testrun_bg.png) repeat 10px center;
+  width: 151px;
+  background: #3b454d;
   padding-left: 20px;
 }
 
-html ul.topnav li ul.subnav li a:hover {
-  background: #222 url(/img/testrun_bg.png) repeat 10px center;
+.topnav ul a:hover {
+  background: #3b454d;
 }
 
 #page_controls select, #filter select {
@@ -222,14 +217,13 @@ table {
   border: 1px solid #aaa;
   -moz-border-radius: 10px;
   border-spacing: 0;
-  padding: 5px;
-  background-color: #fff;
+  background: #fff;
 }
 
 table th {
   padding: 5px 10px 5px 20px;
-  background-color: #eee;
   vertical-align: top;
+  font-weight: normal;
 }
 
 table td {
@@ -240,9 +234,52 @@ table td {
   text-align: left;
 }
 
+/* Targeting the individual result table only */
+table#result {
+  border-collapse: collapse;
+}
+
+table#result thead {
+  border-bottom: 1px solid #aaa;
+}
+
+table#result td {
+  border-bottom: 1px dotted #aaa;
+}
+
+table#result tbody tr:nth-child(even) {
+  background: #f7f7f7;
+}
+
+/* Targeting the full results table only */
+table#results {
+  border-collapse: collapse;
+}
+
+table#results thead {
+  border-bottom: 1px solid #aaa;
+}
+
+table#results td {
+  border-bottom: 1px dotted #aaa;
+}
+
+table#results tbody tr:nth-child(even) {
+  background: #f7f7f7;
+}
+
+/* Any "no results" row bypasses alternate coloring */
+table tr#noresults td {
+  background: #fff;
+}
+
 table#graphics {
   display: none;
   margin: 10px 0 0 0;
+}
+
+table#information {
+  padding: 5px;
 }
 
 #result td:last-child {
@@ -315,31 +352,35 @@ table .information {
   font-size: 0.8em;
 }
 
+thead tr {
+  background: #fafafa;
+}
+
 th.headerSortUp {
   background-image: url(../img/asc.gif) !important;
-  background-color: #eee;
-  background-position: right center;
+  background: #eee;
+  background-position: left center;
 }
 
 th.headerSortDown {
   background-image: url(../img/desc.gif) !important;
-  background-color: #eee;
-  background-position: right center;
+  background: #eee;
+  background-position: left center;
 }
 
 th.header {
   background-image: url(../img/bg.gif);
   cursor: pointer;
-  font-weight: bold;
+  font-weight: normal;
   background-repeat: no-repeat;
   background-position: center left;
   padding-left: 20px;
-  border-right: 1px solid #dad9c7;
+  border-right: 1px solid #aaa;
   margin-left: -1px;
 }
 
 span.selected {
-  background-color: #555;
+  background: #555;
   color: #ffe;
 }
 
