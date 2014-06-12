@@ -20,13 +20,14 @@ h2 {
   position: relative;
   margin: 0 -20px;
   padding: 0;
-  background: url(/img/header_bg.png) repeat-x;
-  color: #fff;
+  background-color: #25292b;
+  color: #e5e5e5;
 }
 
 #header h2 {
   margin: 0;
   padding: 5px 10px;
+  border-bottom: 1px solid #101010;
 }
 
 #header a {
@@ -38,9 +39,11 @@ ul.topnav {
   list-style: none;
   float: left;
   width: 100%;
+  height: 33px;
   margin: 0;
   padding: 0;
-  background: url(/img/testrun_bg.png) repeat-x;
+  border-bottom: 1px solid #101010;
+  background-color: #3b454d;
   font-size: 1em;
 }
 
@@ -53,7 +56,7 @@ ul.topnav li {
 
 ul.topnav li a {
   padding: 10px 5px;
-  color: #fff !important;
+  color: #d3d3d3 !important;
   display: block;
   text-decoration: none;
   float: left;
@@ -61,7 +64,7 @@ ul.topnav li a {
 
 ul.topnav li a:hover {
   background: url(topnav_hover.gif) no-repeat center top;
-  color: #ff9 !important;
+  color: #fff !important;
 }
 
 ul.topnav li ul.subnav {
@@ -69,7 +72,7 @@ ul.topnav li ul.subnav {
   position: absolute;
   left: -9999px;
   top: 31px;
-  background: url(/img/testrun_bg.png) repeat-x;
+  background-color: #3b454d;
   margin: 0;
   padding: 0;
   float: left;
@@ -92,13 +95,13 @@ ul.topnav li ul.subnav li{
 
 html ul.topnav li ul.subnav li a {
   float: left;
-  width: 145px;
-  background: #222 url(/img/testrun_bg.png) repeat 10px center;
-  padding-left: 20px;
+  width: 151px;
+  background-color: #3b454d;
+  padding-left: 14px;
 }
 
 html ul.topnav li ul.subnav li a:hover {
-  background: #222 url(/img/testrun_bg.png) repeat 10px center;
+  background-color: #3b454d;
 }
 
 #page_controls select, #filter select {
@@ -222,14 +225,13 @@ table {
   border: 1px solid #aaa;
   -moz-border-radius: 10px;
   border-spacing: 0;
-  padding: 5px;
   background-color: #fff;
 }
 
 table th {
   padding: 5px 10px 5px 20px;
-  background-color: #eee;
   vertical-align: top;
+  font-weight: normal;
 }
 
 table td {
@@ -243,6 +245,10 @@ table td {
 table#graphics {
   display: none;
   margin: 10px 0 0 0;
+}
+
+table#information {
+  padding: 5px;
 }
 
 #result td:last-child {
@@ -330,7 +336,7 @@ th.headerSortDown {
 th.header {
   background-image: url(../img/bg.gif);
   cursor: pointer;
-  font-weight: bold;
+  font-weight: normal;
   background-repeat: no-repeat;
   background-position: center left;
   padding-left: 20px;
