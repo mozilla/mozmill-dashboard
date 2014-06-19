@@ -250,7 +250,7 @@ table#results tr:first-child td {
   border-top: 1px solid #aaa;
 }
 
-#noresults td {
+table tr#noresults td {
   border-top: 1px solid #aaa;
 }
 
@@ -333,16 +333,16 @@ table .information {
   font-size: 0.8em;
 }
 
-th.headerSortUp {
+th.header.headerSortUp {
   background-image: url(../img/asc.gif) !important;
   background-color: #eee;
-  background-position: right center;
+  background-position: left center;
 }
 
-th.headerSortDown {
+th.header.headerSortDown {
   background-image: url(../img/desc.gif) !important;
   background-color: #eee;
-  background-position: right center;
+  background-position: left center;
 }
 
 th.header {
@@ -351,6 +351,7 @@ th.header {
   font-weight: normal;
   background-repeat: no-repeat;
   background-position: center left;
+  background-color: #fafafa;
   padding-left: 20px;
   border-right: 1px solid #dad9c7;
   margin-left: -1px;
