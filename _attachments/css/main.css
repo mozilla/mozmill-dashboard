@@ -242,12 +242,28 @@ table td {
   text-align: left;
 }
 
-table#result tr:first-child td {
+/* To avoid double lining empty tables, we apply a border
+ * to the td results, only when tabular data exists */
+table#result tbody tr[style="display: table-row;"] td {
   border-top: 1px solid #aaa;
 }
 
-table#results tr:first-child td {
+/* We revert that top border above to all subsequent
+ * rows, so they themselves don't get double lined */
+table#result tbody tr[style="display: table-row;"] ~ tr[style="display: table-row;"] td {
+  border-top: none;
+}
+
+/* To avoid double lining empty tables, we apply a border
+ * to the td results, only when tabular data exists */
+table#results tbody tr[style="display: table-row;"] td {
   border-top: 1px solid #aaa;
+}
+
+/* We revert that top border above to all subsequent
+ * rows, so they themselves don't get double lined */
+table#results tbody tr[style="display: table-row;"] ~ tr[style="display: table-row;"] td {
+  border-top: none;
 }
 
 table tr#noresults td {
@@ -333,13 +349,17 @@ table .information {
   font-size: 0.8em;
 }
 
-th.header.headerSortUp {
+thead tr {
+  background-color: #fafafa;
+}
+
+th.headerSortUp {
   background-image: url(../img/asc.gif) !important;
   background-color: #eee;
   background-position: left center;
 }
 
-th.header.headerSortDown {
+th.headerSortDown {
   background-image: url(../img/desc.gif) !important;
   background-color: #eee;
   background-position: left center;
@@ -351,7 +371,6 @@ th.header {
   font-weight: normal;
   background-repeat: no-repeat;
   background-position: center left;
-  background-color: #fafafa;
   padding-left: 20px;
   border-right: 1px solid #dad9c7;
   margin-left: -1px;
