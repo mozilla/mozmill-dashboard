@@ -20,7 +20,7 @@ h2 {
   position: relative;
   margin: 0 -20px;
   padding: 0;
-  background-color: #25292b;
+  background: #25292b;
   color: #e5e5e5;
 }
 
@@ -30,12 +30,7 @@ h2 {
   border-bottom: 1px solid #101010;
 }
 
-#header a {
-  color: #ff9;
-  text-decoration: none;
-}
-
-ul.topnav {
+.topnav {
   list-style: none;
   float: left;
   width: 100%;
@@ -43,36 +38,36 @@ ul.topnav {
   margin: 0;
   padding: 0;
   border-bottom: 1px solid #101010;
-  background-color: #3b454d;
+  background: #3b454d;
   font-size: 1em;
 }
 
-ul.topnav li {
+.topnav li {
   float: left;
   margin: 0;
   padding: 0 5px;
   position: relative;
 }
 
-ul.topnav li a {
+.topnav a {
   padding: 10px 5px;
-  color: #d3d3d3 !important;
+  color: #d3d3d3;
   display: block;
   text-decoration: none;
   float: left;
 }
 
-ul.topnav li a:hover {
+.topnav a:hover {
   background: url(topnav_hover.gif) no-repeat center top;
-  color: #fff !important;
+  color: #fff;
 }
 
-ul.topnav li ul.subnav {
+.topnav ul {
   list-style: none;
   position: absolute;
   left: -9999px;
   top: 31px;
-  background-color: #3b454d;
+  background: #3b454d;
   margin: 0;
   padding: 0;
   float: left;
@@ -93,15 +88,15 @@ ul.topnav li ul.subnav li{
   width: 170px;
 }
 
-html ul.topnav li ul.subnav li a {
+.topnav ul a {
   float: left;
   width: 151px;
-  background-color: #3b454d;
+  background: #3b454d;
   padding-left: 14px;
 }
 
-html ul.topnav li ul.subnav li a:hover {
-  background-color: #3b454d;
+.topnav ul a:hover {
+  background: #3b454d;
 }
 
 #page_controls select, #filter select {
@@ -225,7 +220,7 @@ table {
   border: 1px solid #aaa;
   -moz-border-radius: 10px;
   border-spacing: 0;
-  background-color: #fff;
+  background: #fff;
 }
 
 table th {
@@ -242,32 +237,43 @@ table td {
   text-align: left;
 }
 
-/* To avoid double lining empty tables, we apply a border
- * to the td results, only when tabular data exists */
-table#result tbody tr[style="display: table-row;"] td {
-  border-top: 1px solid #aaa;
+/* Targeting the individual result table only */
+table#result {
+  border-collapse: collapse;
 }
 
-/* We revert that top border above to all subsequent
- * rows, so they themselves don't get double lined */
-table#result tbody tr[style="display: table-row;"] ~ tr[style="display: table-row;"] td {
-  border-top: none;
+table#result thead {
+  border-bottom: 1px solid #aaa;
 }
 
-/* To avoid double lining empty tables, we apply a border
- * to the td results, only when tabular data exists */
-table#results tbody tr[style="display: table-row;"] td {
-  border-top: 1px solid #aaa;
+table#result td {
+  border-bottom: 1px dotted #aaa;
 }
 
-/* We revert that top border above to all subsequent
- * rows, so they themselves don't get double lined */
-table#results tbody tr[style="display: table-row;"] ~ tr[style="display: table-row;"] td {
-  border-top: none;
+table#result tbody tr:nth-child(even) {
+  background: #f7f7f7;
 }
 
+/* Targeting the full results table only */
+table#results {
+  border-collapse: collapse;
+}
+
+table#results thead {
+  border-bottom: 1px solid #aaa;
+}
+
+table#results td {
+  border-bottom: 1px dotted #aaa;
+}
+
+table#results tbody tr:nth-child(even) {
+  background: #f7f7f7;
+}
+
+/* Any "no results" row bypasses alternate coloring */
 table tr#noresults td {
-  border-top: 1px solid #aaa;
+  background: #fff;
 }
 
 table#graphics {
@@ -350,18 +356,18 @@ table .information {
 }
 
 thead tr {
-  background-color: #fafafa;
+  background: #fafafa;
 }
 
 th.headerSortUp {
   background-image: url(../img/asc.gif) !important;
-  background-color: #eee;
+  background: #eee;
   background-position: left center;
 }
 
 th.headerSortDown {
   background-image: url(../img/desc.gif) !important;
-  background-color: #eee;
+  background: #eee;
   background-position: left center;
 }
 
@@ -372,12 +378,12 @@ th.header {
   background-repeat: no-repeat;
   background-position: center left;
   padding-left: 20px;
-  border-right: 1px solid #dad9c7;
+  border-right: 1px solid #aaa;
   margin-left: -1px;
 }
 
 span.selected {
-  background-color: #555;
+  background: #555;
   color: #ffe;
 }
 
