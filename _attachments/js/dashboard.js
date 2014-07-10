@@ -58,9 +58,10 @@ function processTestResults(aReport) {
   for (var i = 0; i < aReport.results.length; i++) {
     var result = aReport.results[i];
     var info = [ ];
+    var file = result.filename || result.path;
 
     // Split absolute path and only keep the relative path below the test-run folder
-    var parts = result.filename.split(report_type)
+    var parts = file.split(report_type);
     var filename = parts[parts.length - 1].replace(/\\/g, '/');
 
     var repository_url = TESTS_REPOSITORY + '/file/' +
