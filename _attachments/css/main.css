@@ -44,21 +44,18 @@ h2 {
 
 .topnav li {
   float: left;
-  margin: 0;
-  padding: 0 5px;
   position: relative;
 }
 
 .topnav a {
-  padding: 10px 5px;
-  color: #d3d3d3;
+  padding: 10px 10px;
+  color: #d6d6d6;
   display: block;
   text-decoration: none;
   float: left;
 }
 
 .topnav a:hover {
-  background: url(topnav_hover.gif) no-repeat center top;
   color: #fff;
 }
 
@@ -92,7 +89,7 @@ ul.topnav li ul.subnav li{
   float: left;
   width: 151px;
   background: #3b454d;
-  padding-left: 14px;
+  padding-left: 20px;
 }
 
 .topnav ul a:hover {
