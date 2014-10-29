@@ -5,16 +5,18 @@
 var FIREFOX_VERSIONS = ["36.0", "35.0", "34.0", "33.0", "31.0"];
 
 var UPDATE_CHANNELS = [
-  "release",
-  "releasetest",
-  "beta",
-  "beta-cdntest",
-  "beta-localtest",
-  "betatest", // needed for 31.0 ESR branch
   "aurora",
   "auroratest",
+  "beta",
+  "betatest", // needed as long as not all branches are on aus4
+  "beta-cdntest",
+  "beta-localtest",
+  "esr",
+  "esrtest",
   "nightly",
-  "nightly-esr31"
+  "nightly-esr31",
+  "release",
+  "releasetest",
 ];
 
 
