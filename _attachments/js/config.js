@@ -3,6 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var FIREFOX_VERSIONS = ["36.0", "35.0", "34.0", "33.0", "31.0"];
+
+var UPDATE_CHANNELS = [
+  "release",
+  "releasetest",
+  "beta",
+  "beta-cdntest",
+  "beta-localtest",
+  "betatest", // needed for 31.0 ESR branch
+  "aurora",
+  "auroratest",
+  "nightly",
+  "nightly-esr31"
+];
+
+
 var TESTS_REPOSITORY = "http://hg.mozilla.org/qa/mozmill-tests";
 
 var DASHBOARD_SERVERS = [
@@ -35,17 +50,6 @@ var ROUTES = {
   "#/addons/reports": "Add-ons Tests - Reports",
   "#/addons/report": "Add-ons Tests - Report"
 };
-
-var UPDATE_CHANNELS = [
-  "release",
-  "releasetest",
-  "beta",
-  "betatest",
-  "aurora",
-  "auroratest",
-  "nightly",
-  "nightly-esr24"
-];
 
 var BYTE_TO_MEGABYTE = 1/1048576;
 var MAX_CHART_CHECKPOINTS = 450;
