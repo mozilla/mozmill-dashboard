@@ -468,7 +468,9 @@ function processTestResults(aReport) {
           var v = row.value;
           var k = row.key;
 
-          var index = v.test_module + "|" + v.test_function + "|" + v.application_branch + "|" + v.system_name + "|" + v.application_name;
+          var index = v.test_module + "|" + v.test_function + "|" +
+                      v.application_branch + "|" + v.application_version + "|" +
+                      v.system_name + "|" + v.application_name;
           if (index in failures) {
             failures[index]++;
           } else {
@@ -483,11 +485,12 @@ function processTestResults(aReport) {
             test_module : entries[0],
             test_function : entries[1],
             application_branch : entries[2],
-            system_name : entries[3],
-            application_name : entries[4],
-            failure_link : '/#/functional/failure?app=' + entries[4] +
+            application_version : entries[3],
+            system_name : entries[4],
+            application_name : entries[5],
+            failure_link : '/#/functional/failure?app=' + entries[5] +
                            '&branch=' + entries[2] +
-                           '&platform=' + entries[3] +
+                           '&platform=' + entries[4] +
                            '&from=' + fromDate.format() +
                            '&to=' + toDate.format() +
                            '&test=' + encodeURIComponent(entries[0]) +
@@ -1850,7 +1853,9 @@ function processTestResults(aReport) {
           var v = row.value;
           var k = row.key;
 
-          var index = v.test_module + "|" + v.test_function + "|" + v.application_branch + "|" + v.system_name + "|" + v.application_name;
+          var index = v.test_module + "|" + v.test_function + "|" +
+                      v.application_branch + "|" + v.application_version + "|" +
+                      v.system_name + "|" + v.application_name;
           if (index in failures) {
             failures[index]++;
           } else {
@@ -1865,11 +1870,12 @@ function processTestResults(aReport) {
             test_module : entries[0],
             test_function : entries[1],
             application_branch : entries[2],
-            system_name : entries[3],
-            application_name : entries[4],
-            failure_link : '/#/remote/failure?app=' + entries[4] +
+            application_version : entries[3],
+            system_name : entries[4],
+            application_name : entries[5],
+            failure_link : '/#/remote/failure?app=' + entries[5] +
                            '&branch=' + entries[2] +
-                           '&platform=' + entries[3] +
+                           '&platform=' + entries[4] +
                            '&from=' + fromDate.format() +
                            '&to=' + toDate.format() +
                            '&test=' + encodeURIComponent(entries[0]) +
