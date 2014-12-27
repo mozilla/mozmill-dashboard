@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var FIREFOX_VERSIONS = ["37", "36", "35", "34", "31"];
+var FIREFOX_VERSIONS = ["38", "37", "36", "35", "31"];
 
 var UPDATE_CHANNELS = [
   "aurora",
