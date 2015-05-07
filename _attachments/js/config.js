@@ -5,18 +5,11 @@
 var FIREFOX_VERSIONS = ["39", "38", "37", "36", "31"];
 
 var UPDATE_CHANNELS = [
-  "aurora",
-  "auroratest",
-  "beta",
-  "betatest", // needed as long as not all branches are on aus4
-  "beta-cdntest",
-  "beta-localtest",
-  "esr",
-  "esrtest",
-  "nightly",
-  "nightly-esr31",
-  "release",
-  "releasetest",
+  "aurora", "auroratest",
+  "beta", "beta-cdntest", "beta-localtest",
+  "esr", "esr-cdntest", "esr-localtest",
+  "nightly", "nightlytest",
+  "release", "release-cdntest", "release-localtest"
 ];
 
 var TESTS_REPOSITORY = "http://hg.mozilla.org/qa/mozmill-tests";
